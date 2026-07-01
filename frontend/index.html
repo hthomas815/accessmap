@@ -405,6 +405,45 @@
       min-width: 36px; text-align: right;
     }
 
+    /* ── Avoid chips + reroute ── */
+    .route-avoid-section {
+      padding: 10px 16px 12px;
+      border-bottom: 1px solid #1e2d50;
+    }
+    .route-avoid-label {
+      font-size: 11px; font-weight: 700;
+      letter-spacing: .07em; text-transform: uppercase;
+      color: #3a4a68; margin-bottom: 8px;
+    }
+    .route-avoid-row {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .avoid-chip {
+      padding: 6px 13px;
+      border-radius: 20px;
+      border: 1.5px solid #243050;
+      background: #1a2540;
+      color: #5a6a8a;
+      font-size: 13px; font-weight: 500;
+      cursor: pointer;
+      transition: border-color .15s, background .15s, color .15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .avoid-chip.active-high   { border-color: #f44336; background: #f4433618; color: #f44336; }
+    .avoid-chip.active-medium { border-color: #ff9800; background: #ff980018; color: #ff9800; }
+    #rerouteBtn {
+      margin-left: auto;
+      padding: 6px 14px;
+      border-radius: 20px; border: none;
+      background: #4fc3f7; color: #111827;
+      font-size: 13px; font-weight: 700;
+      cursor: pointer;
+      opacity: 0; pointer-events: none;
+      transition: opacity .2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #rerouteBtn.visible { opacity: 1; pointer-events: auto; }
+
     /* ── Highlighted marker pulse ── */
     @keyframes pulse-ring {
       0%   { box-shadow: 0 0 0 0    rgba(255,200,0,.8); }
@@ -475,6 +514,145 @@
     }
     #gpxImportBtn.show { display: flex; }
     #gpxImportBtn:active { background: #66bb6a; color: #16213e; }
+
+    /* ── Grid toggle button ── */
+    #gridBtn {
+      position: absolute;
+      bottom: 216px; left: 20px;
+      z-index: 1000;
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      background: #16213e;
+      border: 2px solid #66bb6a;
+      color: #66bb6a;
+      font-size: 20px; cursor: pointer;
+      display: none;
+      align-items: center; justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,.4);
+      transition: background .15s, color .15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #gridBtn.show  { display: flex; }
+    #gridBtn.active { background: #66bb6a; color: #16213e; }
+    #gridBtn:active { opacity: .8; }
+
+    /* ── Coverage stats pill ── */
+    #coverageStats {
+      position: absolute;
+      top: 16px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 1001;
+      background: #16213e;
+      border: 1.5px solid #66bb6a;
+      color: #eee;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 13px; font-weight: 500;
+      white-space: nowrap;
+      display: none;
+      box-shadow: 0 2px 12px rgba(0,0,0,.4);
+      pointer-events: none;
+    }
+
+    /* ── FAB place-mode state ── */
+    #fab.place-mode { background: #4fc3f7; }
+
+    /* ══════════════════════════════════════
+       MARKER PANEL (comments / updates)
+    ══════════════════════════════════════ */
+    #markerPanel {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      z-index: 1600;
+      background: #111827;
+      border-radius: 20px 20px 0 0;
+      transform: translateY(100%);
+      transition: transform .28s cubic-bezier(.33,1,.68,1);
+      max-height: 72dvh;
+      overflow-y: auto;
+    }
+    #markerPanel.open { transform: translateY(0); }
+
+    .mp-header {
+      display: flex; align-items: center;
+      padding: 14px 16px 10px; gap: 10px;
+      border-bottom: 1px solid #1e2d50;
+    }
+    .mp-icon {
+      width: 40px; height: 40px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; overflow: hidden; padding: 5px;
+    }
+    .mp-title { flex: 1; min-width: 0; }
+    .mp-type { font-size: 15px; font-weight: 700; color: #f0f0f8; }
+    .mp-sub  { font-size: 12px; color: #556080; margin-top: 2px; }
+    .mp-close-btn {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: #1a2540; border: none; color: #6a7a9a;
+      font-size: 16px; cursor: pointer; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .mp-meta {
+      padding: 8px 16px 10px;
+      font-size: 12px; color: #4a5a78;
+      border-bottom: 1px solid #1e2d50;
+      display: flex; gap: 12px; flex-wrap: wrap;
+    }
+
+    .mp-photo { margin: 10px 16px 0; border-radius: 10px; overflow: hidden; }
+    .mp-photo img { width: 100%; max-height: 140px; object-fit: cover; display: block; }
+
+    .mp-note {
+      padding: 10px 16px;
+      font-size: 13px; color: #c0c8e0; line-height: 1.5;
+      border-bottom: 1px solid #1e2d50;
+    }
+
+    .mp-comments-section { padding: 12px 16px 0; }
+    .mp-comments-label {
+      font-size: 11px; font-weight: 700;
+      letter-spacing: .08em; text-transform: uppercase;
+      color: #3a4a68; margin-bottom: 10px;
+    }
+    .mp-comment-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+    .mp-comment {
+      background: #1a2540; border-radius: 10px; padding: 10px 12px;
+    }
+    .mp-comment-body { font-size: 13px; color: #c0c8e0; line-height: 1.45; }
+    .mp-comment-date { font-size: 11px; color: #3a4a68; margin-top: 4px; }
+
+    .mp-add-row {
+      display: flex; gap: 8px; align-items: flex-end; margin-bottom: 12px;
+    }
+    #mpCommentInput {
+      flex: 1; padding: 10px 12px; border-radius: 10px;
+      border: 1.5px solid #243050; background: #1a2540;
+      color: #d0d8ee; font-size: 13px; resize: none;
+      font-family: inherit; line-height: 1.5; min-height: 42px;
+    }
+    #mpCommentInput::placeholder { color: #2e3c55; }
+    #mpCommentInput:focus { outline: none; border-color: #3a5080; }
+    #mpCommentBtn {
+      padding: 10px 16px; border-radius: 10px;
+      border: none; background: #e94560; color: #fff;
+      font-size: 13px; font-weight: 700; cursor: pointer; flex-shrink: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #mpCommentBtn:active { opacity: .8; }
+    #mpCommentBtn:disabled { opacity: .5; }
+
+    .mp-actions {
+      padding: 8px 16px 28px;
+      border-top: 1px solid #1e2d50;
+    }
+    .mp-delete-btn {
+      padding: 10px 20px; border-radius: 10px;
+      border: 1px solid #3a4a60; background: transparent;
+      color: #e94560; font-size: 13px; cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
   </style>
 </head>
 <body>
@@ -485,8 +663,10 @@
 <button id="routeBtn" title="Plan a route">↗</button>
 <button id="coverageBtn" title="Show explored paths">◉</button>
 <button id="gpxImportBtn" title="Import GPX walk">＋</button>
+<button id="gridBtn" title="Toggle coverage grid">⊞</button>
 <input type="file" id="gpxFileInput" accept=".gpx,.xml" style="display:none" />
 <div id="routeBanner"></div>
+<div id="coverageStats"></div>
 
 <!-- ── Marker sheet ── -->
 <div id="sheet">
@@ -570,10 +750,23 @@
     <button id="clearRouteBtn" title="Clear route">✕</button>
   </div>
   <div class="route-friction-summary" id="routeFrictionSummary"></div>
+  <div class="route-avoid-section" id="routeAvoidSection" style="display:none">
+    <div class="route-avoid-label">Avoid obstacles</div>
+    <div class="route-avoid-row">
+      <button class="avoid-chip" id="avoidHighChip">🔴 Hard</button>
+      <button class="avoid-chip" id="avoidMedChip">🟡 Tricky</button>
+      <button id="rerouteBtn">↺ Reroute</button>
+    </div>
+  </div>
   <div class="route-marker-list" id="routeMarkerList"></div>
 </div>
 
 <div id="toast"></div>
+
+<!-- ── Marker detail / comments panel ── -->
+<div id="markerPanel">
+  <div id="markerPanelContent"></div>
+</div>
 
 <!-- ── Custom confirm dialog ── -->
 <div id="confirmOverlay">
@@ -600,6 +793,7 @@ const ICONS = {
   narrow: `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Narrow path icon"> <path d="M31 68C32 54 34 41 37 18" stroke="#D7D7D7" stroke-width="5" stroke-linecap="round"/> <path d="M49 68C48 54 46 41 43 18" stroke="#D7D7D7" stroke-width="5" stroke-linecap="round"/> <path d="M18 64C22 58 24 52 24 46M15 50C21 47 24 42 25 36M62 64C58 58 56 52 56 46M65 50C59 47 56 42 55 36" stroke="#7DBB5A" stroke-width="4" stroke-linecap="round"/> <path d="M40 16V69" stroke="#5A6270" stroke-width="2" stroke-dasharray="6 7" stroke-linecap="round"/> </svg>`,
   rough_surface: `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Rough terrain icon"> <path d="M28 51L38 33C40 30 45 30 47 34L58 51H28Z" fill="#B8AA96"/> <path d="M13 59L22 45C24 42 28 42 30 46L39 59H13Z" fill="#D6C5A7"/> <path d="M44 61L54 49C57 46 61 47 63 51L70 61H44Z" fill="#C6B8A4"/> <ellipse cx="38" cy="65" rx="25" ry="4" fill="#8B8276" opacity="0.5"/> <circle cx="21" cy="66" r="3" fill="#D6C5A7"/><circle cx="58" cy="68" r="3" fill="#B8AA96"/><circle cx="67" cy="63" r="2" fill="#D6C5A7"/> </svg>`,
   other: `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Other icon"> <circle cx="40" cy="40" r="28" stroke="#B99BEA" stroke-width="5"/> <circle cx="28" cy="40" r="4" fill="#B99BEA"/> <circle cx="40" cy="40" r="4" fill="#B99BEA"/> <circle cx="52" cy="40" r="4" fill="#B99BEA"/> </svg>`,
+  field: `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Field icon"> <path d="M14 62H66" stroke="#3d7a3d" stroke-width="4" stroke-linecap="round"/> <path d="M20 62C20 52 18 40 20 28C22 33 24 33 23 28" stroke="#68b26b" stroke-width="3" stroke-linecap="round" fill="none"/> <path d="M31 62C31 52 29 40 31 28C33 33 35 33 34 28" stroke="#5cb85c" stroke-width="3" stroke-linecap="round" fill="none"/> <path d="M42 62C42 52 40 40 42 28C44 33 46 33 45 28" stroke="#68b26b" stroke-width="3" stroke-linecap="round" fill="none"/> <path d="M53 62C53 52 51 40 53 28C55 33 57 33 56 28" stroke="#5cb85c" stroke-width="3" stroke-linecap="round" fill="none"/> <path d="M64 62C64 52 62 40 64 28C66 33 68 33 67 28" stroke="#68b26b" stroke-width="3" stroke-linecap="round" fill="none"/> </svg>`,
 };
 
 const CATEGORIES = [
@@ -609,6 +803,7 @@ const CATEGORIES = [
   { id: "mud",           label: "Mud / Flooding", iconBg: "#0a1a28", iconBorder: "#79B9EA55" },
   { id: "narrow",        label: "Narrow", iconBg: "#0e1e10", iconBorder: "#7DBB5A55" },
   { id: "rough_surface", label: "Rough",  iconBg: "#1e1810", iconBorder: "#B8AA9655" },
+  { id: "field",         label: "Field",  iconBg: "#0d1e0d", iconBorder: "#68b26b55" },
   { id: "other",         label: "Other",  iconBg: "#18142a", iconBorder: "#B99BEA55" },
 ];
 
@@ -713,13 +908,22 @@ const SUBTYPES = {
     { label: "Poor signage", key: "other_poor_signage" },
     { label: "Other",        key: "other_other"        },
   ],
+  field: [
+    { label: "Grassy / accessible",       key: "field_grassy_accessible"       },
+    { label: "Boggy / partly accessible", key: "field_boggy_partial"           },
+    { label: "Overgrown / inaccessible",  key: "field_overgrown_inaccessible"  },
+    { label: "Rough / uneven",            key: "field_rough_uneven"            },
+    { label: "Livestock present",         key: "field_livestock"               },
+    { label: "Other",                     key: "field_other"                   },
+  ],
 };
 
 const TYPE_COLORS = {
   gate: "#c47a2a", kissing_gate: "#c47a2a",
   stile: "#3a8f58", steep: "#4a6aaa",
   mud: "#2e7da0", narrow: "#3a9060",
-  rough_surface: "#8a6040", other: "#4a5080",
+  rough_surface: "#8a6040", field: "#3a7a3a",
+  other: "#4a5080",
 };
 
 // ── Map ───────────────────────────────────────────────────────────────────────
@@ -781,11 +985,12 @@ function restoreFormState() {
 const mapMarkers = {};
 
 // Route state
-let routeMode     = false;
-let routeStart    = null;
-let routeEnd      = null;
-let routeLayer    = null;
-let routePolyline = null;  // kept for bounds-fitting (locate + auto-fit)
+let routeMode       = false;
+let routeStart      = null;
+let routeEnd        = null;
+let routeLayer      = null;
+let routePolyline   = null;   // kept for bounds-fitting (locate + auto-fit)
+const avoidSeverities = new Set();  // "high" | "medium"
 
 // ── Build category grid ────────────────────────────────────────────────────────
 
@@ -881,7 +1086,7 @@ document.querySelectorAll(".diff-btn").forEach(btn => {
 
 // ── Photo ─────────────────────────────────────────────────────────────────────
 
-async function compressPhoto(file, maxWidth = 1200, quality = 0.8) {
+async function compressPhoto(file, maxWidth = 800, quality = 0.75) {
   return new Promise(resolve => {
     const img = new Image();
     const url = URL.createObjectURL(file);
@@ -930,12 +1135,33 @@ document.getElementById("photoLibraryBtn").addEventListener("click", () => {
 document.getElementById("photoCamera").addEventListener("change",  e => handlePhotoFile(e.target.files[0]));
 document.getElementById("photoLibrary").addEventListener("change", e => handlePhotoFile(e.target.files[0]));
 
+// ── Place-marker mode ─────────────────────────────────────────────────────────
+
+let placeMarkerMode = false;
+
+function enterPlaceMarkerMode() {
+  placeMarkerMode = true;
+  document.getElementById("fab").classList.add("place-mode");
+  showBanner(
+    "Tap anywhere on the map to place your marker " +
+    "<button onclick=\"exitPlaceMarkerMode()\" style=\"margin-left:10px;padding:3px 10px;border-radius:10px;border:none;background:#e94560;color:#fff;font-size:12px;font-weight:700;cursor:pointer;\">Cancel</button>",
+    false
+  );
+  document.getElementById("routeBanner").style.pointerEvents = "auto";
+}
+
+function exitPlaceMarkerMode() {
+  placeMarkerMode = false;
+  document.getElementById("fab").classList.remove("place-mode");
+  hideBanner();
+}
+
 // ── FAB ───────────────────────────────────────────────────────────────────────
 
 document.getElementById("fab").addEventListener("click", () => {
   if (routeMode) exitRouteMode();
-  const ll = locationMarker ? locationMarker.getLatLng() : map.getCenter();
-  openSheet(ll.lat, ll.lng);
+  if (placeMarkerMode) { exitPlaceMarkerMode(); return; }
+  enterPlaceMarkerMode();
 });
 
 // ── Long-press ────────────────────────────────────────────────────────────────
@@ -949,11 +1175,15 @@ map.on("mousedown touchstart", e => {
 });
 map.on("mouseup touchend mousemove touchmove", () => clearTimeout(pressTimer));
 
-// ── Map click (route mode) ────────────────────────────────────────────────────
+// ── Map click (route mode / place-marker mode) ────────────────────────────────
 
 map.on("click", e => {
-  if (!routeMode) return;
-  handleRouteClick(e.latlng.lat, e.latlng.lng);
+  if (routeMode) { handleRouteClick(e.latlng.lat, e.latlng.lng); return; }
+  if (placeMarkerMode) {
+    exitPlaceMarkerMode();
+    openSheet(e.latlng.lat, e.latlng.lng);
+    return;
+  }
 });
 
 // ── Save marker ───────────────────────────────────────────────────────────────
@@ -1058,22 +1288,113 @@ const diffLabel = { low: "🟢 Easy", medium: "🟡 Tricky", high: "🔴 Hard" }
 function addMarkerToMap(m) {
   if (mapMarkers[m.id]) return; // skip duplicates
 
-  const cat = getCat(m.type);
-  const rows = [
-    `<div style="font-weight:700;font-size:14px;margin-bottom:4px">${cat.label}</div>`,
-    m.subtype  ? `<div style="color:#8090b0;font-size:12px;margin-bottom:4px">${m.subtype}</div>` : "",
-    m.severity ? `<div style="font-size:12px;margin-bottom:4px">${diffLabel[m.severity] ?? m.severity}</div>` : "",
-    m.note     ? `<div style="font-size:13px;margin-bottom:6px">${m.note}</div>` : "",
-    m.photo_url ? `<img src="${m.photo_url}" style="max-width:160px;border-radius:8px;margin-bottom:6px;display:block">` : "",
-    `<div style="color:#4a5a78;font-size:11px;margin-bottom:8px">Last updated: ${fmt(m.updated_at)}</div>`,
-    `<button onclick="deleteMarker(${m.id})" style="width:100%;padding:7px;border-radius:8px;border:1px solid #3a4a60;background:transparent;color:#e94560;font-size:12px;cursor:pointer;">🗑 Delete marker</button>`,
-  ].filter(Boolean).join("");
-
   const marker = L.marker([m.lat, m.lng], { icon: makeIcon(m.type) })
     .addTo(map)
-    .bindPopup(`<div style="min-width:160px">${rows}</div>`);
+    .on("click", () => openMarkerPanel(m));
 
   mapMarkers[m.id] = { marker, data: m };
+}
+
+// ── Marker panel ──────────────────────────────────────────────────────────────
+
+let currentMarkerPanelId = null;
+
+function openMarkerPanel(m) {
+  currentMarkerPanelId = m.id;
+  const cat   = getCat(m.type);
+  const color = TYPE_COLORS[m.type] || "#4a5080";
+  const svg   = ICONS[cat.id] || ICONS.other;
+  const sevLabel = { low: "🟢 Easy", medium: "🟡 Tricky", high: "🔴 Hard" };
+
+  document.getElementById("markerPanelContent").innerHTML = `
+    <div class="drag-handle"></div>
+    <div class="mp-header">
+      <div class="mp-icon" style="background:${color}cc">${svg}</div>
+      <div class="mp-title">
+        <div class="mp-type">${cat.label}</div>
+        ${m.subtype ? `<div class="mp-sub">${m.subtype}</div>` : ""}
+      </div>
+      <button class="mp-close-btn" onclick="closeMarkerPanel()">✕</button>
+    </div>
+    <div class="mp-meta">
+      ${m.severity ? `<span>${sevLabel[m.severity] || m.severity}</span>` : ""}
+      <span>Updated: ${fmt(m.updated_at)}</span>
+    </div>
+    ${m.photo_url ? `<div class="mp-photo"><img src="${m.photo_url}" alt="Photo"></div>` : ""}
+    ${m.note ? `<div class="mp-note">${m.note}</div>` : ""}
+    <div class="mp-comments-section">
+      <div class="mp-comments-label">Updates &amp; comments</div>
+      <div class="mp-comment-list" id="mpCommentList">
+        <div style="color:#4a5a78;font-size:13px">Loading…</div>
+      </div>
+      <div class="mp-add-row">
+        <textarea id="mpCommentInput" rows="1" placeholder="E.g. gate removed, path less muddy…"></textarea>
+        <button id="mpCommentBtn" onclick="submitComment()">Post</button>
+      </div>
+    </div>
+    <div class="mp-actions">
+      <button class="mp-delete-btn" onclick="deleteMarkerFromPanel(${m.id})">🗑 Delete marker</button>
+    </div>
+  `;
+
+  document.getElementById("markerPanel").classList.add("open");
+  loadComments(m.id);
+}
+
+function closeMarkerPanel() {
+  document.getElementById("markerPanel").classList.remove("open");
+  currentMarkerPanelId = null;
+}
+
+async function loadComments(markerId) {
+  try {
+    const res = await fetch(`${API}/markers/${markerId}/comments`);
+    if (!res.ok) return;
+    const comments = await res.json();
+    const listEl = document.getElementById("mpCommentList");
+    if (!listEl) return;
+    if (comments.length === 0) {
+      listEl.innerHTML = `<div style="color:#3a4a68;font-size:13px">No updates yet — be the first.</div>`;
+      return;
+    }
+    listEl.innerHTML = comments.map(c => `
+      <div class="mp-comment">
+        <div class="mp-comment-body">${c.body.replace(/</g,"&lt;")}</div>
+        <div class="mp-comment-date">${fmt(c.created_at)}</div>
+      </div>
+    `).join("");
+    // Scroll to bottom so newest is visible
+    const section = listEl.closest(".mp-comments-section");
+    if (section) section.scrollIntoView({ behavior: "smooth", block: "end" });
+  } catch (_) {}
+}
+
+async function submitComment() {
+  if (!currentMarkerPanelId) return;
+  const input = document.getElementById("mpCommentInput");
+  const body  = input.value.trim();
+  if (!body) return;
+  const btn = document.getElementById("mpCommentBtn");
+  btn.disabled = true;
+  try {
+    const res = await fetch(`${API}/markers/${currentMarkerPanelId}/comments`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ body }),
+    });
+    if (!res.ok) throw new Error(await res.text());
+    input.value = "";
+    await loadComments(currentMarkerPanelId);
+  } catch (err) {
+    showToast("Failed to post: " + err.message);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function deleteMarkerFromPanel(id) {
+  closeMarkerPanel();
+  await deleteMarker(id);
 }
 
 async function loadMarkers() {
@@ -1113,9 +1434,37 @@ function exitRouteMode() {
   clearRoute();
 }
 
+// ── Avoid chips ───────────────────────────────────────────────────────────────
+
+document.getElementById("avoidHighChip").addEventListener("click", () => toggleAvoid("high"));
+document.getElementById("avoidMedChip").addEventListener("click",  () => toggleAvoid("medium"));
+document.getElementById("rerouteBtn").addEventListener("click", () => {
+  if (avoidSeverities.size > 0) fetchAndDrawRoute(Array.from(avoidSeverities));
+});
+
+function toggleAvoid(sev) {
+  if (avoidSeverities.has(sev)) {
+    avoidSeverities.delete(sev);
+  } else {
+    avoidSeverities.add(sev);
+  }
+  syncAvoidChips();
+}
+
+function syncAvoidChips() {
+  const highChip = document.getElementById("avoidHighChip");
+  const medChip  = document.getElementById("avoidMedChip");
+  const rerouteBtn = document.getElementById("rerouteBtn");
+  highChip.className = "avoid-chip" + (avoidSeverities.has("high")   ? " active-high"   : "");
+  medChip.className  = "avoid-chip" + (avoidSeverities.has("medium") ? " active-medium" : "");
+  rerouteBtn.classList.toggle("visible", avoidSeverities.size > 0);
+}
+
 function clearRoute() {
   if (routeLayer) { map.removeLayer(routeLayer); routeLayer = null; }
   routePolyline = null;
+  avoidSeverities.clear();
+  syncAvoidChips();
   Object.values(mapMarkers).forEach(({ marker, data }) => marker.setIcon(makeIcon(data.type)));
   document.getElementById("routePanel").classList.remove("open");
 }
@@ -1151,8 +1500,9 @@ async function finishRoute() {
   await fetchAndDrawRoute();
 }
 
-async function fetchAndDrawRoute() {
-  showToast("Finding route…", 10000);
+async function fetchAndDrawRoute(avoid = []) {
+  const msg = avoid.length > 0 ? "Rerouting to avoid obstacles…" : "Finding route…";
+  showToast(msg, 10000);
   try {
     // Chain waypoints: A→B, B→C, etc., then merge geometries
     const legs = [];
@@ -1160,7 +1510,11 @@ async function fetchAndDrawRoute() {
       const res = await fetch(`${API}/routes/preview`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ start: routeWaypoints[i], end: routeWaypoints[i + 1], buffer_m: 50 }),
+        body: JSON.stringify({
+          start: routeWaypoints[i], end: routeWaypoints[i + 1],
+          buffer_m: 50,
+          avoid_severities: avoid,
+        }),
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
@@ -1168,12 +1522,15 @@ async function fetchAndDrawRoute() {
       }
       legs.push(await res.json());
     }
-    drawRouteResult(mergeLegs(legs));
+    drawRouteResult(mergeLegs(legs), avoid);
   } catch (err) {
     showToast("Route error: " + err.message);
-    routeMode = true;
-    document.getElementById("routeBtn").classList.add("active");
-    showBanner(`${routeWaypoints.length} point${routeWaypoints.length > 1 ? "s" : ""} · keep tapping or tap Done`, true);
+    // Only re-enter pick mode if this was the first route (not a reroute)
+    if (avoid.length === 0) {
+      routeMode = true;
+      document.getElementById("routeBtn").classList.add("active");
+      showBanner(`${routeWaypoints.length} point${routeWaypoints.length > 1 ? "s" : ""} · keep tapping or tap Done`, true);
+    }
   }
 }
 
@@ -1196,25 +1553,39 @@ function mergeLegs(legs) {
     distance_m: totalDist,
     duration_s: totalDur,
     nearby_markers: allNearby,
+    avoidance_applied: legs.some(l => l.avoidance_applied),
+    avoidance_method:  legs[0]?.avoidance_method ?? null,
   };
 }
 
-function drawRouteResult(data) {
+function drawRouteResult(data, avoid = []) {
   if (!routeLayer) routeLayer = L.layerGroup().addTo(map);
-  showToast("Route found ✓");
+
+  // Remove previous polyline when rerouting
+  if (routePolyline) { routeLayer.removeLayer(routePolyline); routePolyline = null; }
+
+  const routeColor = avoid.length > 0 ? "#66bb6a" : "#4fc3f7";
+  const toastMsg   = data.avoidance_applied  ? "Rerouted ✓ avoiding obstacles"
+                   : avoid.length > 0        ? "Route found (best available)"
+                   :                           "Route found ✓";
+  showToast(toastMsg);
+
   const coords = data.geometry.coordinates.map(([lng, lat]) => [lat, lng]);
-  routePolyline = L.polyline(coords, { color: "#4fc3f7", weight: 5, opacity: 0.85 }).addTo(routeLayer);
+  routePolyline = L.polyline(coords, { color: routeColor, weight: 5, opacity: 0.85 }).addTo(routeLayer);
   // Fit map to show the full route; extra bottom padding leaves room for the info panel
   map.fitBounds(routePolyline.getBounds(), { padding: [40, 40], paddingBottomRight: [40, 280] });
+
+  // Re-highlight only the markers on the new route
   const nearbyIds = new Set(data.nearby_markers.map(m => m.id));
   Object.entries(mapMarkers).forEach(([id, { marker, data: mData }]) => {
-    if (nearbyIds.has(parseInt(id))) marker.setIcon(makeHighlightedIcon(mData.type));
+    marker.setIcon(nearbyIds.has(parseInt(id)) ? makeHighlightedIcon(mData.type) : makeIcon(mData.type));
   });
-  renderRoutePanel(data);
+
+  renderRoutePanel(data, avoid);
   document.getElementById("routePanel").classList.add("open");
 }
 
-function renderRoutePanel(data) {
+function renderRoutePanel(data, avoid = []) {
   const distM = data.distance_m;
   document.getElementById("routeDistVal").textContent =
     distM < 1000 ? `${Math.round(distM)}m` : `${(distM/1000).toFixed(1)}km`;
@@ -1229,11 +1600,19 @@ function renderRoutePanel(data) {
   } else {
     const high = nearby.filter(m => m.severity === "high").length;
     const med  = nearby.filter(m => m.severity === "medium").length;
-    summaryEl.innerHTML =
+    let html =
       `<span style="color:#ffc800">${nearby.length} friction point${nearby.length > 1 ? "s" : ""} found</span>` +
       (high ? ` · <span style="color:#f44336">${high} hard</span>` : "") +
       (med  ? ` · <span style="color:#ff9800">${med} tricky</span>` : "");
+    if (data.avoidance_applied)  html += ` · <span style="color:#66bb6a">↺ Rerouted</span>`;
+    else if (avoid.length > 0)   html += ` · <span style="color:#ff9800">Best available</span>`;
+    summaryEl.innerHTML = html;
   }
+
+  // Show avoid section when there are hard/medium markers to potentially avoid
+  const hasAvoidable = nearby.some(m => ["high", "medium"].includes(m.severity));
+  document.getElementById("routeAvoidSection").style.display = hasAvoidable ? "" : "none";
+  syncAvoidChips();
 
   const listEl = document.getElementById("routeMarkerList");
   listEl.innerHTML = "";
@@ -1299,6 +1678,13 @@ async function deleteMarker(id) {
 let coverageVisible = false;
 const coverageLayer = L.layerGroup(); // not added to map until toggled on
 
+// ── Coverage grid state ───────────────────────────────────────────────────────
+let gridVisible    = false;
+const gridLayer    = L.layerGroup();
+let allTrackPoints = []; // all {lat,lng} from loaded tracks
+let areaName       = "this area";
+let areaNameTimer  = null;
+
 document.getElementById("coverageBtn").addEventListener("click", toggleCoverage);
 document.getElementById("gpxImportBtn").addEventListener("click", () => {
   document.getElementById("gpxFileInput").click();
@@ -1308,11 +1694,20 @@ function toggleCoverage() {
   coverageVisible = !coverageVisible;
   document.getElementById("coverageBtn").classList.toggle("active", coverageVisible);
   document.getElementById("gpxImportBtn").classList.toggle("show", coverageVisible);
+  document.getElementById("gridBtn").classList.toggle("show", coverageVisible);
   if (coverageVisible) {
     coverageLayer.addTo(map);
     loadTracks();
+    loadDistanceStats();
   } else {
     map.removeLayer(coverageLayer);
+    document.getElementById("coverageStats").style.display = "none";
+    // Also hide grid if it was on
+    if (gridVisible) {
+      gridVisible = false;
+      document.getElementById("gridBtn").classList.remove("active");
+      map.removeLayer(gridLayer);
+    }
   }
 }
 
@@ -1331,10 +1726,11 @@ document.getElementById("gpxFileInput").addEventListener("change", async e => {
       body: JSON.stringify({ name: file.name.replace(/\.gpx$/i, ""), points, gpx_source: "gpx" }),
     });
     if (!res.ok) throw new Error(await res.text());
-    const { point_count } = await res.json();
-    showToast(`Walk imported ✓ (${point_count} points)`);
+    const data = await res.json();
+    showToast(data.message || "Walk imported ✓", 4000);
     coverageLayer.clearLayers();
     loadTracks();
+    loadDistanceStats();
   } catch (err) {
     showToast("Import failed: " + err.message);
   }
@@ -1361,19 +1757,133 @@ async function loadTracks() {
     );
     if (!res.ok) return;
     coverageLayer.clearLayers();
+    allTrackPoints = [];
     (await res.json()).forEach(track => {
       if (!track.geojson) return;
       const geo = JSON.parse(track.geojson);
       if (geo.type !== "LineString") return;
       const lls = geo.coordinates.map(([lng, lat]) => [lat, lng]);
+      geo.coordinates.forEach(([lng, lat]) => allTrackPoints.push({ lat, lng }));
       // Wide semi-transparent glow = coverage buffer feel
       L.polyline(lls, { color: "#66bb6a", weight: 22, opacity: 0.10 }).addTo(coverageLayer);
       L.polyline(lls, { color: "#66bb6a", weight: 4,  opacity: 0.50 }).addTo(coverageLayer);
     });
+    if (gridVisible) drawGrid();
   } catch (_) {}
 }
 
-map.on("moveend", () => { if (coverageVisible) loadTracks(); });
+// ── Coverage grid ─────────────────────────────────────────────────────────────
+
+function getGridStep() {
+  const z = map.getZoom();
+  if (z >= 16) return 0.001;   // ~100 m
+  if (z >= 14) return 0.002;   // ~200 m
+  if (z >= 12) return 0.005;   // ~500 m
+  return 0.01;                   // ~1 km
+}
+
+function drawGrid() {
+  gridLayer.clearLayers();
+  const step   = getGridStep();
+  const bounds = map.getBounds();
+
+  const minLat = Math.floor(bounds.getSouth() / step) * step;
+  const maxLat = Math.ceil(bounds.getNorth()  / step) * step;
+  const minLng = Math.floor(bounds.getWest()  / step) * step;
+  const maxLng = Math.ceil(bounds.getEast()   / step) * step;
+
+  // Build set of covered cell keys from track points
+  const covered = new Set();
+  allTrackPoints.forEach(({ lat, lng }) => {
+    covered.add(`${Math.floor(lat / step)},${Math.floor(lng / step)}`);
+  });
+
+  let total = 0, coveredCount = 0;
+  const precision = 7;
+  for (let rlat = minLat; rlat < maxLat - step * 0.01; rlat = parseFloat((rlat + step).toFixed(precision))) {
+    for (let rlng = minLng; rlng < maxLng - step * 0.01; rlng = parseFloat((rlng + step).toFixed(precision))) {
+      const key   = `${Math.floor(rlat / step)},${Math.floor(rlng / step)}`;
+      const isCov = covered.has(key);
+      total++;
+      if (isCov) coveredCount++;
+      L.rectangle(
+        [[rlat, rlng], [parseFloat((rlat + step).toFixed(precision)), parseFloat((rlng + step).toFixed(precision))]],
+        {
+          fillColor:   isCov ? "#66bb6a" : "#ffffff",
+          fillOpacity: isCov ? 0.22 : 0.04,
+          color:       "#66bb6a",
+          weight:      0.8,
+          opacity:     0.35,
+          interactive: false,
+        }
+      ).addTo(gridLayer);
+    }
+  }
+
+  const pct      = total > 0 ? Math.round(coveredCount / total * 100) : 0;
+  const cellSize = step >= 0.01 ? "~1 km" : step >= 0.005 ? "~500 m" : step >= 0.002 ? "~200 m" : "~100 m";
+  const statsEl  = document.getElementById("coverageStats");
+  const kmStr    = totalExploredKm > 0 ? `  ·  ${totalExploredKm.toFixed(1)} km explored` : "";
+  statsEl.textContent = `${pct}% of ${areaName} surveyed  ·  ${coveredCount}/${total} cells (${cellSize})${kmStr}`;
+  statsEl.style.display = "block";
+}
+
+let totalExploredKm = 0;
+
+async function loadDistanceStats() {
+  try {
+    const res = await fetch(`${API}/tracks/stats`);
+    if (!res.ok) return;
+    const { km_total } = await res.json();
+    totalExploredKm = km_total;
+    if (!gridVisible && coverageVisible && km_total > 0) {
+      const statsEl = document.getElementById("coverageStats");
+      statsEl.textContent = `${km_total.toFixed(1)} km explored total`;
+      statsEl.style.display = "block";
+    } else if (gridVisible) {
+      drawGrid(); // refresh grid stats to include km
+    }
+  } catch (_) {}
+}
+
+function toggleGrid() {
+  gridVisible = !gridVisible;
+  document.getElementById("gridBtn").classList.toggle("active", gridVisible);
+  if (gridVisible) {
+    gridLayer.addTo(map);
+    drawGrid();
+    fetchAreaName();
+  } else {
+    map.removeLayer(gridLayer);
+    document.getElementById("coverageStats").style.display = "none";
+  }
+}
+
+async function fetchAreaName() {
+  clearTimeout(areaNameTimer);
+  areaNameTimer = setTimeout(async () => {
+    const c = map.getCenter();
+    try {
+      const res  = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?lat=${c.lat}&lon=${c.lng}&format=json&zoom=10`,
+        { headers: { "Accept-Language": "en" } }
+      );
+      const data = await res.json();
+      const addr = data.address || {};
+      areaName = addr.suburb || addr.city_district || addr.quarter || addr.town || addr.city || addr.county || "this area";
+      if (gridVisible) drawGrid();
+    } catch (_) { areaName = "this area"; }
+  }, 400);
+}
+
+document.getElementById("gridBtn").addEventListener("click", toggleGrid);
+
+map.on("zoomend", () => { if (gridVisible) drawGrid(); });
+
+map.on("moveend", () => {
+  if (coverageVisible) loadTracks();
+  if (gridVisible) { drawGrid(); fetchAreaName(); }
+});;
 
 // ── Toast ─────────────────────────────────────────────────────────────────────
 

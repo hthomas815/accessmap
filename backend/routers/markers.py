@@ -1,17 +1,18 @@
 import os
-import uuid
-import aiofiles
+import base64
 from typing import Optional
 from fastapi import APIRouter, HTTPException, UploadFile, File, Form, Depends
 from asyncpg import Connection
 
+from pydantic import BaseModel
 from models.marker import MarkerCreate, MarkerResponse, MarkerType, Severity, ConfirmationCreate
+
+
+class CommentCreate(BaseModel):
+    body: str
 from db import get_db
 
 router = APIRouter(prefix="/markers", tags=["markers"])
-
-UPLOAD_DIR = "/app/uploads"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 
 @router.post("", response_model=MarkerResponse, status_code=201)
@@ -28,16 +29,14 @@ async def create_marker(
     photo_url = None
     if photo:
         try:
-            ext = os.path.splitext(photo.filename or "")[1].lower() or ".jpg"
-            filename = f"{uuid.uuid4()}{ext}"
-            path = os.path.join(UPLOAD_DIR, filename)
-            async with aiofiles.open(path, "wb") as f:
-                content = await photo.read()
-                await f.write(content)
-            photo_url = f"/uploads/{filename}"
+            content = await photo.read()
+            ext = os.path.splitext(photo.filename or "")[1].lower().lstrip(".") or "jpeg"
+            mime = f"image/{ext}" if ext != "jpg" else "image/jpeg"
+            b64 = base64.b64encode(content).decode("ascii")
+            photo_url = f"data:{mime};base64,{b64}"
         except Exception as exc:
             # Non-fatal: save marker without photo rather than crashing
-            print(f"Photo save failed (marker saved without photo): {exc}")
+            print(f"Photo encode failed (marker saved without photo): {exc}")
 
     row = await db.fetchrow(
         """
@@ -143,3 +142,33 @@ async def confirm_marker(
         )
 
     return {"status": "ok"}
+
+
+@router.get("/{marker_id}/comments")
+async def list_comments(marker_id: int, db: Connection = Depends(get_db)):
+    exists = await db.fetchval(
+        "SELECT id FROM markers WHERE id = $1 AND archived = FALSE", marker_id
+    )
+    if not exists:
+        raise HTTPException(status_code=404, detail="Marker not found")
+
+    rows = await db.fetch(
+        "SELECT id, body, created_at FROM comments WHERE marker_id = $1 ORDER BY created_at ASC",
+        marker_id,
+    )
+    return [{"id": r["id"], "body": r["body"], "created_at": r["created_at"].isoformat()} for r in rows]
+
+
+@router.post("/{marker_id}/comments", status_code=201)
+async def add_comment(marker_id: int, body: CommentCreate, db: Connection = Depends(get_db)):
+    exists = await db.fetchval(
+        "SELECT id FROM markers WHERE id = $1 AND archived = FALSE", marker_id
+    )
+    if not exists:
+        raise HTTPException(status_code=404, detail="Marker not found")
+
+    row = await db.fetchrow(
+        "INSERT INTO comments (marker_id, body) VALUES ($1, $2) RETURNING id, body, created_at",
+        marker_id, body.body.strip(),
+    )
+    return {"id": row["id"], "body": row["body"], "created_at": row["created_at"].isoformat()}

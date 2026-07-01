@@ -12,6 +12,7 @@ class MarkerType(str, Enum):
     mud = "mud"
     narrow = "narrow"
     rough_surface = "rough_surface"
+    field = "field"
     other = "other"
 
 

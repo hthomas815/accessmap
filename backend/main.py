@@ -14,9 +14,6 @@ from routers.tracks import router as tracks_router
 
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://access:access@localhost:5432/accessmap")
 
-UPLOAD_DIR = os.getenv("UPLOAD_DIR", "/app/uploads")
-os.makedirs(UPLOAD_DIR, exist_ok=True)
-
 BASE_DIR = Path(__file__).parent
 FRONTEND_DIR = BASE_DIR / "frontend"
 SCHEMA_FILE = BASE_DIR / "db" / "init.sql"
@@ -52,6 +49,23 @@ async def migrate_db(pool: asyncpg.Pool) -> None:
         """)
         await conn.execute(
             "CREATE INDEX IF NOT EXISTS idx_tracks_path ON tracks USING GIST (path);"
+        )
+        # v4: comments table for marker updates
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS comments (
+                id          SERIAL PRIMARY KEY,
+                marker_id   INTEGER NOT NULL REFERENCES markers(id) ON DELETE CASCADE,
+                body        TEXT NOT NULL,
+                created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+            );
+        """)
+        await conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_comments_marker ON comments (marker_id);"
+        )
+        # v5: 'field' marker type — ALTER TYPE cannot run inside a transaction
+        # asyncpg executes each statement in its own implicit transaction, so this is safe
+        await conn.execute(
+            "ALTER TYPE marker_type ADD VALUE IF NOT EXISTS 'field';"
         )
 
 
@@ -89,8 +103,6 @@ app.add_middleware(
 app.include_router(markers_router, prefix="/api")
 app.include_router(routes_router, prefix="/api")
 app.include_router(tracks_router, prefix="/api")
-
-app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 if FRONTEND_DIR.exists():
     app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")

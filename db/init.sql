@@ -63,6 +63,16 @@ CREATE TABLE confirmations (
 
 CREATE INDEX idx_confirmations_marker ON confirmations (marker_id);
 
+-- Marker comments / updates (freeform community notes)
+CREATE TABLE comments (
+    id          SERIAL PRIMARY KEY,
+    marker_id   INTEGER NOT NULL REFERENCES markers(id) ON DELETE CASCADE,
+    body        TEXT NOT NULL,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_comments_marker ON comments (marker_id);
+
 -- Auto-update updated_at
 CREATE OR REPLACE FUNCTION update_updated_at()
 RETURNS TRIGGER AS $$
