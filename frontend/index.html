@@ -569,7 +569,7 @@
       box-shadow: 0 2px 8px rgba(0,0,0,.4);
       -webkit-tap-highlight-color: transparent;
     }
-    #targetBtn.place-mode { background: #4fc3f7; color: #16213e; border-color: #4fc3f7; }
+    #targetBtn.place-mode { background: #e94560; color: #fff; border-color: #e94560; }
     #targetBtn:active { opacity: .8; }
 
     /* ── North button ── */
@@ -587,6 +587,7 @@
       -webkit-tap-highlight-color: transparent;
     }
     #northBtn:active { background: #a0a8c8; color: #16213e; }
+    #northBtn.rotated { border-color: #e94560; color: #e94560; }
 
     /* ══════════════════════════════════════
        MARKER PANEL (comments / updates)
@@ -759,17 +760,6 @@
       background: none; border: none; color: #6a7a9a; font-size: 18px; cursor: pointer;
       padding: 4px 8px;
     }
-    #searchSubmitBtn {
-      width: 44px; height: 44px;
-      border-radius: 50%;
-      border: 1.5px solid #e94560;
-      background: #16213e; color: #e94560;
-      font-size: 18px; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 2px 12px rgba(0,0,0,.5);
-      flex-shrink: 0;
-      -webkit-tap-highlight-color: transparent;
-    }
     #searchResults {
       position: absolute;
       top: 68px; left: 16px; right: 16px;
@@ -791,6 +781,18 @@
     .search-result-item:active { background: #1e2e4a; }
     .search-result-name { font-weight: 600; color: #eee; margin-bottom: 2px; }
     .search-result-detail { font-size: 12px; color: #6a7a9a; }
+    .search-result-tag {
+      display: inline-block;
+      padding: 1px 6px;
+      border-radius: 8px;
+      background: #1e2d50;
+      color: #7a9aba;
+      font-size: 11px;
+      font-weight: 600;
+      margin-left: 4px;
+      text-transform: capitalize;
+      vertical-align: middle;
+    }
 
   </style>
 </head>
@@ -800,11 +802,11 @@
 
 <!-- ── Search bar ── -->
 <div id="searchBar">
-  <div style="position:relative;flex:1;display:flex;">
-    <input id="searchInput" type="text" placeholder="🔍  Search for a place…" autocomplete="off" />
+  <div style="position:relative;flex:1;display:flex;align-items:center;">
+    <span style="position:absolute;left:14px;color:#4a5a7a;font-size:16px;pointer-events:none">🔍</span>
+    <input id="searchInput" type="text" placeholder="Search for a place…" autocomplete="off" style="padding-left:40px!important" />
     <button id="searchClearBtn" title="Clear">✕</button>
   </div>
-  <button id="searchSubmitBtn" title="Search">🔍</button>
 </div>
 <div id="searchResults"></div>
 
@@ -812,8 +814,8 @@
 <button id="fab" title="Drop marker at my location">＋</button>
 <button id="routeBtn" title="Plan a route"><svg width="28" height="28" viewBox="0 0 40 40" fill="none"><circle cx="8" cy="33" r="5" stroke="currentColor" stroke-width="3"/><path d="M13 33 H30 Q36 33 36 27 Q36 21 30 21 H12 Q6 21 6 15 Q6 9 12 9 H28" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/><polyline points="23,4 28,9 23,14" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 <button id="menuBtn" title="Menu">☰</button>
-<button id="targetBtn" title="Place marker on map"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="6"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg></button>
-<button id="northBtn" title="Map orientation"><span style="display:flex;flex-direction:column;align-items:center;line-height:1;gap:1px"><span style="color:#e94560;font-size:11px">▲</span><span style="font-size:10px;font-weight:700">N</span></span></button>
+<button id="targetBtn" title="Place marker on map"><svg width="20" height="26" viewBox="0 0 24 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 1C7.03 1 3 5.03 3 10c0 7.25 9 19 9 19s9-11.75 9-19c0-4.97-4.03-9-9-9z" fill="currentColor"/><circle cx="12" cy="10" r="3.5" fill="#16213e"/></svg></button>
+<button id="northBtn" title="Map orientation"><span class="north-arrow" style="display:flex;flex-direction:column;align-items:center;line-height:1;gap:1px;transition:transform 0.3s ease"><span style="color:#e94560;font-size:11px">▲</span><span style="font-size:10px;font-weight:700">N</span></span></button>
 <input type="file" id="gpxFileInput" accept=".gpx,.xml" style="display:none" />
 <div id="routeBanner"></div>
 <div id="coverageStats"></div>
@@ -972,6 +974,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>
+<script src="https://unpkg.com/leaflet-rotate@0.2.8/dist/leaflet-rotate-src.js"></script>
 <script>
 const API = "/api";
 
@@ -1120,7 +1123,7 @@ const TYPE_COLORS = {
 
 // ── Map ───────────────────────────────────────────────────────────────────────
 
-const map = L.map("map", { zoomControl: false }).setView([51.5, -1.0], 13);
+const map = L.map("map", { zoomControl: false, rotate: true, touchRotate: true }).setView([51.5, -1.0], 13);
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution: "© OpenStreetMap contributors", maxZoom: 19,
 }).addTo(map);
@@ -1494,26 +1497,30 @@ let searchDebounce   = null;
 async function geocodeSearch(q) {
   if (!q.trim()) { searchResults.style.display = "none"; return; }
   try {
-    const url = `https://nominatim.openstreetmap.org/search?format=json&limit=5&q=${encodeURIComponent(q)}`;
-    const res  = await fetch(url, { headers: { "Accept-Language": "en" } });
+    const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=6`;
+    const res  = await fetch(url);
     const data = await res.json();
-    renderSearchResults(data);
+    renderSearchResults(data.features || []);
   } catch { showToast("Search unavailable offline"); }
 }
 
 function renderSearchResults(items) {
   if (!items.length) {
     searchResults.innerHTML = `<div class="search-result-item"><div class="search-result-name">No results found</div></div>`;
+    searchResults._items = [];
   } else {
+    searchResults._items = items;
     searchResults.innerHTML = items.map((item, i) => {
-      const name   = item.display_name.split(",")[0];
-      const detail = item.display_name.split(",").slice(1, 3).join(",").trim();
+      const p      = item.properties || {};
+      const name   = p.name || p.street || p.city || "Unknown place";
+      const parts  = [p.city, p.county, p.country].filter(Boolean);
+      const detail = parts.slice(0, 2).join(", ");
+      const tag    = p.osm_value || p.type || "";
       return `<div class="search-result-item" onclick="selectSearchResult(${i})">
-        <div class="search-result-name">${name}</div>
-        <div class="search-result-detail">${detail}</div>
+        <div class="search-result-name">${name}${tag ? ` <span class="search-result-tag">${tag}</span>` : ""}</div>
+        ${detail ? `<div class="search-result-detail">${detail}</div>` : ""}
       </div>`;
     }).join("");
-    searchResults._items = items;
   }
   searchResults.style.display = "block";
 }
@@ -1521,21 +1528,65 @@ function renderSearchResults(items) {
 function selectSearchResult(i) {
   const item = searchResults._items?.[i];
   if (!item) return;
-  const lat = parseFloat(item.lat), lng = parseFloat(item.lon);
-  const bbox = item.boundingbox; // [minLat, maxLat, minLng, maxLng]
-  if (bbox) {
-    map.fitBounds([[+bbox[0], +bbox[2]], [+bbox[1], +bbox[3]]], { padding: [40, 40] });
-  } else {
-    map.setView([lat, lng], 15);
-  }
-  // Drop a temporary pin
-  if (window._searchPin) window._searchPin.remove();
-  window._searchPin = L.circleMarker([lat, lng], {
-    radius: 8, fillColor: "#4fc3f7", color: "#fff", weight: 2, fillOpacity: 1,
-  }).addTo(map).bindPopup(item.display_name.split(",")[0]).openPopup();
-  setTimeout(() => { if (window._searchPin) { window._searchPin.remove(); window._searchPin = null; } }, 8000);
+  const [lng, lat] = item.geometry.coordinates;
+  const name = item.properties?.name || item.properties?.city || "Selected location";
+
+  // Remove old search pin
+  if (window._searchPin) { window._searchPin.remove(); window._searchPin = null; }
+
+  // Drop a temporary pin with a "Navigate here" popup
+  window._searchPin = L.marker([lat, lng], {
+    icon: L.divIcon({
+      className: "",
+      html: `<div style="background:#e94560;border:2px solid #fff;border-radius:50% 50% 50% 0;width:20px;height:20px;transform:rotate(-45deg);box-shadow:0 2px 6px rgba(0,0,0,.4)"></div>`,
+      iconSize: [20, 20], iconAnchor: [10, 20],
+    })
+  }).addTo(map);
+
+  map.setView([lat, lng], 15);
   searchResults.style.display = "none";
   searchInput.blur();
+
+  // Show toast with navigate option
+  showSearchActions(lat, lng, name);
+}
+
+function showSearchActions(lat, lng, name) {
+  // Remove any existing action bar
+  const old = document.getElementById("searchActionBar");
+  if (old) old.remove();
+
+  const bar = document.createElement("div");
+  bar.id = "searchActionBar";
+  bar.style.cssText = `
+    position:absolute; bottom:110px; left:50%; transform:translateX(-50%);
+    z-index:1500; background:#16213e; border:1.5px solid #2a3a5a;
+    border-radius:20px; padding:10px 16px; display:flex; gap:12px;
+    align-items:center; box-shadow:0 4px 20px rgba(0,0,0,.5);
+    white-space:nowrap; font-size:14px; color:#eee;
+    -webkit-tap-highlight-color:transparent;
+  `;
+  bar.innerHTML = `
+    <span style="max-width:140px;overflow:hidden;text-overflow:ellipsis;color:#aab">${name}</span>
+    <button onclick="navigateToSearchPin(${lat},${lng})" style="padding:7px 14px;border-radius:12px;border:none;background:#4fc3f7;color:#16213e;font-weight:700;font-size:13px;cursor:pointer;">↗ Route here</button>
+    <button onclick="document.getElementById('searchActionBar').remove();if(window._searchPin){window._searchPin.remove();window._searchPin=null;}" style="padding:7px 10px;border-radius:12px;border:none;background:#2a3a5a;color:#aaa;font-size:13px;cursor:pointer;">✕</button>
+  `;
+  document.body.appendChild(bar);
+}
+
+function navigateToSearchPin(lat, lng) {
+  const bar = document.getElementById("searchActionBar");
+  if (bar) bar.remove();
+  // Enter route mode and pre-fill the destination
+  if (!routeMode) {
+    document.getElementById("routeBtn").click();
+    // Small delay to let route mode initialise, then set end point
+    setTimeout(() => {
+      handleRouteClick(lat, lng);
+    }, 300);
+  } else {
+    handleRouteClick(lat, lng);
+  }
 }
 
 searchInput.addEventListener("input", () => {
@@ -1549,10 +1600,6 @@ searchInput.addEventListener("input", () => {
 searchInput.addEventListener("keydown", e => {
   if (e.key === "Enter") { clearTimeout(searchDebounce); geocodeSearch(searchInput.value); }
   if (e.key === "Escape") { searchResults.style.display = "none"; searchInput.blur(); }
-});
-
-document.getElementById("searchSubmitBtn").addEventListener("click", () => {
-  clearTimeout(searchDebounce); geocodeSearch(searchInput.value);
 });
 
 searchClearBtn.addEventListener("click", () => {
@@ -1581,7 +1628,19 @@ document.getElementById("targetBtn").addEventListener("click", () => {
   enterPlaceMarkerMode();
 });
 
-document.getElementById("northBtn").addEventListener("click", () => showToast("Map is always oriented north ↑"));
+document.getElementById("northBtn").addEventListener("click", () => {
+  if (typeof map.setBearing === "function") {
+    map.setBearing(0, { animate: true, duration: 0.4 });
+  }
+});
+
+map.on("rotate", () => {
+  const bearing = typeof map.getBearing === "function" ? map.getBearing() : 0;
+  const arrow = document.querySelector("#northBtn .north-arrow");
+  if (arrow) arrow.style.transform = `rotate(${bearing}deg)`;
+  // Show/hide the north button highlight when rotated
+  document.getElementById("northBtn").classList.toggle("rotated", Math.abs(bearing) > 2);
+});
 
 // ── Map marker rendering ──────────────────────────────────────────────────────
 
