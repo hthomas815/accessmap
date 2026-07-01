@@ -19,6 +19,7 @@ async def create_marker(
     lat: float = Form(...),
     lng: float = Form(...),
     type: MarkerType = Form(...),
+    subtype: Optional[str] = Form(None),
     severity: Optional[Severity] = Form(None),
     note: Optional[str] = Form(None),
     photo: Optional[UploadFile] = File(None),
@@ -36,15 +37,15 @@ async def create_marker(
 
     row = await db.fetchrow(
         """
-        INSERT INTO markers (location, type, severity, note, photo_url)
-        VALUES (ST_SetSRID(ST_MakePoint($1, $2), 4326), $3, $4, $5, $6)
+        INSERT INTO markers (location, type, subtype, severity, note, photo_url)
+        VALUES (ST_SetSRID(ST_MakePoint($1, $2), 4326), $3, $4, $5, $6, $7)
         RETURNING
             id,
             ST_Y(location) AS lat,
             ST_X(location) AS lng,
-            type, severity, note, photo_url, source, created_at, updated_at
+            type, subtype, severity, note, photo_url, source, created_at, updated_at
         """,
-        lng, lat, type.value, severity.value if severity else None, note, photo_url,
+        lng, lat, type.value, subtype, severity.value if severity else None, note, photo_url,
     )
     return {**dict(row), "confirmation_count": 0}
 
@@ -57,14 +58,13 @@ async def list_markers(
     max_lng: float,
     db: Connection = Depends(get_db),
 ):
-    """Return all non-archived markers within a bounding box."""
     rows = await db.fetch(
         """
         SELECT
             m.id,
             ST_Y(m.location) AS lat,
             ST_X(m.location) AS lng,
-            m.type, m.severity, m.note, m.photo_url, m.source,
+            m.type, m.subtype, m.severity, m.note, m.photo_url, m.source,
             m.created_at, m.updated_at,
             COUNT(c.id) AS confirmation_count
         FROM markers m
@@ -88,7 +88,7 @@ async def get_marker(marker_id: int, db: Connection = Depends(get_db)):
             m.id,
             ST_Y(m.location) AS lat,
             ST_X(m.location) AS lng,
-            m.type, m.severity, m.note, m.photo_url, m.source,
+            m.type, m.subtype, m.severity, m.note, m.photo_url, m.source,
             m.created_at, m.updated_at,
             COUNT(c.id) AS confirmation_count
         FROM markers m
@@ -133,7 +133,6 @@ async def confirm_marker(
         marker_id, body.note, body.still_valid,
     )
 
-    # If someone marks it as no longer valid, archive it
     if not body.still_valid:
         await db.execute(
             "UPDATE markers SET archived = TRUE WHERE id = $1", marker_id

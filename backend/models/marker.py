@@ -25,6 +25,7 @@ class MarkerCreate(BaseModel):
     lat: float = Field(..., ge=-90, le=90)
     lng: float = Field(..., ge=-180, le=180)
     type: MarkerType
+    subtype: Optional[str] = None
     severity: Optional[Severity] = None
     note: Optional[str] = Field(None, max_length=1000)
 
@@ -34,6 +35,7 @@ class MarkerResponse(BaseModel):
     lat: float
     lng: float
     type: MarkerType
+    subtype: Optional[str] = None
     severity: Optional[Severity]
     note: Optional[str]
     photo_url: Optional[str]

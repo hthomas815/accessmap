@@ -14,14 +14,13 @@ DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://access:access@localhost:5
 UPLOAD_DIR = os.getenv("UPLOAD_DIR", "/app/uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-# Paths relative to this file (works both locally and in Docker)
 BASE_DIR = Path(__file__).parent
 FRONTEND_DIR = BASE_DIR / "frontend"
 SCHEMA_FILE = BASE_DIR / "db" / "init.sql"
 
 
 async def init_db(pool: asyncpg.Pool) -> None:
-    """Run schema SQL on first boot if the markers table doesn't exist yet."""
+    """Run full schema SQL on first boot if markers table doesn't exist."""
     async with pool.acquire() as conn:
         exists = await conn.fetchval(
             "SELECT EXISTS(SELECT 1 FROM information_schema.tables WHERE table_name = 'markers')"
@@ -31,10 +30,20 @@ async def init_db(pool: asyncpg.Pool) -> None:
             await conn.execute(sql)
 
 
+async def migrate_db(pool: asyncpg.Pool) -> None:
+    """Idempotent migrations — safe to run on every boot."""
+    async with pool.acquire() as conn:
+        # v2: subtype column for two-step marker flow
+        await conn.execute(
+            "ALTER TABLE markers ADD COLUMN IF NOT EXISTS subtype TEXT;"
+        )
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     pool = await asyncpg.create_pool(DATABASE_URL, min_size=2, max_size=10)
     await init_db(pool)
+    await migrate_db(pool)
     app.state.pool = pool
     yield
     await pool.close()
@@ -51,10 +60,8 @@ app.add_middleware(
 
 app.include_router(markers_router, prefix="/api")
 
-# Serve uploaded photos
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
-# Serve frontend static files (CSS, JS, images etc.)
 if FRONTEND_DIR.exists():
     app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
 
@@ -66,7 +73,6 @@ async def health():
 
 @app.get("/")
 async def serve_index():
-    """Serve the frontend SPA."""
     index = FRONTEND_DIR / "index.html"
     if index.exists():
         return FileResponse(str(index))
