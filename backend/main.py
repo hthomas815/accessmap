@@ -113,6 +113,19 @@ async def health():
     return {"status": "ok"}
 
 
+@app.get("/sw.js")
+async def serve_sw():
+    f = FRONTEND_DIR / "sw.js"
+    return FileResponse(str(f), media_type="application/javascript",
+                        headers={"Service-Worker-Allowed": "/"})
+
+
+@app.get("/manifest.json")
+async def serve_manifest():
+    f = FRONTEND_DIR / "manifest.json"
+    return FileResponse(str(f), media_type="application/manifest+json")
+
+
 @app.get("/")
 async def serve_index():
     index = FRONTEND_DIR / "index.html"

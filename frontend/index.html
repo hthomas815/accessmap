@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>AccessMap</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.css" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#e94560" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -515,10 +522,30 @@
     #gpxImportBtn.show { display: flex; }
     #gpxImportBtn:active { background: #66bb6a; color: #16213e; }
 
+    /* ── Save offline button ── */
+    #saveOfflineBtn {
+      position: absolute;
+      bottom: 216px; left: 20px;
+      z-index: 1000;
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      background: #16213e;
+      border: 2px solid #66bb6a;
+      color: #66bb6a;
+      font-size: 18px; cursor: pointer;
+      display: none;
+      align-items: center; justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,.4);
+      transition: background .15s, color .15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #saveOfflineBtn.show  { display: flex; }
+    #saveOfflineBtn:active { background: #66bb6a; color: #16213e; }
+
     /* ── Grid toggle button ── */
     #gridBtn {
       position: absolute;
-      bottom: 216px; left: 20px;
+      bottom: 274px; left: 20px;
       z-index: 1000;
       width: 46px; height: 46px;
       border-radius: 50%;
@@ -663,6 +690,7 @@
 <button id="routeBtn" title="Plan a route">↗</button>
 <button id="coverageBtn" title="Show explored paths">◉</button>
 <button id="gpxImportBtn" title="Import GPX walk">＋</button>
+<button id="saveOfflineBtn" title="Save this area for offline use">📥</button>
 <button id="gridBtn" title="Toggle coverage grid">⊞</button>
 <input type="file" id="gpxFileInput" accept=".gpx,.xml" style="display:none" />
 <div id="routeBanner"></div>
@@ -780,6 +808,7 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>
 <script>
 const API = "/api";
 
@@ -980,6 +1009,32 @@ function restoreFormState() {
   }
   document.getElementById("sheet").classList.add("open");
 }
+
+// ── Marker cluster group ──────────────────────────────────────────────────────
+
+const clusterGroup = L.markerClusterGroup({
+  showCoverageOnHover: false,
+  maxClusterRadius: 56,
+  iconCreateFunction(cluster) {
+    const n    = cluster.getChildCount();
+    const size = n < 10 ? 34 : n < 50 ? 40 : 46;
+    return L.divIcon({
+      html: `<div style="
+        background:#e94560cc;
+        border:2px solid rgba(255,255,255,.35);
+        border-radius:50%;
+        width:${size}px;height:${size}px;
+        display:flex;align-items:center;justify-content:center;
+        color:#fff;font-size:${n < 10 ? 13 : 12}px;font-weight:700;
+        box-shadow:0 2px 10px rgba(0,0,0,.5);
+      ">${n}</div>`,
+      className: "",
+      iconSize:   [size, size],
+      iconAnchor: [size / 2, size / 2],
+    });
+  },
+});
+clusterGroup.addTo(map);
 
 // Map marker references: id -> { marker: L.Marker, data: markerObj }
 const mapMarkers = {};
@@ -1289,8 +1344,8 @@ function addMarkerToMap(m) {
   if (mapMarkers[m.id]) return; // skip duplicates
 
   const marker = L.marker([m.lat, m.lng], { icon: makeIcon(m.type) })
-    .addTo(map)
     .on("click", () => openMarkerPanel(m));
+  clusterGroup.addLayer(marker);
 
   mapMarkers[m.id] = { marker, data: m };
 }
@@ -1664,7 +1719,7 @@ async function deleteMarker(id) {
     const res = await fetch(`${API}/markers/${id}`, { method: "DELETE" });
     if (!res.ok && res.status !== 204) throw new Error(await res.text());
     if (mapMarkers[id]) {
-      map.removeLayer(mapMarkers[id].marker);
+      clusterGroup.removeLayer(mapMarkers[id].marker);
       delete mapMarkers[id];
     }
     showToast("Marker deleted");
@@ -1694,6 +1749,7 @@ function toggleCoverage() {
   coverageVisible = !coverageVisible;
   document.getElementById("coverageBtn").classList.toggle("active", coverageVisible);
   document.getElementById("gpxImportBtn").classList.toggle("show", coverageVisible);
+  document.getElementById("saveOfflineBtn").classList.toggle("show", coverageVisible);
   document.getElementById("gridBtn").classList.toggle("show", coverageVisible);
   if (coverageVisible) {
     coverageLayer.addTo(map);
@@ -1902,6 +1958,81 @@ function showToast(msg, duration = 2500) {
     el.classList.remove("show");
   }
 }
+
+// ── Service worker registration ───────────────────────────────────────────────
+
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/sw.js").catch(() => {});
+
+  // Listen for progress messages from the SW during tile prefetch
+  navigator.serviceWorker.addEventListener("message", e => {
+    if (e.data?.type === "PREFETCH_PROGRESS") {
+      const pct = Math.round(e.data.done / e.data.total * 100);
+      showToast(`Saving area… ${pct}%`, 30000);
+    } else if (e.data?.type === "PREFETCH_DONE") {
+      showToast(`Area saved ✓ — ${e.data.total} map tiles cached`);
+    }
+  });
+}
+
+// ── Save area offline ─────────────────────────────────────────────────────────
+
+function latLngToTileXY(lat, lng, z) {
+  const n   = 2 ** z;
+  const x   = Math.floor((lng + 180) / 360 * n);
+  const lr  = lat * Math.PI / 180;
+  const y   = Math.floor((1 - Math.log(Math.tan(lr) + 1 / Math.cos(lr)) / Math.PI) / 2 * n);
+  return { x, y };
+}
+
+function tilesForBoundsAtZoom(bounds, z) {
+  const nw = latLngToTileXY(bounds.getNorth(), bounds.getWest(), z);
+  const se = latLngToTileXY(bounds.getSouth(), bounds.getEast(), z);
+  const urls = [];
+  for (let x = nw.x; x <= se.x; x++) {
+    for (let y = nw.y; y <= se.y; y++) {
+      // Round-robin across OSM subdomains to respect tile server etiquette
+      const sub = ["a","b","c"][(x + y) % 3];
+      urls.push(`https://${sub}.tile.openstreetmap.org/${z}/${x}/${y}.png`);
+    }
+  }
+  return urls;
+}
+
+document.getElementById("saveOfflineBtn").addEventListener("click", async () => {
+  const sw = navigator.serviceWorker?.controller;
+  if (!sw) {
+    showToast("Reload the page once to enable offline saving");
+    return;
+  }
+
+  const bounds   = map.getBounds();
+  const zoom     = map.getZoom();
+  // Cache current zoom ±2 levels, clamped sensibly
+  const minZoom  = Math.max(Math.floor(zoom) - 2, 11);
+  const maxZoom  = Math.min(Math.floor(zoom) + 1, 17);
+
+  const tileUrls = [];
+  for (let z = minZoom; z <= maxZoom; z++) {
+    tileUrls.push(...tilesForBoundsAtZoom(bounds, z));
+  }
+
+  // Hard cap: don't let one save dominate the tile cache
+  const MAX_SAVE = 600;
+  if (tileUrls.length > MAX_SAVE) {
+    showToast(`Zoom in a bit — ${tileUrls.length} tiles is too many (max ${MAX_SAVE})`);
+    return;
+  }
+
+  showToast(`Saving ${tileUrls.length} tiles…`, 30000);
+
+  // Also warm the API cache for the current viewport
+  const b = map.getBounds();
+  fetch(`${API}/markers?min_lat=${b.getSouth()}&min_lng=${b.getWest()}&max_lat=${b.getNorth()}&max_lng=${b.getEast()}`).catch(() => {});
+
+  // Kick off tile prefetch in the service worker
+  sw.postMessage({ type: "PREFETCH_TILES", urls: tileUrls });
+});
 </script>
 </body>
 </html>
