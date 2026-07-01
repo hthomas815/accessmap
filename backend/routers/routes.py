@@ -9,8 +9,9 @@ from db import get_db
 
 router = APIRouter(prefix="/routes", tags=["routes"])
 
-# OSRM public demo — no key needed. Swap for self-hosted via env var later.
-OSRM_URL = os.getenv("OSRM_URL", "http://router.project-osrm.org")
+# OSM Community routing server — foot profile, includes footpaths/bridleways.
+# router.project-osrm.org only has driving data; this server has proper foot routing.
+OSRM_URL = os.getenv("OSRM_URL", "https://routing.openstreetmap.de/routed-foot")
 
 
 class LatLng(BaseModel):
@@ -40,7 +41,9 @@ async def preview_route(body: RouteRequest, db: Connection = Depends(get_db)):
 
     # ── 1. Fetch route from OSRM ──────────────────────────────────────────────
     coord_str = f"{body.start.lng},{body.start.lat};{body.end.lng},{body.end.lat}"
-    url = f"{OSRM_URL}/route/v1/foot/{coord_str}"
+    # Note: routing.openstreetmap.de uses /driving/ as the endpoint name regardless
+    # of mode — the foot/bike/car profile is selected by the subdomain/path prefix.
+    url = f"{OSRM_URL}/route/v1/driving/{coord_str}"
 
     try:
         async with httpx.AsyncClient(timeout=15.0) as client:

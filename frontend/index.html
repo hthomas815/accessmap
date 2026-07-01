@@ -501,7 +501,7 @@
         <div class="photo-title">Add photo</div>
         <div class="photo-sub" id="photoSub">Tap to add a photo</div>
       </div>
-      <input type="file" id="photoInput" accept="image/*" capture="environment" />
+      <input type="file" id="photoInput" accept="image/*" />
     </div>
 
     <div class="action-row">
@@ -545,7 +545,7 @@ const ICONS = {
   steep: `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Steep icon"> <path d="M10 61L34 28C36 25 40 25 43 29L70 61H10Z" fill="#B8B4EA"/> <path d="M25 61L46 36C48 34 51 34 53 37L72 61H25Z" fill="#D6D3F5"/> <path d="M35 28L41 39L46 35" stroke="#F3F0FF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/> <path d="M14 65H68" stroke="#8A819E" stroke-width="4" stroke-linecap="round"/> <path d="M19 61L60 44" stroke="#514B68" stroke-width="4" stroke-linecap="round"/> <path d="M58 44L52 42M58 44L55 50" stroke="#514B68" stroke-width="4" stroke-linecap="round"/> </svg>`,
   mud: `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mud icon"> <ellipse cx="40" cy="54" rx="28" ry="10" fill="#79B9EA"/> <ellipse cx="29" cy="51" rx="10" ry="5" fill="#A8D7F5"/> <ellipse cx="51" cy="56" rx="11" ry="5" fill="#5CA5D8"/> <path d="M24 35C20 30 21 25 25 20C30 27 31 32 24 35Z" fill="#5CB7E8"/> <path d="M44 30C40 25 41 20 45 15C50 22 51 27 44 30Z" fill="#8CCDF2"/> <path d="M58 39C61 33 65 31 71 32C69 39 65 42 58 39Z" fill="#8CCDF2"/> <path d="M19 46C12 44 9 40 8 35C16 35 20 39 19 46Z" fill="#8CCDF2"/> </svg>`,
   narrow: `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Narrow path icon"> <path d="M31 68C32 54 34 41 37 18" stroke="#D7D7D7" stroke-width="5" stroke-linecap="round"/> <path d="M49 68C48 54 46 41 43 18" stroke="#D7D7D7" stroke-width="5" stroke-linecap="round"/> <path d="M18 64C22 58 24 52 24 46M15 50C21 47 24 42 25 36M62 64C58 58 56 52 56 46M65 50C59 47 56 42 55 36" stroke="#7DBB5A" stroke-width="4" stroke-linecap="round"/> <path d="M40 16V69" stroke="#5A6270" stroke-width="2" stroke-dasharray="6 7" stroke-linecap="round"/> </svg>`,
-  rough: `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Rough terrain icon"> <path d="M28 51L38 33C40 30 45 30 47 34L58 51H28Z" fill="#B8AA96"/> <path d="M13 59L22 45C24 42 28 42 30 46L39 59H13Z" fill="#D6C5A7"/> <path d="M44 61L54 49C57 46 61 47 63 51L70 61H44Z" fill="#C6B8A4"/> <ellipse cx="38" cy="65" rx="25" ry="4" fill="#8B8276" opacity="0.5"/> <circle cx="21" cy="66" r="3" fill="#D6C5A7"/><circle cx="58" cy="68" r="3" fill="#B8AA96"/><circle cx="67" cy="63" r="2" fill="#D6C5A7"/> </svg>`,
+  rough_surface: `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Rough terrain icon"> <path d="M28 51L38 33C40 30 45 30 47 34L58 51H28Z" fill="#B8AA96"/> <path d="M13 59L22 45C24 42 28 42 30 46L39 59H13Z" fill="#D6C5A7"/> <path d="M44 61L54 49C57 46 61 47 63 51L70 61H44Z" fill="#C6B8A4"/> <ellipse cx="38" cy="65" rx="25" ry="4" fill="#8B8276" opacity="0.5"/> <circle cx="21" cy="66" r="3" fill="#D6C5A7"/><circle cx="58" cy="68" r="3" fill="#B8AA96"/><circle cx="67" cy="63" r="2" fill="#D6C5A7"/> </svg>`,
   other: `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Other icon"> <circle cx="40" cy="40" r="28" stroke="#B99BEA" stroke-width="5"/> <circle cx="28" cy="40" r="4" fill="#B99BEA"/> <circle cx="40" cy="40" r="4" fill="#B99BEA"/> <circle cx="52" cy="40" r="4" fill="#B99BEA"/> </svg>`,
 };
 
@@ -553,68 +553,112 @@ const CATEGORIES = [
   { id: "gate",          label: "Gate",   iconBg: "#2a1e0a", iconBorder: "#E7A13E55" },
   { id: "stile",         label: "Stile",  iconBg: "#0e2010", iconBorder: "#91C65A55" },
   { id: "steep",         label: "Steep",  iconBg: "#16142a", iconBorder: "#B8B4EA55" },
-  { id: "mud",           label: "Mud",    iconBg: "#0a1a28", iconBorder: "#79B9EA55" },
+  { id: "mud",           label: "Mud / Flooding", iconBg: "#0a1a28", iconBorder: "#79B9EA55" },
   { id: "narrow",        label: "Narrow", iconBg: "#0e1e10", iconBorder: "#7DBB5A55" },
   { id: "rough_surface", label: "Rough",  iconBg: "#1e1810", iconBorder: "#B8AA9655" },
   { id: "other",         label: "Other",  iconBg: "#18142a", iconBorder: "#B99BEA55" },
 ];
 
+const SUBTYPE_ICONS = {
+  "gate_heavy_gate": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Heavy gate icon"> <rect x="11" y="18" rx="3" fill="#B46A22"/> <rect x="60" y="18" rx="3" fill="#B46A22"/> <rect x="19" y="25" rx="3" fill="#E7A13E"/> <rect x="19" y="47" rx="3" fill="#E7A13E"/> <path d="M22 54L58 28" stroke="#7B451A" stroke-width="6" stroke-linecap="round"/> <path d="M22 29L58 56" stroke="#7B451A" stroke-width="6" stroke-linecap="round"/> <path d="M56 12V24" stroke="#1F2430" stroke-width="4" stroke-linecap="round"/> <circle cx="56" cy="9" r="4.5" fill="#AF9A84"/> </svg>`,
+  "gate_kissing_gate": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Kissing gate icon"> <rect x="13" y="20" rx="3" fill="#E7A13E"/> <rect x="60" y="20" rx="3" fill="#E7A13E"/> <path d="M20 29C33 29 36 40 40 40C44 40 47 29 60 29" stroke="#F2C36B" stroke-width="6" stroke-linecap="round" fill="none"/> <path d="M20 51C33 51 36 40 40 40C44 40 47 51 60 51" stroke="#F2C36B" stroke-width="6" stroke-linecap="round" fill="none"/> <circle cx="40" cy="40" r="4" fill="#B46A22"/> </svg>`,
+  "gate_locked_gate": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Gate icon"> <rect x="13" y="20" rx="3" fill="#E7A13E"/> <rect x="60" y="20" rx="3" fill="#E7A13E"/> <rect x="19" y="27" rx="3" fill="#F2C36B"/> <rect x="19" y="47" rx="3" fill="#F2C36B"/> <path d="M22 52L58 28" stroke="#B46A22" stroke-width="5" stroke-linecap="round"/> <path d="M22 29L58 52" stroke="#B46A22" stroke-width="5" stroke-linecap="round"/> <circle cx="20" cy="30" r="2" fill="#7B451A"/><circle cx="60" cy="30" r="2" fill="#7B451A"/> <rect x="49" y="44" rx="4" fill="#E9E4F7" stroke="#1F2430" stroke-width="2.5"/> <path d="M53 44V40C53 35.5 56.2 32 60 32C63.8 32 67 35.5 67 40V44" stroke="#1F2430" stroke-width="2.5" stroke-linecap="round"/> <circle cx="58.5" cy="51.5" r="1.8" fill="#1F2430"/> </svg>`,
+  "gate_narrow_gate": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Gate icon"> <rect x="13" y="20" rx="3" fill="#E7A13E"/> <rect x="60" y="20" rx="3" fill="#E7A13E"/> <rect x="19" y="27" rx="3" fill="#F2C36B"/> <rect x="19" y="47" rx="3" fill="#F2C36B"/> <path d="M22 52L58 28" stroke="#B46A22" stroke-width="5" stroke-linecap="round"/> <path d="M22 29L58 52" stroke="#B46A22" stroke-width="5" stroke-linecap="round"/> <circle cx="20" cy="30" r="2" fill="#7B451A"/><circle cx="60" cy="30" r="2" fill="#7B451A"/> <path d="M20 15L30 15" stroke="#1F2430" stroke-width="3" stroke-linecap="round"/> <path d="M28 11L32 15L28 19" stroke="#1F2430" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/> <path d="M60 15L50 15" stroke="#1F2430" stroke-width="3" stroke-linecap="round"/> <path d="M52 11L48 15L52 19" stroke="#1F2430" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/> </svg>`,
+  "gate_other_gate": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Gate icon"> <rect x="13" y="20" rx="3" fill="#E7A13E"/> <rect x="60" y="20" rx="3" fill="#E7A13E"/> <rect x="19" y="27" rx="3" fill="#F2C36B"/> <rect x="19" y="47" rx="3" fill="#F2C36B"/> <path d="M22 52L58 28" stroke="#B46A22" stroke-width="5" stroke-linecap="round"/> <path d="M22 29L58 52" stroke="#B46A22" stroke-width="5" stroke-linecap="round"/> <circle cx="20" cy="30" r="2" fill="#7B451A"/><circle cx="60" cy="30" r="2" fill="#7B451A"/> <circle cx="62" cy="18" r="11" fill="#6F60A9"/> <circle cx="58" cy="18" r="1.8" fill="#FFFFFF"/> <circle cx="62" cy="18" r="1.8" fill="#FFFFFF"/> <circle cx="66" cy="18" r="1.8" fill="#FFFFFF"/> </svg>`,
+  "gate_standard_gate": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Gate icon"> <rect x="13" y="20" rx="3" fill="#E7A13E"/> <rect x="60" y="20" rx="3" fill="#E7A13E"/> <rect x="19" y="27" rx="3" fill="#F2C36B"/> <rect x="19" y="47" rx="3" fill="#F2C36B"/> <path d="M22 52L58 28" stroke="#B46A22" stroke-width="5" stroke-linecap="round"/> <path d="M22 29L58 52" stroke="#B46A22" stroke-width="5" stroke-linecap="round"/> <circle cx="20" cy="30" r="2" fill="#7B451A"/><circle cx="60" cy="30" r="2" fill="#7B451A"/> </svg>`,
+  "mud_boggy_ground": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mud icon"> <ellipse cx="39" cy="51" rx="25" ry="12" fill="#4A9CC5"/> <ellipse cx="34" cy="49" rx="15" ry="7" fill="#7CC6E6" opacity="0.95"/> <circle cx="22" cy="36" r="4" fill="#4A9CC5"/> <path d="M20 26C20 22 22.5 19 24.5 16C26.5 19 29 22 29 26C29 29.3 26.1 32 22.5 32C19.5 32 17 29.6 17 26Z" fill="#7CC6E6"/> <path d="M18 60H60" stroke="#8B6A4A" stroke-width="4" stroke-linecap="round" opacity="0.8"/> <path d="M50 37C50 31 53 26 55 21C57 26 60 31 60 37" stroke="#68B26B" stroke-width="3" stroke-linecap="round" fill="none"/> <path d="M56 37V22" stroke="#68B26B" stroke-width="3" stroke-linecap="round"/> <path d="M63 40C63 35 65 31 67 27" stroke="#68B26B" stroke-width="3" stroke-linecap="round" fill="none"/> </svg>`,
+  "mud_deep_mud": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mud icon"> <ellipse cx="39" cy="51" rx="25" ry="12" fill="#4A9CC5"/> <ellipse cx="34" cy="49" rx="15" ry="7" fill="#7CC6E6" opacity="0.95"/> <circle cx="22" cy="36" r="4" fill="#4A9CC5"/> <path d="M20 26C20 22 22.5 19 24.5 16C26.5 19 29 22 29 26C29 29.3 26.1 32 22.5 32C19.5 32 17 29.6 17 26Z" fill="#7CC6E6"/> <path d="M18 60H60" stroke="#8B6A4A" stroke-width="4" stroke-linecap="round" opacity="0.8"/> <path d="M62 22V40" stroke="#2F6E8C" stroke-width="3.5" stroke-linecap="round"/> <path d="M56 34L62 40L68 34" stroke="#2F6E8C" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/> </svg>`,
+  "mud_light_mud": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mud icon"> <ellipse cx="39" cy="51" rx="25" ry="12" fill="#4A9CC5"/> <ellipse cx="34" cy="49" rx="15" ry="7" fill="#7CC6E6" opacity="0.95"/> <circle cx="22" cy="36" r="4" fill="#4A9CC5"/> <path d="M20 26C20 22 22.5 19 24.5 16C26.5 19 29 22 29 26C29 29.3 26.1 32 22.5 32C19.5 32 17 29.6 17 26Z" fill="#7CC6E6"/> <path d="M18 60H60" stroke="#8B6A4A" stroke-width="4" stroke-linecap="round" opacity="0.8"/> </svg>`,
+  "mud_other_muddy_section": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mud icon"> <ellipse cx="39" cy="51" rx="25" ry="12" fill="#4A9CC5"/> <ellipse cx="34" cy="49" rx="15" ry="7" fill="#7CC6E6" opacity="0.95"/> <circle cx="22" cy="36" r="4" fill="#4A9CC5"/> <path d="M20 26C20 22 22.5 19 24.5 16C26.5 19 29 22 29 26C29 29.3 26.1 32 22.5 32C19.5 32 17 29.6 17 26Z" fill="#7CC6E6"/> <path d="M18 60H60" stroke="#8B6A4A" stroke-width="4" stroke-linecap="round" opacity="0.8"/> <circle cx="62" cy="18" r="11" fill="#6F60A9"/> <circle cx="58" cy="18" r="1.8" fill="#FFFFFF"/> <circle cx="62" cy="18" r="1.8" fill="#FFFFFF"/> <circle cx="66" cy="18" r="1.8" fill="#FFFFFF"/> </svg>`,
+  "mud_seasonal_mud": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mud icon"> <ellipse cx="39" cy="51" rx="25" ry="12" fill="#4A9CC5"/> <ellipse cx="34" cy="49" rx="15" ry="7" fill="#7CC6E6" opacity="0.95"/> <circle cx="22" cy="36" r="4" fill="#4A9CC5"/> <path d="M20 26C20 22 22.5 19 24.5 16C26.5 19 29 22 29 26C29 29.3 26.1 32 22.5 32C19.5 32 17 29.6 17 26Z" fill="#7CC6E6"/> <path d="M18 60H60" stroke="#8B6A4A" stroke-width="4" stroke-linecap="round" opacity="0.8"/> <path d="M63 11C57 11 52 15 52 22C58 22 63 18 63 11Z" fill="#68B26B"/> <path d="M52 22C52 17 55 14 60 12" stroke="#2F6B43" stroke-width="2.5" stroke-linecap="round"/> </svg>`,
+  "mud_standing_water": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mud icon"> <ellipse cx="39" cy="51" rx="25" ry="12" fill="#4A9CC5"/> <ellipse cx="34" cy="49" rx="15" ry="7" fill="#7CC6E6" opacity="0.95"/> <circle cx="22" cy="36" r="4" fill="#4A9CC5"/> <path d="M20 26C20 22 22.5 19 24.5 16C26.5 19 29 22 29 26C29 29.3 26.1 32 22.5 32C19.5 32 17 29.6 17 26Z" fill="#7CC6E6"/> <path d="M18 60H60" stroke="#8B6A4A" stroke-width="4" stroke-linecap="round" opacity="0.8"/> <path d="M48 15C51 12 55 12 58 15C61 18 65 18 68 15" stroke="#2F6E8C" stroke-width="2.6" stroke-linecap="round" fill="none"/> <path d="M46 22C50 19 54 19 58 22C62 25 66 25 70 22" stroke="#2F6E8C" stroke-width="2.6" stroke-linecap="round" fill="none"/> </svg>`,
+  "narrow_drop_off_exposed_edge": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Drop off exposed edge icon"> <path d="M18 18C18 24 18 32 20 40C22 48 24 56 24 62" stroke="#77A582" stroke-width="7" stroke-linecap="round"/> <path d="M31 18L40 62" stroke="#D9D9D2" stroke-width="8" stroke-linecap="round"/> <path d="M49 18L40 62" stroke="#AAB7AA" stroke-width="8" stroke-linecap="round" opacity="0.95"/> <path d="M58 18V62" stroke="#75685D" stroke-width="3.5" stroke-dasharray="4 5" stroke-linecap="round"/> <path d="M58 30L67 26" stroke="#D95C54" stroke-width="3.5" stroke-linecap="round"/> </svg>`,
+  "narrow_narrow_bridge": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Narrow icon"> <path d="M20 18C18 24 18 32 20 40C22 48 24 56 24 62" stroke="#77A582" stroke-width="7" stroke-linecap="round"/> <path d="M60 18C62 24 62 32 60 40C58 48 56 56 56 62" stroke="#77A582" stroke-width="7" stroke-linecap="round"/> <path d="M31 18L40 62" stroke="#D9D9D2" stroke-width="8" stroke-linecap="round"/> <path d="M49 18L40 62" stroke="#AAB7AA" stroke-width="8" stroke-linecap="round" opacity="0.95"/> <path d="M25 34H55" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" opacity="0.55"/> <path d="M18 62C23 58 28 58 33 62C38 66 43 66 48 62C53 58 58 58 63 62" stroke="#5DB6E6" stroke-width="3" stroke-linecap="round" fill="none"/> </svg>`,
+  "narrow_narrow_gap": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Narrow gap icon"> <rect x="17" y="16" rx="4" fill="#77A582"/> <rect x="53" y="16" rx="4" fill="#77A582"/> <rect x="34" y="18" rx="6" fill="#D9D9D2"/> <path d="M20 15L30 15" stroke="#1F2430" stroke-width="3" stroke-linecap="round"/> <path d="M28 11L32 15L28 19" stroke="#1F2430" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/> <path d="M60 15L50 15" stroke="#1F2430" stroke-width="3" stroke-linecap="round"/> <path d="M52 11L48 15L52 19" stroke="#1F2430" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/> </svg>`,
+  "narrow_narrow_path": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Narrow icon"> <path d="M20 18C18 24 18 32 20 40C22 48 24 56 24 62" stroke="#77A582" stroke-width="7" stroke-linecap="round"/> <path d="M60 18C62 24 62 32 60 40C58 48 56 56 56 62" stroke="#77A582" stroke-width="7" stroke-linecap="round"/> <path d="M31 18L40 62" stroke="#D9D9D2" stroke-width="8" stroke-linecap="round"/> <path d="M49 18L40 62" stroke="#AAB7AA" stroke-width="8" stroke-linecap="round" opacity="0.95"/> <path d="M25 34H55" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" opacity="0.55"/> </svg>`,
+  "narrow_other_narrow_section": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Narrow icon"> <path d="M20 18C18 24 18 32 20 40C22 48 24 56 24 62" stroke="#77A582" stroke-width="7" stroke-linecap="round"/> <path d="M60 18C62 24 62 32 60 40C58 48 56 56 56 62" stroke="#77A582" stroke-width="7" stroke-linecap="round"/> <path d="M31 18L40 62" stroke="#D9D9D2" stroke-width="8" stroke-linecap="round"/> <path d="M49 18L40 62" stroke="#AAB7AA" stroke-width="8" stroke-linecap="round" opacity="0.95"/> <path d="M25 34H55" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" opacity="0.55"/> <circle cx="62" cy="18" r="11" fill="#6F60A9"/> <circle cx="58" cy="18" r="1.8" fill="#FFFFFF"/> <circle cx="62" cy="18" r="1.8" fill="#FFFFFF"/> <circle cx="66" cy="18" r="1.8" fill="#FFFFFF"/> </svg>`,
+  "narrow_overgrown_path": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Narrow icon"> <path d="M20 18C18 24 18 32 20 40C22 48 24 56 24 62" stroke="#77A582" stroke-width="7" stroke-linecap="round"/> <path d="M60 18C62 24 62 32 60 40C58 48 56 56 56 62" stroke="#77A582" stroke-width="7" stroke-linecap="round"/> <path d="M31 18L40 62" stroke="#D9D9D2" stroke-width="8" stroke-linecap="round"/> <path d="M49 18L40 62" stroke="#AAB7AA" stroke-width="8" stroke-linecap="round" opacity="0.95"/> <path d="M25 34H55" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" opacity="0.55"/> <path d="M17 22C14 18 12 16 10 14" stroke="#68B26B" stroke-width="3" stroke-linecap="round"/> <path d="M63 22C66 18 68 16 70 14" stroke="#68B26B" stroke-width="3" stroke-linecap="round"/> <path d="M12 18C15 17 18 18 20 21" stroke="#68B26B" stroke-width="3" stroke-linecap="round"/> <path d="M60 21C62 18 65 17 68 18" stroke="#68B26B" stroke-width="3" stroke-linecap="round"/> </svg>`,
+  "other_blocked_path": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Blocked path icon"> <path d="M28 16L40 62" stroke="#D9D9D2" stroke-width="8" stroke-linecap="round"/> <path d="M52 16L40 62" stroke="#AAB7AA" stroke-width="8" stroke-linecap="round"/> <path d="M18 20C16 26 16 34 18 42C20 50 22 56 22 62" stroke="#77A582" stroke-width="7" stroke-linecap="round"/> <path d="M62 20C64 26 64 34 62 42C60 50 58 56 58 62" stroke="#77A582" stroke-width="7" stroke-linecap="round"/> <path d="M24 22L56 54" stroke="#D95C54" stroke-width="5" stroke-linecap="round"/> <path d="M56 22L24 54" stroke="#D95C54" stroke-width="5" stroke-linecap="round"/> </svg>`,
+  "other_fallen_tree": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Fallen tree icon"> <path d="M18 54L54 30" stroke="#75685D" stroke-width="9" stroke-linecap="round"/> <path d="M54 30L63 24" stroke="#68B26B" stroke-width="5" stroke-linecap="round"/> <path d="M12 60H68" stroke="#77A582" stroke-width="4" stroke-linecap="round"/> <path d="M22 51L18 46" stroke="#AF9A84" stroke-width="4" stroke-linecap="round"/> <path d="M30 46L26 41" stroke="#AF9A84" stroke-width="4" stroke-linecap="round"/> </svg>`,
+  "other_flooding": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Flooding icon"> <path d="M18 26H62V46H18Z" fill="#6F60A9" opacity="0.25"/> <path d="M16 54C21 50 26 50 31 54C36 58 41 58 46 54C51 50 56 50 61 54C64 56 67 56 69 54" stroke="#5DB6E6" stroke-width="4" stroke-linecap="round" fill="none"/> <path d="M14 64C19 60 24 60 29 64C34 68 39 68 44 64C49 60 54 60 59 64C62 66 65 66 67 64" stroke="#5DB6E6" stroke-width="4" stroke-linecap="round" fill="none"/> <path d="M26 20V32" stroke="#1F2430" stroke-width="3" stroke-linecap="round"/> </svg>`,
+  "other_livestock": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Livestock icon"> <ellipse cx="39" cy="44" rx="18" ry="12" fill="#9C8BD4"/> <circle cx="57" cy="39" r="7" fill="#6F60A9"/> <path d="M24 56V64" stroke="#1F2430" stroke-width="3.5" stroke-linecap="round"/> <path d="M34 56V64" stroke="#1F2430" stroke-width="3.5" stroke-linecap="round"/> <path d="M46 56V64" stroke="#1F2430" stroke-width="3.5" stroke-linecap="round"/> <path d="M54 56V64" stroke="#1F2430" stroke-width="3.5" stroke-linecap="round"/> <circle cx="55" cy="38" r="1.4" fill="#FFFFFF"/><path d="M61 34L66 31" stroke="#1F2430" stroke-width="2.5" stroke-linecap="round"/> </svg>`,
+  "other_other": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Other icon"> <circle cx="40" cy="40" r="25" fill="#9C8BD4"/> <circle cx="30" cy="40" r="3.3" fill="#E9E4F7"/> <circle cx="40" cy="40" r="3.3" fill="#E9E4F7"/> <circle cx="50" cy="40" r="3.3" fill="#E9E4F7"/> </svg>`,
+  "other_poor_signage": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Poor signage icon"> <path d="M38 16V64" stroke="#75685D" stroke-width="6" stroke-linecap="round"/> <path d="M38 20H60L54 30H38Z" fill="#9C8BD4"/> <path d="M38 38H18L24 48H38Z" fill="#6F60A9"/> <circle cx="57" cy="23" r="1.5" fill="#FFFFFF"/> <circle cx="23" cy="41" r="1.5" fill="#FFFFFF"/> </svg>`,
+  "rough_broken_surface": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Broken surface icon"> <rect x="16" y="18" rx="8" fill="#CBB8A3"/> <path d="M32 19L36 33L28 42L40 52" stroke="#75685D" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/> <path d="M51 24L46 35L54 43L49 57" stroke="#75685D" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/> </svg>`,
+  "rough_loose_stones": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Loose stones icon"> <circle cx="20" cy="54" r="6" fill="#AF9A84"/> <circle cx="33" cy="46" r="7" fill="#CBB8A3"/> <circle cx="47" cy="55" r="6" fill="#AF9A84"/> <circle cx="58" cy="43" r="5" fill="#CBB8A3"/> <circle cx="28" cy="31" r="4" fill="#AF9A84"/> <path d="M14 64H66" stroke="#75685D" stroke-width="4" stroke-linecap="round" opacity="0.75"/> </svg>`,
+  "rough_other_rough_terrain": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Rough icon"> <path d="M14 60L24 44L31 54L40 36L49 50L58 40L66 60H14Z" fill="#CBB8A3"/> <path d="M22 51L29 57L40 39L49 50L58 42" stroke="#75685D" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/> <circle cx="27" cy="42" r="5" fill="#AF9A84"/> <circle cx="54" cy="34" r="4" fill="#AF9A84"/> <circle cx="62" cy="18" r="11" fill="#6F60A9"/> <circle cx="58" cy="18" r="1.8" fill="#FFFFFF"/> <circle cx="62" cy="18" r="1.8" fill="#FFFFFF"/> <circle cx="66" cy="18" r="1.8" fill="#FFFFFF"/> </svg>`,
+  "rough_ruts": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ruts icon"> <path d="M21 18C24 30 24 44 21 62" stroke="#AF9A84" stroke-width="8" stroke-linecap="round"/> <path d="M43 18C46 30 46 44 43 62" stroke="#AF9A84" stroke-width="8" stroke-linecap="round"/> <path d="M60 18C63 30 63 44 60 62" stroke="#AF9A84" stroke-width="8" stroke-linecap="round"/> <path d="M14 24C26 22 38 22 68 24" stroke="#75685D" stroke-width="3" stroke-linecap="round" opacity="0.7"/> </svg>`,
+  "rough_tree_roots": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Tree roots icon"> <path d="M38 14V32" stroke="#75685D" stroke-width="6" stroke-linecap="round"/> <path d="M38 32C32 35 28 42 24 50" stroke="#75685D" stroke-width="4.5" stroke-linecap="round" fill="none"/> <path d="M38 32C42 35 48 42 55 50" stroke="#75685D" stroke-width="4.5" stroke-linecap="round" fill="none"/> <path d="M28 49C24 51 20 55 17 60" stroke="#AF9A84" stroke-width="4" stroke-linecap="round"/> <path d="M49 48C54 50 59 54 63 60" stroke="#AF9A84" stroke-width="4" stroke-linecap="round"/> <path d="M14 61H66" stroke="#CBB8A3" stroke-width="4" stroke-linecap="round"/> </svg>`,
+  "rough_uneven_ground": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Rough icon"> <path d="M14 60L24 44L31 54L40 36L49 50L58 40L66 60H14Z" fill="#CBB8A3"/> <path d="M22 51L29 57L40 39L49 50L58 42" stroke="#75685D" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/> <circle cx="27" cy="42" r="5" fill="#AF9A84"/> <circle cx="54" cy="34" r="4" fill="#AF9A84"/> </svg>`,
+  "steep_long_climb": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Steep icon"> <path d="M12 57C22 55 28 51 35 43C43 34 49 26 68 22" stroke="#7568A9" stroke-width="6" stroke-linecap="round" fill="none"/> <path d="M12 57L12 64H68V22C56 26 49 33 42 41C35 49 25 56 12 57Z" fill="#C9C0E4" opacity="0.95"/> <path d="M22 54C26 52 31 49 36 44C42 39 46 34 53 29" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.75"/> <path d="M62 58V40" stroke="#7568A9" stroke-width="3.5" stroke-linecap="round"/> <path d="M56 46L62 40L68 46" stroke="#7568A9" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/> </svg>`,
+  "steep_long_descent": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Steep icon"> <path d="M12 57C22 55 28 51 35 43C43 34 49 26 68 22" stroke="#7568A9" stroke-width="6" stroke-linecap="round" fill="none"/> <path d="M12 57L12 64H68V22C56 26 49 33 42 41C35 49 25 56 12 57Z" fill="#C9C0E4" opacity="0.95"/> <path d="M22 54C26 52 31 49 36 44C42 39 46 34 53 29" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.75"/> <path d="M62 22V40" stroke="#7568A9" stroke-width="3.5" stroke-linecap="round"/> <path d="M56 34L62 40L68 34" stroke="#7568A9" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/> </svg>`,
+  "steep_other_steep_section": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Steep icon"> <path d="M12 57C22 55 28 51 35 43C43 34 49 26 68 22" stroke="#7568A9" stroke-width="6" stroke-linecap="round" fill="none"/> <path d="M12 57L12 64H68V22C56 26 49 33 42 41C35 49 25 56 12 57Z" fill="#C9C0E4" opacity="0.95"/> <path d="M22 54C26 52 31 49 36 44C42 39 46 34 53 29" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.75"/> <circle cx="62" cy="18" r="11" fill="#6F60A9"/> <circle cx="58" cy="18" r="1.8" fill="#FFFFFF"/> <circle cx="62" cy="18" r="1.8" fill="#FFFFFF"/> <circle cx="66" cy="18" r="1.8" fill="#FFFFFF"/> </svg>`,
+  "steep_short_steep_section": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Steep icon"> <path d="M12 57C22 55 28 51 35 43C43 34 49 26 68 22" stroke="#7568A9" stroke-width="6" stroke-linecap="round" fill="none"/> <path d="M12 57L12 64H68V22C56 26 49 33 42 41C35 49 25 56 12 57Z" fill="#C9C0E4" opacity="0.95"/> <path d="M22 54C26 52 31 49 36 44C42 39 46 34 53 29" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.75"/> <circle cx="63" cy="18" r="11" fill="#D95C54"/> <path d="M63 12V20" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/> <circle cx="63" cy="24" r="1.8" fill="#FFFFFF"/> </svg>`,
+  "steep_slippery_slope": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Steep icon"> <path d="M12 57C22 55 28 51 35 43C43 34 49 26 68 22" stroke="#7568A9" stroke-width="6" stroke-linecap="round" fill="none"/> <path d="M12 57L12 64H68V22C56 26 49 33 42 41C35 49 25 56 12 57Z" fill="#C9C0E4" opacity="0.95"/> <path d="M22 54C26 52 31 49 36 44C42 39 46 34 53 29" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.75"/> <path d="M57 34C59 31 61 28 62 25C64 28 66 31 66 34C66 36.8 64.1 39 61.5 39C58.9 39 57 36.8 57 34Z" fill="#5DB6E6"/> <path d="M54 45L60 51" stroke="#1F2430" stroke-width="3" stroke-linecap="round"/> <path d="M60 45L66 51" stroke="#1F2430" stroke-width="3" stroke-linecap="round"/> </svg>`,
+  "steep_steps": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Steep steps icon"> <path d="M14 60H66" stroke="#7568A9" stroke-width="4" stroke-linecap="round"/> <path d="M18 56V46H28V38H38V30H48V22H60" stroke="#A89CCF" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/> <path d="M18 56L18 62" stroke="#7568A9" stroke-width="4" stroke-linecap="round"/> </svg>`,
+  "stile_broken_awkward_stile": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Broken awkward stile icon"> <rect x="18" y="22" rx="3" fill="#5FA86D"/> <rect x="55" y="22" rx="3" fill="#5FA86D"/> <rect x="27" y="28" rx="2.5" fill="#8FD29A"/> <rect x="27" y="52" rx="2.5" fill="#8FD29A"/> <path d="M27 43H41" stroke="#D95C54" stroke-width="4.5" stroke-linecap="round"/> <path d="M44 40L51 47" stroke="#D95C54" stroke-width="4.5" stroke-linecap="round"/> <path d="M12 46H18" stroke="#2F6B43" stroke-width="4" stroke-linecap="round"/> <path d="M62 46H68" stroke="#2F6B43" stroke-width="4" stroke-linecap="round"/> </svg>`,
+  "stile_high_step": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Stile icon"> <rect x="18" y="22" rx="3" fill="#5FA86D"/> <rect x="55" y="22" rx="3" fill="#5FA86D"/> <rect x="27" y="28" rx="2.5" fill="#8FD29A"/> <rect x="27" y="40" rx="2.5" fill="#8FD29A"/> <rect x="27" y="52" rx="2.5" fill="#8FD29A"/> <path d="M12 46H18" stroke="#2F6B43" stroke-width="4" stroke-linecap="round"/> <path d="M62 46H68" stroke="#2F6B43" stroke-width="4" stroke-linecap="round"/> <path d="M20 61L29 16" stroke="#2F6B43" stroke-width="3.5" stroke-linecap="round" opacity="0.8"/> <path d="M60 61L51 16" stroke="#2F6B43" stroke-width="3.5" stroke-linecap="round" opacity="0.8"/> <path d="M62 58V40" stroke="#2F6B43" stroke-width="3.5" stroke-linecap="round"/> <path d="M56 46L62 40L68 46" stroke="#2F6B43" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/> </svg>`,
+  "stile_ladder_stile": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ladder stile icon"> <rect x="23" y="15" rx="3" fill="#5FA86D"/> <rect x="50" y="15" rx="3" fill="#5FA86D"/> <rect x="30" y="22" height="4.5" rx="2.2" fill="#8FD29A"/> <rect x="30" y="32" height="4.5" rx="2.2" fill="#8FD29A"/> <rect x="30" y="42" height="4.5" rx="2.2" fill="#8FD29A"/> <rect x="30" y="52" height="4.5" rx="2.2" fill="#8FD29A"/> <path d="M12 49H22" stroke="#2F6B43" stroke-width="4" stroke-linecap="round"/> <path d="M58 49H68" stroke="#2F6B43" stroke-width="4" stroke-linecap="round"/> </svg>`,
+  "stile_narrow_stile": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Stile icon"> <rect x="18" y="22" rx="3" fill="#5FA86D"/> <rect x="55" y="22" rx="3" fill="#5FA86D"/> <rect x="27" y="28" rx="2.5" fill="#8FD29A"/> <rect x="27" y="40" rx="2.5" fill="#8FD29A"/> <rect x="27" y="52" rx="2.5" fill="#8FD29A"/> <path d="M12 46H18" stroke="#2F6B43" stroke-width="4" stroke-linecap="round"/> <path d="M62 46H68" stroke="#2F6B43" stroke-width="4" stroke-linecap="round"/> <path d="M20 61L29 16" stroke="#2F6B43" stroke-width="3.5" stroke-linecap="round" opacity="0.8"/> <path d="M60 61L51 16" stroke="#2F6B43" stroke-width="3.5" stroke-linecap="round" opacity="0.8"/> <path d="M20 15L30 15" stroke="#1F2430" stroke-width="3" stroke-linecap="round"/> <path d="M28 11L32 15L28 19" stroke="#1F2430" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/> <path d="M60 15L50 15" stroke="#1F2430" stroke-width="3" stroke-linecap="round"/> <path d="M52 11L48 15L52 19" stroke="#1F2430" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/> </svg>`,
+  "stile_other_stile": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Stile icon"> <rect x="18" y="22" rx="3" fill="#5FA86D"/> <rect x="55" y="22" rx="3" fill="#5FA86D"/> <rect x="27" y="28" rx="2.5" fill="#8FD29A"/> <rect x="27" y="40" rx="2.5" fill="#8FD29A"/> <rect x="27" y="52" rx="2.5" fill="#8FD29A"/> <path d="M12 46H18" stroke="#2F6B43" stroke-width="4" stroke-linecap="round"/> <path d="M62 46H68" stroke="#2F6B43" stroke-width="4" stroke-linecap="round"/> <path d="M20 61L29 16" stroke="#2F6B43" stroke-width="3.5" stroke-linecap="round" opacity="0.8"/> <path d="M60 61L51 16" stroke="#2F6B43" stroke-width="3.5" stroke-linecap="round" opacity="0.8"/> <circle cx="62" cy="18" r="11" fill="#6F60A9"/> <circle cx="58" cy="18" r="1.8" fill="#FFFFFF"/> <circle cx="62" cy="18" r="1.8" fill="#FFFFFF"/> <circle cx="66" cy="18" r="1.8" fill="#FFFFFF"/> </svg>`,
+  "stile_standard_stile": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Stile icon"> <rect x="18" y="22" rx="3" fill="#5FA86D"/> <rect x="55" y="22" rx="3" fill="#5FA86D"/> <rect x="27" y="28" rx="2.5" fill="#8FD29A"/> <rect x="27" y="40" rx="2.5" fill="#8FD29A"/> <rect x="27" y="52" rx="2.5" fill="#8FD29A"/> <path d="M12 46H18" stroke="#2F6B43" stroke-width="4" stroke-linecap="round"/> <path d="M62 46H68" stroke="#2F6B43" stroke-width="4" stroke-linecap="round"/> <path d="M20 61L29 16" stroke="#2F6B43" stroke-width="3.5" stroke-linecap="round" opacity="0.8"/> <path d="M60 61L51 16" stroke="#2F6B43" stroke-width="3.5" stroke-linecap="round" opacity="0.8"/> </svg>`,
+};
+
 const SUBTYPES = {
   gate: [
-    { label: "Standard gate",  icon: "🚪" },
-    { label: "Kissing gate",   icon: "🔄" },
-    { label: "Locked gate",    icon: "🔒" },
-    { label: "Narrow gate",    icon: "↔️"  },
-    { label: "Heavy gate",     icon: "⚖️"  },
-    { label: "Other gate",     icon: "···" },
+    { label: "Standard gate",  key: "gate_standard_gate"  },
+    { label: "Kissing gate",   key: "gate_kissing_gate"   },
+    { label: "Locked gate",    key: "gate_locked_gate"    },
+    { label: "Narrow gate",    key: "gate_narrow_gate"    },
+    { label: "Heavy gate",     key: "gate_heavy_gate"     },
+    { label: "Other gate",     key: "gate_other_gate"     },
   ],
   stile: [
-    { label: "Standard stile",   icon: "🪜" },
-    { label: "Ladder stile",     icon: "📏" },
-    { label: "Narrow stile",     icon: "↔️"  },
-    { label: "High step",        icon: "⬆️"  },
-    { label: "Broken / awkward", icon: "⚠️"  },
-    { label: "Other stile",      icon: "···" },
+    { label: "Standard stile",   key: "stile_standard_stile"      },
+    { label: "Ladder stile",     key: "stile_ladder_stile"        },
+    { label: "Narrow stile",     key: "stile_narrow_stile"        },
+    { label: "High step",        key: "stile_high_step"           },
+    { label: "Broken / awkward", key: "stile_broken_awkward_stile"},
+    { label: "Other stile",      key: "stile_other_stile"         },
   ],
   steep: [
-    { label: "Short steep",    icon: "📐" },
-    { label: "Long climb",     icon: "⬆️"  },
-    { label: "Long descent",   icon: "⬇️"  },
-    { label: "Slippery slope", icon: "⚠️"  },
-    { label: "Steps",          icon: "🪜" },
-    { label: "Other steep",    icon: "···" },
+    { label: "Short steep",    key: "steep_short_steep_section"  },
+    { label: "Long climb",     key: "steep_long_climb"           },
+    { label: "Long descent",   key: "steep_long_descent"         },
+    { label: "Slippery slope", key: "steep_slippery_slope"       },
+    { label: "Steps",          key: "steep_steps"                },
+    { label: "Other steep",    key: "steep_other_steep_section"  },
   ],
   mud: [
-    { label: "Light mud",      icon: "💧" },
-    { label: "Deep mud",       icon: "🌊" },
-    { label: "Standing water", icon: "💦" },
-    { label: "Boggy ground",   icon: "🌿" },
-    { label: "Seasonal mud",   icon: "📅" },
-    { label: "Other mud",      icon: "···" },
+    { label: "Light mud",      key: "mud_light_mud"           },
+    { label: "Deep mud",       key: "mud_deep_mud"            },
+    { label: "Standing water", key: "mud_standing_water"      },
+    { label: "Boggy ground",   key: "mud_boggy_ground"        },
+    { label: "Seasonal mud",   key: "mud_seasonal_mud"        },
+    { label: "Other mud",      key: "mud_other_muddy_section" },
   ],
   narrow: [
-    { label: "Narrow path",    icon: "🛤️"  },
-    { label: "Overgrown path", icon: "🌿" },
-    { label: "Narrow bridge",  icon: "🌉" },
-    { label: "Narrow gap",     icon: "↔️"  },
-    { label: "Exposed edge",   icon: "⚠️"  },
-    { label: "Other narrow",   icon: "···" },
+    { label: "Narrow path",    key: "narrow_narrow_path"           },
+    { label: "Overgrown path", key: "narrow_overgrown_path"        },
+    { label: "Narrow bridge",  key: "narrow_narrow_bridge"         },
+    { label: "Narrow gap",     key: "narrow_narrow_gap"            },
+    { label: "Exposed edge",   key: "narrow_drop_off_exposed_edge" },
+    { label: "Other narrow",   key: "narrow_other_narrow_section"  },
   ],
   rough_surface: [
-    { label: "Uneven ground",  icon: "〰️"  },
-    { label: "Loose stones",   icon: "🪨" },
-    { label: "Tree roots",     icon: "🌳" },
-    { label: "Ruts",           icon: "🚜" },
-    { label: "Broken surface", icon: "💥" },
-    { label: "Other rough",    icon: "···" },
+    { label: "Uneven ground",  key: "rough_uneven_ground"     },
+    { label: "Loose stones",   key: "rough_loose_stones"      },
+    { label: "Tree roots",     key: "rough_tree_roots"        },
+    { label: "Ruts",           key: "rough_ruts"              },
+    { label: "Broken surface", key: "rough_broken_surface"    },
+    { label: "Other rough",    key: "rough_other_rough_terrain"},
   ],
   other: [
-    { label: "Fallen tree",  icon: "🌲" },
-    { label: "Livestock",    icon: "🐄" },
-    { label: "Flooding",     icon: "🌊" },
-    { label: "Blocked path", icon: "🚫" },
-    { label: "Poor signage", icon: "🪧" },
-    { label: "Other",        icon: "···" },
+    { label: "Fallen tree",  key: "other_fallen_tree"  },
+    { label: "Livestock",    key: "other_livestock"    },
+    { label: "Blocked path", key: "other_blocked_path" },
+    { label: "Poor signage", key: "other_poor_signage" },
+    { label: "Other",        key: "other_other"        },
   ],
 };
 
@@ -642,6 +686,43 @@ let pendingLat  = null;
 let pendingLng  = null;
 let locationMarker = null;
 let currentPhoto   = null;
+
+// Persist/restore form state across iOS page suspensions (camera/file picker)
+function saveFormState() {
+  if (!selectedCategory) return;
+  sessionStorage.setItem("am_cat",  selectedCategory.id);
+  sessionStorage.setItem("am_lat",  pendingLat);
+  sessionStorage.setItem("am_lng",  pendingLng);
+  if (selectedSubtype)    sessionStorage.setItem("am_sub",  selectedSubtype);
+  if (selectedDifficulty) sessionStorage.setItem("am_diff", selectedDifficulty);
+}
+function clearFormState() {
+  ["am_cat","am_lat","am_lng","am_sub","am_diff"].forEach(k => sessionStorage.removeItem(k));
+}
+function restoreFormState() {
+  const catId = sessionStorage.getItem("am_cat");
+  const lat   = parseFloat(sessionStorage.getItem("am_lat"));
+  const lng   = parseFloat(sessionStorage.getItem("am_lng"));
+  if (!catId || isNaN(lat) || isNaN(lng)) return;
+  const cat = CATEGORIES.find(c => c.id === catId);
+  if (!cat) return;
+  pendingLat = lat; pendingLng = lng;
+  selectedSubtype    = sessionStorage.getItem("am_sub")  || null;
+  selectedDifficulty = sessionStorage.getItem("am_diff") || null;
+  goToStep2(cat);
+  // Re-highlight previously selected subtype/difficulty
+  if (selectedSubtype) {
+    document.querySelectorAll(".sub-btn").forEach(b => {
+      if (b.textContent.trim().startsWith(selectedSubtype)) b.classList.add("selected");
+    });
+  }
+  if (selectedDifficulty) {
+    document.querySelectorAll(".diff-btn").forEach(b => {
+      if (b.dataset.val === selectedDifficulty) b.classList.add("selected");
+    });
+  }
+  document.getElementById("sheet").classList.add("open");
+}
 
 // Map marker references: id -> { marker: L.Marker, data: markerObj }
 const mapMarkers = {};
@@ -689,7 +770,10 @@ function goToStep2(cat) {
   (SUBTYPES[cat.id] || []).forEach(st => {
     const btn = document.createElement("button");
     btn.className = "sub-btn";
-    btn.innerHTML = `<span class="sub-icon">${st.icon}</span>${st.label}`;
+    const svgIcon = SUBTYPE_ICONS[st.key];
+    btn.innerHTML = svgIcon
+      ? `<div style="width:30px;height:30px;flex-shrink:0;overflow:hidden;">${svgIcon}</div>${st.label}`
+      : `<span class="sub-icon">·</span>${st.label}`;
     btn.addEventListener("click", () => {
       document.querySelectorAll(".sub-btn").forEach(b => b.classList.remove("selected"));
       btn.classList.add("selected");
@@ -720,6 +804,7 @@ function openSheet(lat, lng) {
 }
 
 function closeSheet() {
+  clearFormState();
   document.getElementById("sheet").classList.remove("open");
   setTimeout(goToStep1, 300);
 }
@@ -741,6 +826,7 @@ document.querySelectorAll(".diff-btn").forEach(btn => {
 // ── Photo ─────────────────────────────────────────────────────────────────────
 
 document.getElementById("photoSection").addEventListener("click", () => {
+  saveFormState(); // persist before iOS might suspend the page
   document.getElementById("photoInput").click();
 });
 document.getElementById("photoInput").addEventListener("change", e => {
@@ -778,9 +864,12 @@ map.on("click", e => {
 // ── Save marker ───────────────────────────────────────────────────────────────
 
 document.getElementById("saveBtn").addEventListener("click", async () => {
-  if (!selectedCategory) return;
+  if (!selectedCategory) { showToast("Please select a category first"); return; }
+  if (pendingLat == null) { showToast("No location set — tap the map first"); return; }
+
+  const btn  = document.getElementById("saveBtn");
   const note = document.getElementById("noteInput").value.trim();
-  const fd = new FormData();
+  const fd   = new FormData();
   fd.append("lat",  pendingLat);
   fd.append("lng",  pendingLng);
   fd.append("type", selectedCategory.id);
@@ -789,14 +878,24 @@ document.getElementById("saveBtn").addEventListener("click", async () => {
   if (note)               fd.append("note",     note);
   if (currentPhoto)       fd.append("photo",    currentPhoto);
 
+  btn.disabled   = true;
+  btn.textContent = "Saving…";
   try {
     const res = await fetch(`${API}/markers`, { method: "POST", body: fd });
-    if (!res.ok) throw new Error(await res.text());
+    if (!res.ok) {
+      const body = await res.text();
+      throw new Error(`${res.status} — ${body}`);
+    }
     addMarkerToMap(await res.json());
+    clearFormState();
     closeSheet();
     showToast("Marker saved ✓");
   } catch (err) {
-    showToast("Error — " + err.message);
+    showToast("Save failed: " + err.message);
+    console.error("Save marker error:", err);
+  } finally {
+    btn.disabled   = false;
+    btn.textContent = "✓ Save marker";
   }
 });
 
@@ -866,12 +965,13 @@ function addMarkerToMap(m) {
 
   const cat = getCat(m.type);
   const rows = [
-    `<div style="font-weight:700;font-size:14px;margin-bottom:4px">${cat.icon} ${cat.label}</div>`,
+    `<div style="font-weight:700;font-size:14px;margin-bottom:4px">${cat.label}</div>`,
     m.subtype  ? `<div style="color:#8090b0;font-size:12px;margin-bottom:4px">${m.subtype}</div>` : "",
     m.severity ? `<div style="font-size:12px;margin-bottom:4px">${diffLabel[m.severity] ?? m.severity}</div>` : "",
     m.note     ? `<div style="font-size:13px;margin-bottom:6px">${m.note}</div>` : "",
     m.photo_url ? `<img src="${m.photo_url}" style="max-width:160px;border-radius:8px;margin-bottom:6px;display:block">` : "",
-    `<div style="color:#4a5a78;font-size:11px">Last updated: ${fmt(m.updated_at)}</div>`,
+    `<div style="color:#4a5a78;font-size:11px;margin-bottom:8px">Last updated: ${fmt(m.updated_at)}</div>`,
+    `<button onclick="deleteMarker(${m.id})" style="width:100%;padding:7px;border-radius:8px;border:1px solid #3a4a60;background:transparent;color:#e94560;font-size:12px;cursor:pointer;">🗑 Delete marker</button>`,
   ].filter(Boolean).join("");
 
   const marker = L.marker([m.lat, m.lng], { icon: makeIcon(m.type) })
@@ -1014,7 +1114,7 @@ function renderRoutePanel(data) {
     const item = document.createElement("div");
     item.className = "route-marker-item";
     item.innerHTML = `
-      <span class="route-marker-icon">${cat.icon}</span>
+      <span class="route-marker-icon" style="font-size:13px;font-weight:600;color:#c8d2e8">${cat.label.split(" ")[0]}</span>
       <div class="route-marker-info">
         <div class="rmi-type">${cat.label}${m.subtype ? ` <span style="font-weight:400;color:#889">· ${m.subtype}</span>` : ""}</div>
         ${m.note ? `<div class="rmi-sub">${m.note}</div>` : ""}
@@ -1024,6 +1124,23 @@ function renderRoutePanel(data) {
     `;
     listEl.appendChild(item);
   });
+}
+
+// ── Delete marker ─────────────────────────────────────────────────────────────
+
+async function deleteMarker(id) {
+  if (!confirm("Delete this marker?")) return;
+  try {
+    const res = await fetch(`${API}/markers/${id}`, { method: "DELETE" });
+    if (!res.ok && res.status !== 204) throw new Error(await res.text());
+    if (mapMarkers[id]) {
+      map.removeLayer(mapMarkers[id].marker);
+      delete mapMarkers[id];
+    }
+    showToast("Marker deleted");
+  } catch (err) {
+    showToast("Delete failed: " + err.message);
+  }
 }
 
 // ── Coverage / GPX layer ──────────────────────────────────────────────────────
@@ -1108,6 +1225,9 @@ async function loadTracks() {
 map.on("moveend", () => { if (coverageVisible) loadTracks(); });
 
 // ── Toast ─────────────────────────────────────────────────────────────────────
+
+// Restore state if iOS suspended the page during file pick
+restoreFormState();
 
 let toastTimer = null;
 function showToast(msg, duration = 2500) {

@@ -1,0 +1,12 @@
+<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Broken awkward stile icon">
+
+<rect x="18" y="22" width="7" height="39" rx="3" fill="#5FA86D"/>
+<rect x="55" y="22" width="7" height="39" rx="3" fill="#5FA86D"/>
+<rect x="27" y="28" width="27" height="5" rx="2.5" fill="#8FD29A"/>
+<rect x="27" y="52" width="27" height="5" rx="2.5" fill="#8FD29A"/>
+<path d="M27 43H41" stroke="#D95C54" stroke-width="4.5" stroke-linecap="round"/>
+<path d="M44 40L51 47" stroke="#D95C54" stroke-width="4.5" stroke-linecap="round"/>
+<path d="M12 46H18" stroke="#2F6B43" stroke-width="4" stroke-linecap="round"/>
+<path d="M62 46H68" stroke="#2F6B43" stroke-width="4" stroke-linecap="round"/>
+
+</svg>

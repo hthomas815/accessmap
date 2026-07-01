@@ -1,0 +1,12 @@
+<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Heavy gate icon">
+
+<rect x="11" y="18" width="9" height="46" rx="3" fill="#B46A22"/>
+<rect x="60" y="18" width="9" height="46" rx="3" fill="#B46A22"/>
+<rect x="19" y="25" width="42" height="8" rx="3" fill="#E7A13E"/>
+<rect x="19" y="47" width="42" height="8" rx="3" fill="#E7A13E"/>
+<path d="M22 54L58 28" stroke="#7B451A" stroke-width="6" stroke-linecap="round"/>
+<path d="M22 29L58 56" stroke="#7B451A" stroke-width="6" stroke-linecap="round"/>
+<path d="M56 12V24" stroke="#1F2430" stroke-width="4" stroke-linecap="round"/>
+<circle cx="56" cy="9" r="4.5" fill="#AF9A84"/>
+
+</svg>
