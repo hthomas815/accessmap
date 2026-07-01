@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: accessmap
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: accessmap-db
+          property: connectionString
+
+databases:
+  - name: accessmap-db
+    databaseName: accessmap
+    plan: free

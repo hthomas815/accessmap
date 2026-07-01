@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>AccessMap</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #1a1a2e;
+      color: #eee;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    #map {
+      flex: 1;
+      width: 100%;
+    }
+
+    /* ── Top bar ── */
+    #topbar {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      display: flex;
+      gap: 8px;
+    }
+
+    /* ── FAB: drop marker ── */
+    #fab {
+      position: absolute;
+      bottom: 28px;
+      right: 20px;
+      z-index: 1000;
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      background: #e94560;
+      border: none;
+      color: #fff;
+      font-size: 28px;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0,0,0,.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform .1s;
+    }
+    #fab:active { transform: scale(.93); }
+
+    /* ── Locate button ── */
+    #locateBtn {
+      position: absolute;
+      bottom: 108px;
+      right: 20px;
+      z-index: 1000;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: #16213e;
+      border: 2px solid #e94560;
+      color: #e94560;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,.4);
+    }
+    #locateBtn:active { background: #e94560; color: #fff; }
+
+    /* ── Bottom sheet (marker type picker) ── */
+    #sheet {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      z-index: 2000;
+      background: #16213e;
+      border-radius: 20px 20px 0 0;
+      padding: 16px 16px 32px;
+      transform: translateY(100%);
+      transition: transform .25s ease;
+      max-height: 85dvh;
+      overflow-y: auto;
+    }
+    #sheet.open { transform: translateY(0); }
+
+    #sheet h2 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 14px;
+      text-align: center;
+      color: #aaa;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    .type-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .type-btn {
+      background: #0f3460;
+      border: 2px solid transparent;
+      border-radius: 12px;
+      padding: 10px 4px;
+      color: #eee;
+      font-size: 11px;
+      text-align: center;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      transition: border-color .1s;
+    }
+    .type-btn span.icon { font-size: 22px; }
+    .type-btn.selected { border-color: #e94560; background: #1a1a3e; }
+
+    .severity-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .sev-btn {
+      flex: 1;
+      padding: 8px;
+      border-radius: 8px;
+      border: 2px solid transparent;
+      background: #0f3460;
+      color: #eee;
+      font-size: 13px;
+      cursor: pointer;
+      text-align: center;
+    }
+    .sev-btn.selected { border-color: #e94560; }
+
+    #noteInput {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #334;
+      background: #0a1628;
+      color: #eee;
+      font-size: 14px;
+      resize: none;
+      margin-bottom: 14px;
+      font-family: inherit;
+    }
+    #noteInput::placeholder { color: #556; }
+
+    .photo-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    #photoBtn {
+      padding: 8px 14px;
+      background: #0f3460;
+      border: 1px solid #334;
+      border-radius: 8px;
+      color: #ccc;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    #photoName { font-size: 12px; color: #888; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    #photoInput { display: none; }
+
+    .action-row {
+      display: flex;
+      gap: 10px;
+    }
+    #cancelBtn {
+      flex: 1;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid #334;
+      background: transparent;
+      color: #aaa;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    #saveBtn {
+      flex: 2;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      background: #e94560;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    #saveBtn:disabled { background: #555; cursor: default; }
+
+    /* ── Toast ── */
+    #toast {
+      position: absolute;
+      top: 72px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #0f3460;
+      color: #eee;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-size: 13px;
+      z-index: 3000;
+      opacity: 0;
+      transition: opacity .3s;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    #toast.show { opacity: 1; }
+
+    /* Leaflet dark tile style override */
+    .leaflet-tile-pane { filter: brightness(.85) saturate(.9); }
+  </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<button id="locateBtn" title="Go to my location">⊕</button>
+<button id="fab" title="Drop a marker">＋</button>
+
+<!-- Bottom sheet -->
+<div id="sheet">
+  <h2>What did you find?</h2>
+
+  <div class="type-grid" id="typeGrid"></div>
+
+  <div class="severity-row" id="severityRow">
+    <button class="sev-btn" data-val="low">🟢 Easy</button>
+    <button class="sev-btn" data-val="medium">🟡 Tricky</button>
+    <button class="sev-btn" data-val="high">🔴 Hard</button>
+  </div>
+
+  <textarea id="noteInput" rows="2" placeholder="Optional note…"></textarea>
+
+  <div class="photo-row">
+    <button id="photoBtn">📷 Photo</button>
+    <span id="photoName">No photo</span>
+    <input type="file" id="photoInput" accept="image/*" capture="environment" />
+  </div>
+
+  <div class="action-row">
+    <button id="cancelBtn">Cancel</button>
+    <button id="saveBtn" disabled>Save marker</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+const API = "/api";
+
+// ── Marker type definitions ──────────────────────────────────────────────────
+const TYPES = [
+  { id: "gate",         icon: "🚪", label: "Gate"        },
+  { id: "kissing_gate", icon: "🔄", label: "Kissing gate" },
+  { id: "stile",        icon: "🪜", label: "Stile"       },
+  { id: "steep",        icon: "⛰️",  label: "Steep"       },
+  { id: "mud",          icon: "💧", label: "Mud"         },
+  { id: "narrow",       icon: "↔️",  label: "Narrow"      },
+  { id: "rough_surface",icon: "🪨", label: "Rough"       },
+  { id: "other",        icon: "❓", label: "Other"       },
+];
+
+const TYPE_COLORS = {
+  gate: "#4fc3f7",
+  kissing_gate: "#29b6f6",
+  stile: "#f06292",
+  steep: "#ff8a65",
+  mud: "#a1887f",
+  narrow: "#ce93d8",
+  rough_surface: "#aaa",
+  other: "#eee",
+};
+
+// ── Map setup ────────────────────────────────────────────────────────────────
+const map = L.map("map", { zoomControl: false }).setView([51.5, -1.0], 13);
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: "© OpenStreetMap contributors",
+  maxZoom: 19,
+}).addTo(map);
+
+L.control.zoom({ position: "topleft" }).addTo(map);
+
+// ── State ────────────────────────────────────────────────────────────────────
+let selectedType = null;
+let selectedSeverity = null;
+let pendingLat = null;
+let pendingLng = null;
+let locationMarker = null;
+let currentPhoto = null;
+
+// ── Build type grid ──────────────────────────────────────────────────────────
+const typeGrid = document.getElementById("typeGrid");
+TYPES.forEach(t => {
+  const btn = document.createElement("button");
+  btn.className = "type-btn";
+  btn.dataset.type = t.id;
+  btn.innerHTML = `<span class="icon">${t.icon}</span>${t.label}`;
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".type-btn").forEach(b => b.classList.remove("selected"));
+    btn.classList.add("selected");
+    selectedType = t.id;
+    updateSaveBtn();
+  });
+  typeGrid.appendChild(btn);
+});
+
+// ── Severity ─────────────────────────────────────────────────────────────────
+document.querySelectorAll(".sev-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".sev-btn").forEach(b => b.classList.remove("selected"));
+    btn.classList.add("selected");
+    selectedSeverity = btn.dataset.val;
+  });
+});
+
+// ── Photo picker ─────────────────────────────────────────────────────────────
+document.getElementById("photoBtn").addEventListener("click", () => {
+  document.getElementById("photoInput").click();
+});
+document.getElementById("photoInput").addEventListener("change", e => {
+  currentPhoto = e.target.files[0] || null;
+  document.getElementById("photoName").textContent = currentPhoto ? currentPhoto.name : "No photo";
+});
+
+// ── Save button state ─────────────────────────────────────────────────────────
+function updateSaveBtn() {
+  document.getElementById("saveBtn").disabled = !selectedType;
+}
+
+// ── Open / close sheet ────────────────────────────────────────────────────────
+function openSheet(lat, lng) {
+  pendingLat = lat;
+  pendingLng = lng;
+  selectedType = null;
+  selectedSeverity = null;
+  currentPhoto = null;
+
+  document.querySelectorAll(".type-btn").forEach(b => b.classList.remove("selected"));
+  document.querySelectorAll(".sev-btn").forEach(b => b.classList.remove("selected"));
+  document.getElementById("noteInput").value = "";
+  document.getElementById("photoName").textContent = "No photo";
+  document.getElementById("photoInput").value = "";
+  updateSaveBtn();
+
+  document.getElementById("sheet").classList.add("open");
+}
+
+function closeSheet() {
+  document.getElementById("sheet").classList.remove("open");
+}
+
+document.getElementById("cancelBtn").addEventListener("click", closeSheet);
+
+// ── FAB: drop marker at current GPS or map centre ─────────────────────────────
+document.getElementById("fab").addEventListener("click", () => {
+  if (locationMarker) {
+    const ll = locationMarker.getLatLng();
+    openSheet(ll.lat, ll.lng);
+  } else {
+    const c = map.getCenter();
+    openSheet(c.lat, c.lng);
+  }
+});
+
+// ── Long-press / tap on map to choose exact spot ─────────────────────────────
+let pressTimer = null;
+map.on("mousedown touchstart", e => {
+  const ll = e.latlng || (e.touches && map.mouseEventToLatLng(e.touches[0]));
+  if (!ll) return;
+  pressTimer = setTimeout(() => openSheet(ll.lat, ll.lng), 600);
+});
+map.on("mouseup touchend mousemove touchmove", () => clearTimeout(pressTimer));
+
+// ── Save marker ───────────────────────────────────────────────────────────────
+document.getElementById("saveBtn").addEventListener("click", async () => {
+  const note = document.getElementById("noteInput").value.trim();
+  const fd = new FormData();
+  fd.append("lat", pendingLat);
+  fd.append("lng", pendingLng);
+  fd.append("type", selectedType);
+  if (selectedSeverity) fd.append("severity", selectedSeverity);
+  if (note) fd.append("note", note);
+  if (currentPhoto) fd.append("photo", currentPhoto);
+
+  try {
+    const res = await fetch(`${API}/markers`, { method: "POST", body: fd });
+    if (!res.ok) throw new Error(await res.text());
+    const marker = await res.json();
+    addMarkerToMap(marker);
+    closeSheet();
+    showToast("Marker saved ✓");
+  } catch (err) {
+    showToast("Error saving — " + err.message);
+  }
+});
+
+// ── Locate button ─────────────────────────────────────────────────────────────
+document.getElementById("locateBtn").addEventListener("click", () => {
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const { latitude: lat, longitude: lng } = pos.coords;
+      if (locationMarker) locationMarker.setLatLng([lat, lng]);
+      else {
+        locationMarker = L.circleMarker([lat, lng], {
+          radius: 8,
+          fillColor: "#e94560",
+          color: "#fff",
+          weight: 2,
+          fillOpacity: 1,
+        }).addTo(map);
+      }
+      map.setView([lat, lng], 17);
+    },
+    err => showToast("Location error: " + err.message),
+    { enableHighAccuracy: true, timeout: 8000 },
+  );
+});
+
+// ── Render marker on map ──────────────────────────────────────────────────────
+function makeIcon(type) {
+  const t = TYPES.find(x => x.id === type) || TYPES[TYPES.length - 1];
+  const color = TYPE_COLORS[type] || "#eee";
+  return L.divIcon({
+    className: "",
+    html: `<div style="
+      background:${color};
+      border:2px solid #fff;
+      border-radius:50%;
+      width:32px;height:32px;
+      display:flex;align-items:center;justify-content:center;
+      font-size:16px;
+      box-shadow:0 2px 6px rgba(0,0,0,.5);
+    ">${t.icon}</div>`,
+    iconSize: [32, 32],
+    iconAnchor: [16, 16],
+  });
+}
+
+function addMarkerToMap(m) {
+  const popup = `
+    <b>${TYPES.find(t => t.id === m.type)?.label ?? m.type}</b>
+    ${m.severity ? `<br>Severity: ${m.severity}` : ""}
+    ${m.note ? `<br>${m.note}` : ""}
+    ${m.photo_url ? `<br><img src="${m.photo_url}" style="max-width:160px;border-radius:6px;margin-top:6px;" />` : ""}
+    <br><small>${new Date(m.created_at).toLocaleString()}</small>
+  `;
+  L.marker([m.lat, m.lng], { icon: makeIcon(m.type) })
+    .addTo(map)
+    .bindPopup(popup);
+}
+
+// ── Load markers for current view ─────────────────────────────────────────────
+async function loadMarkers() {
+  const b = map.getBounds();
+  try {
+    const res = await fetch(
+      `${API}/markers?min_lat=${b.getSouth()}&min_lng=${b.getWest()}&max_lat=${b.getNorth()}&max_lng=${b.getEast()}`
+    );
+    if (!res.ok) return;
+    const markers = await res.json();
+    markers.forEach(addMarkerToMap);
+  } catch (e) {
+    // silently fail if API not yet running
+  }
+}
+
+map.on("moveend", loadMarkers);
+loadMarkers();
+
+// ── Toast helper ──────────────────────────────────────────────────────────────
+function showToast(msg, duration = 2500) {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  setTimeout(() => el.classList.remove("show"), duration);
+}
+</script>
+</body>
+</html>
