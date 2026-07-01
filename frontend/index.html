@@ -30,12 +30,12 @@
       background: #e94560;
       border: none; color: #fff;
       font-size: 28px; cursor: pointer;
-      box-shadow: 0 4px 16px rgba(0,0,0,.4);
+      box-shadow: 0 4px 20px rgba(233,69,96,.5);
       display: flex; align-items: center; justify-content: center;
       transition: transform .1s;
       -webkit-tap-highlight-color: transparent;
     }
-    #fab:active { transform: scale(.93); }
+    #fab:active { transform: scale(.92); }
 
     /* ── Locate ── */
     #locateBtn {
@@ -53,243 +53,352 @@
     }
     #locateBtn:active { background: #e94560; color: #fff; }
 
-    /* ── Bottom sheet ── */
+    /* ── Route button ── */
+    #routeBtn {
+      position: absolute;
+      bottom: 28px; left: 20px;
+      z-index: 1000;
+      width: 62px; height: 62px;
+      border-radius: 50%;
+      background: #16213e;
+      border: 2px solid #4fc3f7;
+      color: #4fc3f7;
+      font-size: 24px; cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0,0,0,.4);
+      display: flex; align-items: center; justify-content: center;
+      transition: background .15s, color .15s, transform .1s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #routeBtn.active { background: #4fc3f7; color: #16213e; }
+    #routeBtn:active { transform: scale(.93); }
+
+    /* ── Route instruction banner ── */
+    #routeBanner {
+      position: absolute;
+      top: 16px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 1001;
+      background: #16213e;
+      border: 1.5px solid #4fc3f7;
+      color: #eee;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-size: 14px; font-weight: 500;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0; transition: opacity .2s;
+    }
+    #routeBanner.show { opacity: 1; }
+
+    /* ══════════════════════════════════════
+       BOTTOM SHEET
+    ══════════════════════════════════════ */
     #sheet {
       position: absolute;
       bottom: 0; left: 0; right: 0;
       z-index: 2000;
-      background: #16213e;
-      border-radius: 20px 20px 0 0;
+      background: #111827;
+      border-radius: 24px 24px 0 0;
       transform: translateY(100%);
-      transition: transform .25s ease;
-      max-height: 88dvh;
+      transition: transform .28s cubic-bezier(.32,0,.67,0);
+      max-height: 90dvh;
       overflow-y: auto;
       overflow-x: hidden;
     }
-    #sheet.open { transform: translateY(0); }
-
-    /* ── Step 1: Category picker ── */
-    #step1 {
-      padding: 20px 16px 32px;
+    #sheet.open {
+      transform: translateY(0);
+      transition: transform .28s cubic-bezier(.33,1,.68,1);
     }
 
-    #step1 h2 {
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 20px;
+    .drag-handle {
+      width: 36px; height: 4px;
+      background: #243050;
+      border-radius: 2px;
+      margin: 14px auto 0;
+    }
+
+    /* ── Step 1: Category picker ── */
+    #step1 { padding: 14px 20px 32px; }
+
+    .sheet-title {
       text-align: center;
-      color: #889;
-      letter-spacing: .08em;
-      text-transform: uppercase;
+      margin: 10px 0 20px;
+    }
+    .sheet-title h2 {
+      font-size: 18px; font-weight: 700;
+      color: #f0f0f8; letter-spacing: -.01em;
+    }
+    .sheet-title p {
+      font-size: 13px; color: #5a6a8a; margin-top: 3px;
     }
 
     .category-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      margin-bottom: 20px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
     }
 
     .cat-btn {
-      background: #0f3460;
-      border: 2px solid transparent;
-      border-radius: 14px;
-      padding: 16px 4px 12px;
-      color: #dde;
-      font-size: 12px;
-      font-weight: 500;
-      text-align: center;
+      background: #1a2540;
+      border: 1.5px solid #243050;
+      border-radius: 18px;
+      padding: 20px 12px 16px;
+      color: #c8d2e8;
       cursor: pointer;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 7px;
+      gap: 10px;
       -webkit-tap-highlight-color: transparent;
-      transition: background .12s, border-color .12s;
+      transition: border-color .15s, background .15s;
     }
-    .cat-btn .icon { font-size: 30px; line-height: 1; }
-    .cat-btn:active { background: #1a2a50; border-color: #e94560; }
+    .cat-btn:active { border-color: #e94560; background: #1e2d4e; }
 
-    .cancel-row { display: flex; justify-content: center; }
+    .cat-icon-wrap {
+      width: 68px; height: 68px;
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px; line-height: 1;
+    }
+    .cat-label { font-size: 14px; font-weight: 600; color: #c8d2e8; }
+
+    /* "Other" — special pill row */
+    .cat-btn.other-btn {
+      grid-column: 1 / -1;
+      flex-direction: row;
+      justify-content: center;
+      max-width: 180px;
+      margin: 0 auto;
+      padding: 12px 24px;
+      border-radius: 50px;
+      background: transparent;
+      border-color: #243050;
+      gap: 10px;
+    }
+    .cat-btn.other-btn .cat-icon-wrap {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      font-size: 18px;
+      background: #243050 !important;
+      border: none !important;
+    }
+    .cat-btn.other-btn .cat-label { font-size: 15px; }
+    .cat-btn.other-btn:active { border-color: #e94560; background: #1a2540; }
+
+    #step1 .cancel-row { display: flex; justify-content: center; margin-top: 4px; }
     .cancel-text-btn {
       padding: 12px 36px;
-      border-radius: 10px;
-      border: 1px solid #334;
-      background: transparent;
-      color: #778;
-      font-size: 15px;
-      cursor: pointer;
+      border-radius: 10px; border: none;
+      background: transparent; color: #3a5070;
+      font-size: 15px; font-weight: 500; cursor: pointer;
       -webkit-tap-highlight-color: transparent;
     }
 
     /* ── Step 2: Detail ── */
-    #step2 {
-      display: none;
-      padding: 20px 16px 36px;
-    }
+    #step2 { display: none; padding: 14px 20px 40px; }
     #step2.active { display: block; }
 
     .step2-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 20px;
+      display: flex; align-items: center;
+      gap: 12px; margin: 10px 0 22px;
     }
     .back-btn {
-      width: 36px; height: 36px;
-      border-radius: 50%;
-      background: #0f3460;
-      border: none; color: #e94560;
+      width: 36px; height: 36px; border-radius: 50%;
+      background: #1a2540; border: none; color: #6a7a9a;
       font-size: 22px; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-      -webkit-tap-highlight-color: transparent;
+      flex-shrink: 0; -webkit-tap-highlight-color: transparent;
     }
-    .selected-cat {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .selected-cat .icon { font-size: 26px; line-height: 1; }
-    .selected-cat .label { font-size: 18px; font-weight: 700; }
-    .close-btn {
-      width: 36px; height: 36px;
-      border-radius: 50%;
-      background: transparent;
-      border: 1px solid #334;
-      color: #778; font-size: 15px; cursor: pointer;
+    .cat-hero { display: flex; align-items: center; gap: 12px; flex: 1; }
+    .cat-hero-icon {
+      width: 52px; height: 52px; border-radius: 14px;
       display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-      -webkit-tap-highlight-color: transparent;
+      font-size: 28px; flex-shrink: 0;
+    }
+    .cat-hero-text { display: flex; flex-direction: column; gap: 2px; }
+    .cat-hero-name { font-size: 20px; font-weight: 700; color: #f0f0f8; letter-spacing: -.01em; }
+    .cat-hero-sub  { font-size: 12px; color: #4a5a78; }
+
+    .sec-label {
+      font-size: 11px; font-weight: 700;
+      letter-spacing: .08em; text-transform: uppercase;
+      color: #3a4a68; margin-bottom: 10px;
     }
 
-    .section-label {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      color: #556;
-      margin-bottom: 8px;
-    }
-    .section-label .opt {
-      font-size: 10px;
-      font-weight: 400;
-      text-transform: none;
-      letter-spacing: 0;
-      color: #445;
-      margin-left: 4px;
-    }
-
-    /* ── Subtype grid ── */
+    /* Subtype grid */
     .subtype-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-      margin-bottom: 18px;
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 8px; margin-bottom: 20px;
     }
     .sub-btn {
-      background: #0f3460;
-      border: 2px solid transparent;
-      border-radius: 10px;
-      padding: 11px 8px;
-      color: #bbc;
-      font-size: 13px;
-      text-align: center;
-      cursor: pointer;
+      background: #1a2540; border: 1.5px solid #243050;
+      border-radius: 12px; padding: 11px 10px;
+      color: #7a8aaa; font-size: 13px; font-weight: 500;
+      text-align: left; cursor: pointer;
+      display: flex; align-items: center; gap: 8px;
       -webkit-tap-highlight-color: transparent;
-      transition: border-color .1s, background .1s, color .1s;
+      transition: border-color .12s, background .12s, color .12s;
     }
-    .sub-btn.selected { border-color: #e94560; background: #1a1a3e; color: #fff; }
+    .sub-btn .sub-icon { font-size: 16px; flex-shrink: 0; }
+    .sub-btn.selected { border-color: #e94560; background: #1e1530; color: #f0f0f8; }
 
-    /* ── Difficulty ── */
-    .difficulty-row {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 18px;
-    }
+    /* Difficulty */
+    .difficulty-row { display: flex; gap: 8px; margin-bottom: 20px; }
     .diff-btn {
-      flex: 1;
-      padding: 10px 4px;
-      border-radius: 8px;
-      border: 2px solid transparent;
-      background: #0f3460;
-      color: #bbc;
-      font-size: 13px;
-      cursor: pointer;
-      text-align: center;
+      flex: 1; padding: 10px 4px;
+      border-radius: 10px; border: 1.5px solid #243050;
+      background: #1a2540; color: #5a6a8a;
+      font-size: 13px; font-weight: 500; cursor: pointer; text-align: center;
       -webkit-tap-highlight-color: transparent;
-      transition: border-color .1s, color .1s;
+      transition: border-color .12s, color .12s, background .12s;
     }
-    .diff-btn.selected { border-color: #e94560; color: #fff; }
+    .diff-btn.selected { border-color: #e94560; color: #f0f0f8; background: #1e1530; }
 
-    /* ── Note ── */
+    /* Note */
     #noteInput {
-      width: 100%;
-      padding: 10px 12px;
-      border-radius: 10px;
-      border: 1px solid #334;
-      background: #0a1628;
-      color: #eee;
-      font-size: 14px;
-      resize: none;
-      margin-bottom: 14px;
-      font-family: inherit;
+      width: 100%; padding: 12px 14px;
+      border-radius: 12px; border: 1.5px solid #243050;
+      background: #1a2540; color: #d0d8ee;
+      font-size: 14px; resize: none;
+      margin-bottom: 16px; font-family: inherit; line-height: 1.5;
     }
-    #noteInput::placeholder { color: #445; }
+    #noteInput::placeholder { color: #2e3c55; }
+    #noteInput:focus { outline: none; border-color: #3a5080; }
 
-    /* ── Photo ── */
-    .photo-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-    #photoBtn {
-      padding: 9px 14px;
-      background: #0f3460;
-      border: 1px solid #334;
-      border-radius: 8px;
-      color: #bbc;
-      font-size: 13px;
-      cursor: pointer;
+    /* Photo section */
+    .photo-section {
+      background: #1a2540; border: 1.5px solid #243050;
+      border-radius: 12px; padding: 14px;
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 20px; cursor: pointer;
       -webkit-tap-highlight-color: transparent;
     }
-    #photoName { font-size: 12px; color: #778; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    #photoInput { display: none; }
+    .photo-section:active { border-color: #3a5080; }
+    .photo-icon-wrap {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: #243050;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0;
+    }
+    .photo-text { display: flex; flex-direction: column; gap: 2px; }
+    .photo-title { font-size: 14px; font-weight: 600; color: #6a7a9a; }
+    .photo-sub   { font-size: 12px; color: #3a4a68; }
+    #photoInput  { display: none; }
 
-    /* ── Save ── */
+    /* Action row */
+    .action-row { display: flex; gap: 10px; align-items: center; }
+    .cancel-outline-btn {
+      padding: 14px 20px; border-radius: 12px;
+      border: 1.5px solid #243050; background: transparent;
+      color: #4a5a78; font-size: 15px; font-weight: 500; cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
     #saveBtn {
-      width: 100%;
-      padding: 16px;
-      border-radius: 12px;
-      border: none;
-      background: #e94560;
-      color: #fff;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      letter-spacing: .02em;
+      flex: 1; padding: 15px; border-radius: 12px; border: none;
+      background: #e94560; color: #fff;
+      font-size: 16px; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      box-shadow: 0 4px 16px rgba(233,69,96,.35);
       -webkit-tap-highlight-color: transparent;
     }
+    #saveBtn:active { transform: scale(.98); }
+
+    /* ══════════════════════════════════════
+       ROUTE PANEL
+    ══════════════════════════════════════ */
+    #routePanel {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      z-index: 1500;
+      background: #16213e;
+      border-radius: 20px 20px 0 0;
+      transform: translateY(100%);
+      transition: transform .25s ease;
+      max-height: 55dvh;
+      overflow-y: auto;
+    }
+    #routePanel.open { transform: translateY(0); }
+
+    .route-panel-handle {
+      width: 36px; height: 4px; background: #334;
+      border-radius: 2px; margin: 12px auto 0;
+    }
+    .route-panel-header {
+      display: flex; align-items: center;
+      padding: 12px 16px 8px; gap: 12px;
+    }
+    .route-stats { flex: 1; display: flex; gap: 20px; align-items: flex-end; }
+    .route-stat .val  { font-size: 20px; font-weight: 700; color: #4fc3f7; line-height: 1.1; }
+    .route-stat .lbl  { font-size: 11px; color: #556; text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; }
+
+    #clearRouteBtn {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: transparent; border: 1px solid #334;
+      color: #778; font-size: 14px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; -webkit-tap-highlight-color: transparent;
+    }
+    #clearRouteBtn:active { background: #334; }
+
+    .route-friction-summary {
+      padding: 4px 16px 12px; font-size: 13px; color: #889;
+      border-bottom: 1px solid #1e2d50;
+    }
+    .route-marker-list { padding: 0 16px 32px; }
+    .route-marker-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 0; border-top: 1px solid #1e2d50;
+    }
+    .route-marker-icon { font-size: 22px; flex-shrink: 0; }
+    .route-marker-info { flex: 1; min-width: 0; }
+    .route-marker-info .rmi-type {
+      font-size: 14px; font-weight: 600;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .route-marker-info .rmi-sub {
+      font-size: 12px; color: #889; margin-top: 2px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .sev-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .sev-dot.low    { background: #4caf50; }
+    .sev-dot.medium { background: #ff9800; }
+    .sev-dot.high   { background: #f44336; }
+    .sev-dot.none   { background: #3a4a60; }
+    .route-marker-dist {
+      font-size: 12px; color: #556; flex-shrink: 0;
+      min-width: 36px; text-align: right;
+    }
+
+    /* ── Highlighted marker pulse ── */
+    @keyframes pulse-ring {
+      0%   { box-shadow: 0 0 0 0    rgba(255,200,0,.8); }
+      70%  { box-shadow: 0 0 0 10px rgba(255,200,0,0);  }
+      100% { box-shadow: 0 0 0 0    rgba(255,200,0,0);  }
+    }
+    .marker-highlighted { animation: pulse-ring 1.6s infinite; border-color: #ffc800 !important; }
 
     /* ── Toast ── */
     #toast {
       position: absolute;
       top: 20px; left: 50%;
       transform: translateX(-50%);
-      background: #0f3460;
-      color: #eee;
-      padding: 10px 20px;
-      border-radius: 20px;
-      font-size: 13px;
-      z-index: 3000;
-      opacity: 0;
-      transition: opacity .3s;
-      white-space: nowrap;
-      pointer-events: none;
+      background: #1a2540; border: 1px solid #2d3a55;
+      color: #d0d8ee; padding: 10px 20px;
+      border-radius: 20px; font-size: 13px;
+      z-index: 3000; opacity: 0; transition: opacity .3s;
+      white-space: nowrap; pointer-events: none;
+      box-shadow: 0 4px 20px rgba(0,0,0,.4);
     }
     #toast.show { opacity: 1; }
+
+    /* ── Leaflet popup ── */
+    .leaflet-popup-content-wrapper {
+      background: #1a2540 !important; border: 1px solid #2d3a55 !important;
+      color: #d0d8ee !important; border-radius: 12px !important;
+    }
+    .leaflet-popup-tip { background: #1a2540 !important; }
+    .leaflet-popup-content { margin: 12px 14px !important; }
 
     .leaflet-tile-pane { filter: brightness(.85) saturate(.9); }
   </style>
@@ -299,13 +408,19 @@
 <div id="map"></div>
 <button id="locateBtn" title="Go to my location">⊕</button>
 <button id="fab" title="Drop a marker">＋</button>
+<button id="routeBtn" title="Plan a route">↗</button>
+<div id="routeBanner"></div>
 
-<!-- ── Bottom sheet ── -->
+<!-- ── Marker sheet ── -->
 <div id="sheet">
+  <div class="drag-handle"></div>
 
   <!-- Step 1: Category picker -->
   <div id="step1">
-    <h2>What did you find?</h2>
+    <div class="sheet-title">
+      <h2>What did you find?</h2>
+      <p>Choose a category</p>
+    </div>
     <div id="categoryGrid" class="category-grid"></div>
     <div class="cancel-row">
       <button class="cancel-text-btn" id="cancelBtn1">Cancel</button>
@@ -316,35 +431,62 @@
   <div id="step2">
     <div class="step2-header">
       <button class="back-btn" id="backBtn">‹</button>
-      <div class="selected-cat">
-        <span class="icon" id="selectedCatIcon"></span>
-        <span class="label" id="selectedCatLabel"></span>
+      <div class="cat-hero">
+        <div class="cat-hero-icon" id="heroIcon"></div>
+        <div class="cat-hero-text">
+          <div class="cat-hero-name" id="selectedCatLabel"></div>
+          <div class="cat-hero-sub">Add details</div>
+        </div>
       </div>
-      <button class="close-btn" id="cancelBtn2">✕</button>
     </div>
 
-    <div class="section-label">Subtype <span class="opt">(optional)</span></div>
+    <div class="sec-label">Type</div>
     <div id="subtypeGrid" class="subtype-grid"></div>
 
-    <div class="section-label">Difficulty <span class="opt">(optional)</span></div>
+    <div class="sec-label">Difficulty</div>
     <div class="difficulty-row">
       <button class="diff-btn" data-val="low">🟢 Easy</button>
       <button class="diff-btn" data-val="medium">🟡 Tricky</button>
       <button class="diff-btn" data-val="high">🔴 Hard</button>
     </div>
 
-    <div class="section-label">Note <span class="opt">(optional)</span></div>
-    <textarea id="noteInput" rows="2" placeholder="e.g. passable but slow, seasonal mud..."></textarea>
+    <div class="sec-label">Optional note</div>
+    <textarea id="noteInput" rows="2" placeholder="Add a note..."></textarea>
 
-    <div class="photo-row">
-      <button id="photoBtn">📷 Photo</button>
-      <span id="photoName">No photo</span>
+    <div class="photo-section" id="photoSection">
+      <div class="photo-icon-wrap">📷</div>
+      <div class="photo-text">
+        <div class="photo-title">Add photo</div>
+        <div class="photo-sub" id="photoSub">Tap to add a photo</div>
+      </div>
       <input type="file" id="photoInput" accept="image/*" capture="environment" />
     </div>
 
-    <button id="saveBtn">Save marker</button>
+    <div class="action-row">
+      <button class="cancel-outline-btn" id="cancelBtn2">Cancel</button>
+      <button id="saveBtn">✓ Save marker</button>
+    </div>
   </div>
+</div>
 
+<!-- ── Route panel ── -->
+<div id="routePanel">
+  <div class="route-panel-handle"></div>
+  <div class="route-panel-header">
+    <div class="route-stats">
+      <div class="route-stat">
+        <div class="val" id="routeDistVal">—</div>
+        <div class="lbl">Distance</div>
+      </div>
+      <div class="route-stat">
+        <div class="val" id="routeTimeVal">—</div>
+        <div class="lbl">Walk time</div>
+      </div>
+    </div>
+    <button id="clearRouteBtn" title="Clear route">✕</button>
+  </div>
+  <div class="route-friction-summary" id="routeFrictionSummary"></div>
+  <div class="route-marker-list" id="routeMarkerList"></div>
 </div>
 
 <div id="toast"></div>
@@ -356,58 +498,121 @@ const API = "/api";
 // ── Data ──────────────────────────────────────────────────────────────────────
 
 const CATEGORIES = [
-  { id: "gate",          icon: "🚪", label: "Gate"    },
-  { id: "stile",         icon: "🪜", label: "Stile"   },
-  { id: "steep",         icon: "⛰️",  label: "Steep"   },
-  { id: "mud",           icon: "💧", label: "Mud"     },
-  { id: "narrow",        icon: "↔️",  label: "Narrow"  },
-  { id: "rough_surface", icon: "🪨", label: "Rough"   },
-  { id: "other",         icon: "❓", label: "Other"   },
+  { id: "gate",          icon: "🚪", label: "Gate",   iconBg: "#c47a2a", iconBorder: "#c47a2a40" },
+  { id: "stile",         icon: "🪜", label: "Stile",  iconBg: "#3a8f58", iconBorder: "#3a8f5840" },
+  { id: "steep",         icon: "⛰️",  label: "Steep",  iconBg: "#4a6aaa", iconBorder: "#4a6aaa40" },
+  { id: "mud",           icon: "💧", label: "Mud",    iconBg: "#2e7da0", iconBorder: "#2e7da040" },
+  { id: "narrow",        icon: "↔️",  label: "Narrow", iconBg: "#3a9060", iconBorder: "#3a906040" },
+  { id: "rough_surface", icon: "🪨", label: "Rough",  iconBg: "#8a6040", iconBorder: "#8a604040" },
+  { id: "other",         icon: "···", label: "Other", iconBg: "#4a5080", iconBorder: "#4a508040" },
 ];
 
 const SUBTYPES = {
-  gate:          ["Standard gate", "Kissing gate", "Locked gate", "Narrow gate", "Heavy gate", "Other gate"],
-  stile:         ["Standard stile", "Ladder stile", "Narrow stile", "High step", "Broken / awkward", "Other stile"],
-  steep:         ["Short steep", "Long climb", "Long descent", "Slippery slope", "Steps", "Other steep"],
-  mud:           ["Light mud", "Deep mud", "Standing water", "Boggy ground", "Seasonal mud", "Other mud"],
-  narrow:        ["Narrow path", "Overgrown path", "Narrow bridge", "Narrow gap", "Exposed edge", "Other narrow"],
-  rough_surface: ["Uneven ground", "Loose stones", "Tree roots", "Ruts", "Broken surface", "Other rough"],
-  other:         ["Fallen tree", "Livestock", "Flooding", "Blocked path", "Poor signage", "Other"],
+  gate: [
+    { label: "Standard gate",  icon: "🚪" },
+    { label: "Kissing gate",   icon: "🔄" },
+    { label: "Locked gate",    icon: "🔒" },
+    { label: "Narrow gate",    icon: "↔️"  },
+    { label: "Heavy gate",     icon: "⚖️"  },
+    { label: "Other gate",     icon: "···" },
+  ],
+  stile: [
+    { label: "Standard stile",   icon: "🪜" },
+    { label: "Ladder stile",     icon: "📏" },
+    { label: "Narrow stile",     icon: "↔️"  },
+    { label: "High step",        icon: "⬆️"  },
+    { label: "Broken / awkward", icon: "⚠️"  },
+    { label: "Other stile",      icon: "···" },
+  ],
+  steep: [
+    { label: "Short steep",    icon: "📐" },
+    { label: "Long climb",     icon: "⬆️"  },
+    { label: "Long descent",   icon: "⬇️"  },
+    { label: "Slippery slope", icon: "⚠️"  },
+    { label: "Steps",          icon: "🪜" },
+    { label: "Other steep",    icon: "···" },
+  ],
+  mud: [
+    { label: "Light mud",      icon: "💧" },
+    { label: "Deep mud",       icon: "🌊" },
+    { label: "Standing water", icon: "💦" },
+    { label: "Boggy ground",   icon: "🌿" },
+    { label: "Seasonal mud",   icon: "📅" },
+    { label: "Other mud",      icon: "···" },
+  ],
+  narrow: [
+    { label: "Narrow path",    icon: "🛤️"  },
+    { label: "Overgrown path", icon: "🌿" },
+    { label: "Narrow bridge",  icon: "🌉" },
+    { label: "Narrow gap",     icon: "↔️"  },
+    { label: "Exposed edge",   icon: "⚠️"  },
+    { label: "Other narrow",   icon: "···" },
+  ],
+  rough_surface: [
+    { label: "Uneven ground",  icon: "〰️"  },
+    { label: "Loose stones",   icon: "🪨" },
+    { label: "Tree roots",     icon: "🌳" },
+    { label: "Ruts",           icon: "🚜" },
+    { label: "Broken surface", icon: "💥" },
+    { label: "Other rough",    icon: "···" },
+  ],
+  other: [
+    { label: "Fallen tree",  icon: "🌲" },
+    { label: "Livestock",    icon: "🐄" },
+    { label: "Flooding",     icon: "🌊" },
+    { label: "Blocked path", icon: "🚫" },
+    { label: "Poor signage", icon: "🪧" },
+    { label: "Other",        icon: "···" },
+  ],
 };
 
 const TYPE_COLORS = {
-  gate: "#4fc3f7", kissing_gate: "#29b6f6",
-  stile: "#f06292", steep: "#ff8a65",
-  mud: "#a1887f", narrow: "#ce93d8",
-  rough_surface: "#90a4ae", other: "#ccc",
+  gate: "#c47a2a", kissing_gate: "#c47a2a",
+  stile: "#3a8f58", steep: "#4a6aaa",
+  mud: "#2e7da0", narrow: "#3a9060",
+  rough_surface: "#8a6040", other: "#4a5080",
 };
 
-// ── Map setup ─────────────────────────────────────────────────────────────────
+// ── Map ───────────────────────────────────────────────────────────────────────
 
 const map = L.map("map", { zoomControl: false }).setView([51.5, -1.0], 13);
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  attribution: "© OpenStreetMap contributors",
-  maxZoom: 19,
+  attribution: "© OpenStreetMap contributors", maxZoom: 19,
 }).addTo(map);
 L.control.zoom({ position: "topleft" }).addTo(map);
 
 // ── State ─────────────────────────────────────────────────────────────────────
 
-let selectedCategory = null;
-let selectedSubtype   = null;
+let selectedCategory   = null;
+let selectedSubtype    = null;
 let selectedDifficulty = null;
-let pendingLat = null;
-let pendingLng = null;
+let pendingLat  = null;
+let pendingLng  = null;
 let locationMarker = null;
-let currentPhoto = null;
+let currentPhoto   = null;
+
+// Map marker references: id -> { marker: L.Marker, data: markerObj }
+const mapMarkers = {};
+
+// Route state
+let routeMode  = false;
+let routeStart = null;
+let routeEnd   = null;
+let routeLayer = null;
 
 // ── Build category grid ────────────────────────────────────────────────────────
 
 const categoryGrid = document.getElementById("categoryGrid");
 CATEGORIES.forEach(cat => {
   const btn = document.createElement("button");
-  btn.className = "cat-btn";
-  btn.innerHTML = `<span class="icon">${cat.icon}</span>${cat.label}`;
+  btn.className = "cat-btn" + (cat.id === "other" ? " other-btn" : "");
+  const iconSize = cat.id === "other" ? "18px" : "36px";
+  btn.innerHTML = `
+    <div class="cat-icon-wrap" style="background:${cat.iconBg}22;border:1.5px solid ${cat.iconBorder}">
+      <span style="font-size:${iconSize}">${cat.icon}</span>
+    </div>
+    <span class="cat-label">${cat.label}</span>
+  `;
   btn.addEventListener("click", () => goToStep2(cat));
   categoryGrid.appendChild(btn);
 });
@@ -415,34 +620,35 @@ CATEGORIES.forEach(cat => {
 // ── Step navigation ───────────────────────────────────────────────────────────
 
 function goToStep2(cat) {
-  selectedCategory  = cat;
-  selectedSubtype   = null;
+  selectedCategory   = cat;
+  selectedSubtype    = null;
   selectedDifficulty = null;
-  currentPhoto      = null;
+  currentPhoto       = null;
 
-  // Header
-  document.getElementById("selectedCatIcon").textContent  = cat.icon;
+  // Hero header
+  const hero = document.getElementById("heroIcon");
+  hero.textContent = cat.icon;
+  hero.style.cssText = `background:${cat.iconBg}28;border:1.5px solid ${cat.iconBorder};width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;`;
   document.getElementById("selectedCatLabel").textContent = cat.label;
 
-  // Build subtype grid
+  // Subtype buttons
   const grid = document.getElementById("subtypeGrid");
   grid.innerHTML = "";
-  (SUBTYPES[cat.id] || []).forEach(label => {
+  (SUBTYPES[cat.id] || []).forEach(st => {
     const btn = document.createElement("button");
     btn.className = "sub-btn";
-    btn.textContent = label;
+    btn.innerHTML = `<span class="sub-icon">${st.icon}</span>${st.label}`;
     btn.addEventListener("click", () => {
       document.querySelectorAll(".sub-btn").forEach(b => b.classList.remove("selected"));
       btn.classList.add("selected");
-      selectedSubtype = label;
+      selectedSubtype = st.label;
     });
     grid.appendChild(btn);
   });
 
-  // Reset difficulty / note / photo
   document.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("selected"));
   document.getElementById("noteInput").value = "";
-  document.getElementById("photoName").textContent = "No photo";
+  document.getElementById("photoSub").textContent = "Tap to add a photo";
   document.getElementById("photoInput").value = "";
 
   document.getElementById("step1").style.display = "none";
@@ -455,19 +661,15 @@ function goToStep1() {
 }
 
 function openSheet(lat, lng) {
-  pendingLat = lat;
-  pendingLng = lng;
-  selectedCategory   = null;
-  selectedSubtype    = null;
-  selectedDifficulty = null;
-  currentPhoto       = null;
+  pendingLat = lat; pendingLng = lng;
+  selectedCategory = selectedSubtype = selectedDifficulty = currentPhoto = null;
   goToStep1();
   document.getElementById("sheet").classList.add("open");
 }
 
 function closeSheet() {
   document.getElementById("sheet").classList.remove("open");
-  setTimeout(goToStep1, 280);
+  setTimeout(goToStep1, 300);
 }
 
 document.getElementById("cancelBtn1").addEventListener("click", closeSheet);
@@ -486,36 +688,45 @@ document.querySelectorAll(".diff-btn").forEach(btn => {
 
 // ── Photo ─────────────────────────────────────────────────────────────────────
 
-document.getElementById("photoBtn").addEventListener("click", () => {
+document.getElementById("photoSection").addEventListener("click", () => {
   document.getElementById("photoInput").click();
 });
 document.getElementById("photoInput").addEventListener("change", e => {
   currentPhoto = e.target.files[0] || null;
-  document.getElementById("photoName").textContent = currentPhoto ? currentPhoto.name : "No photo";
+  document.getElementById("photoSub").textContent =
+    currentPhoto ? currentPhoto.name : "Tap to add a photo";
 });
 
 // ── FAB ───────────────────────────────────────────────────────────────────────
 
 document.getElementById("fab").addEventListener("click", () => {
+  if (routeMode) exitRouteMode();
   const ll = locationMarker ? locationMarker.getLatLng() : map.getCenter();
   openSheet(ll.lat, ll.lng);
 });
 
-// ── Long-press on map to choose exact spot ────────────────────────────────────
+// ── Long-press ────────────────────────────────────────────────────────────────
 
 let pressTimer = null;
 map.on("mousedown touchstart", e => {
+  if (routeMode) return;
   const ll = e.latlng || (e.touches && map.mouseEventToLatLng(e.touches[0]));
   if (!ll) return;
   pressTimer = setTimeout(() => openSheet(ll.lat, ll.lng), 600);
 });
 map.on("mouseup touchend mousemove touchmove", () => clearTimeout(pressTimer));
 
+// ── Map click (route mode) ────────────────────────────────────────────────────
+
+map.on("click", e => {
+  if (!routeMode) return;
+  handleRouteClick(e.latlng.lat, e.latlng.lng);
+});
+
 // ── Save marker ───────────────────────────────────────────────────────────────
 
 document.getElementById("saveBtn").addEventListener("click", async () => {
   if (!selectedCategory) return;
-
   const note = document.getElementById("noteInput").value.trim();
   const fd = new FormData();
   fd.append("lat",  pendingLat);
@@ -529,8 +740,7 @@ document.getElementById("saveBtn").addEventListener("click", async () => {
   try {
     const res = await fetch(`${API}/markers`, { method: "POST", body: fd });
     if (!res.ok) throw new Error(await res.text());
-    const marker = await res.json();
-    addMarkerToMap(marker);
+    addMarkerToMap(await res.json());
     closeSheet();
     showToast("Marker saved ✓");
   } catch (err) {
@@ -545,11 +755,9 @@ document.getElementById("locateBtn").addEventListener("click", () => {
     pos => {
       const { latitude: lat, longitude: lng } = pos.coords;
       if (locationMarker) locationMarker.setLatLng([lat, lng]);
-      else {
-        locationMarker = L.circleMarker([lat, lng], {
-          radius: 8, fillColor: "#e94560", color: "#fff", weight: 2, fillOpacity: 1,
-        }).addTo(map);
-      }
+      else locationMarker = L.circleMarker([lat, lng], {
+        radius: 8, fillColor: "#e94560", color: "#fff", weight: 2, fillOpacity: 1,
+      }).addTo(map);
       map.setView([lat, lng], 17);
     },
     err => showToast("Location error: " + err.message),
@@ -557,40 +765,59 @@ document.getElementById("locateBtn").addEventListener("click", () => {
   );
 });
 
-// ── Map markers ───────────────────────────────────────────────────────────────
+// ── Map marker rendering ──────────────────────────────────────────────────────
 
 function getCat(id) {
-  return CATEGORIES.find(c => c.id === id) || { icon: "❓", label: id };
+  return CATEGORIES.find(c => c.id === id) || { icon: "❓", label: id, iconBg: "#4a5080" };
 }
 
 function makeIcon(type) {
   const cat   = getCat(type);
-  const color = TYPE_COLORS[type] || "#ccc";
+  const color = TYPE_COLORS[type] || "#4a5080";
   return L.divIcon({
     className: "",
-    html: `<div style="
-      background:${color};border:2px solid #fff;border-radius:50%;
-      width:34px;height:34px;display:flex;align-items:center;justify-content:center;
-      font-size:17px;box-shadow:0 2px 8px rgba(0,0,0,.5);">${cat.icon}</div>`,
-    iconSize:   [34, 34],
-    iconAnchor: [17, 17],
+    html: `<div style="background:${color};border:2px solid rgba(255,255,255,.25);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 2px 10px rgba(0,0,0,.5);">${cat.icon}</div>`,
+    iconSize: [36, 36], iconAnchor: [18, 18],
   });
 }
 
-function addMarkerToMap(m) {
-  const cat = getCat(m.type);
-  const lines = [
-    `<b>${cat.icon} ${cat.label}</b>`,
-    m.subtype  ? `<span style="color:#aaa;font-size:12px">${m.subtype}</span>` : "",
-    m.severity ? `Difficulty: ${m.severity}` : "",
-    m.note     ? m.note : "",
-    m.photo_url ? `<img src="${m.photo_url}" style="max-width:160px;border-radius:6px;margin-top:6px">` : "",
-    `<small style="color:#889">${new Date(m.created_at).toLocaleString()}</small>`,
-  ].filter(Boolean).join("<br>");
+function makeHighlightedIcon(type) {
+  const cat   = getCat(type);
+  const color = TYPE_COLORS[type] || "#4a5080";
+  return L.divIcon({
+    className: "",
+    html: `<div class="marker-highlighted" style="background:${color};border:2px solid #ffc800;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 2px 10px rgba(0,0,0,.5);">${cat.icon}</div>`,
+    iconSize: [36, 36], iconAnchor: [18, 18],
+  });
+}
 
-  L.marker([m.lat, m.lng], { icon: makeIcon(m.type) })
+function fmt(dateStr) {
+  return new Date(dateStr).toLocaleString(undefined, {
+    day: "numeric", month: "short", year: "numeric",
+    hour: "2-digit", minute: "2-digit",
+  });
+}
+
+const diffLabel = { low: "🟢 Easy", medium: "🟡 Tricky", high: "🔴 Hard" };
+
+function addMarkerToMap(m) {
+  if (mapMarkers[m.id]) return; // skip duplicates
+
+  const cat = getCat(m.type);
+  const rows = [
+    `<div style="font-weight:700;font-size:14px;margin-bottom:4px">${cat.icon} ${cat.label}</div>`,
+    m.subtype  ? `<div style="color:#8090b0;font-size:12px;margin-bottom:4px">${m.subtype}</div>` : "",
+    m.severity ? `<div style="font-size:12px;margin-bottom:4px">${diffLabel[m.severity] ?? m.severity}</div>` : "",
+    m.note     ? `<div style="font-size:13px;margin-bottom:6px">${m.note}</div>` : "",
+    m.photo_url ? `<img src="${m.photo_url}" style="max-width:160px;border-radius:8px;margin-bottom:6px;display:block">` : "",
+    `<div style="color:#4a5a78;font-size:11px">Last updated: ${fmt(m.updated_at)}</div>`,
+  ].filter(Boolean).join("");
+
+  const marker = L.marker([m.lat, m.lng], { icon: makeIcon(m.type) })
     .addTo(map)
-    .bindPopup(lines);
+    .bindPopup(`<div style="min-width:160px">${rows}</div>`);
+
+  mapMarkers[m.id] = { marker, data: m };
 }
 
 async function loadMarkers() {
@@ -600,21 +827,153 @@ async function loadMarkers() {
       `${API}/markers?min_lat=${b.getSouth()}&min_lng=${b.getWest()}&max_lat=${b.getNorth()}&max_lng=${b.getEast()}`
     );
     if (!res.ok) return;
-    const markers = await res.json();
-    markers.forEach(addMarkerToMap);
-  } catch (_) { /* silently fail during startup */ }
+    (await res.json()).forEach(addMarkerToMap);
+  } catch (_) {}
 }
 
 map.on("moveend", loadMarkers);
 loadMarkers();
 
+// ── Route mode ────────────────────────────────────────────────────────────────
+
+document.getElementById("routeBtn").addEventListener("click", () => {
+  routeMode ? exitRouteMode() : enterRouteMode();
+});
+document.getElementById("clearRouteBtn").addEventListener("click", exitRouteMode);
+
+function enterRouteMode() {
+  routeMode = true; routeStart = null; routeEnd = null;
+  closeSheet();
+  document.getElementById("routeBtn").classList.add("active");
+  showBanner("Tap to set start point");
+}
+
+function exitRouteMode() {
+  routeMode = false; routeStart = null; routeEnd = null;
+  document.getElementById("routeBtn").classList.remove("active");
+  hideBanner();
+  clearRoute();
+}
+
+function clearRoute() {
+  if (routeLayer) { map.removeLayer(routeLayer); routeLayer = null; }
+  Object.values(mapMarkers).forEach(({ marker, data }) => marker.setIcon(makeIcon(data.type)));
+  document.getElementById("routePanel").classList.remove("open");
+}
+
+function showBanner(msg) {
+  const el = document.getElementById("routeBanner");
+  el.textContent = msg; el.classList.add("show");
+}
+function hideBanner() {
+  document.getElementById("routeBanner").classList.remove("show");
+}
+
+async function handleRouteClick(lat, lng) {
+  if (!routeLayer) routeLayer = L.layerGroup().addTo(map);
+
+  if (!routeStart) {
+    routeStart = { lat, lng };
+    L.circleMarker([lat, lng], { radius: 10, fillColor: "#4caf50", color: "#fff", weight: 2.5, fillOpacity: 1 })
+      .bindPopup("Start").addTo(routeLayer);
+    showBanner("Tap to set end point");
+  } else if (!routeEnd) {
+    routeEnd = { lat, lng };
+    L.circleMarker([lat, lng], { radius: 10, fillColor: "#f44336", color: "#fff", weight: 2.5, fillOpacity: 1 })
+      .bindPopup("End").addTo(routeLayer);
+    hideBanner();
+    routeMode = false;
+    document.getElementById("routeBtn").classList.remove("active");
+    await fetchAndDrawRoute();
+  }
+}
+
+async function fetchAndDrawRoute() {
+  showToast("Finding route…", 10000);
+  try {
+    const res = await fetch(`${API}/routes/preview`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ start: routeStart, end: routeEnd, buffer_m: 50 }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || `HTTP ${res.status}`);
+    }
+    drawRouteResult(await res.json());
+  } catch (err) {
+    showToast("Route error: " + err.message);
+    routeEnd = null; routeMode = true;
+    document.getElementById("routeBtn").classList.add("active");
+    showBanner("Tap to set end point");
+  }
+}
+
+function drawRouteResult(data) {
+  showToast("Route found ✓");
+  const coords = data.geometry.coordinates.map(([lng, lat]) => [lat, lng]);
+  L.polyline(coords, { color: "#4fc3f7", weight: 5, opacity: 0.85 }).addTo(routeLayer);
+  const nearbyIds = new Set(data.nearby_markers.map(m => m.id));
+  Object.entries(mapMarkers).forEach(([id, { marker, data: mData }]) => {
+    if (nearbyIds.has(parseInt(id))) marker.setIcon(makeHighlightedIcon(mData.type));
+  });
+  renderRoutePanel(data);
+  document.getElementById("routePanel").classList.add("open");
+}
+
+function renderRoutePanel(data) {
+  const distM = data.distance_m;
+  document.getElementById("routeDistVal").textContent =
+    distM < 1000 ? `${Math.round(distM)}m` : `${(distM/1000).toFixed(1)}km`;
+  const mins = Math.round(data.duration_s / 60);
+  document.getElementById("routeTimeVal").textContent =
+    mins < 60 ? `${mins} min` : `${Math.floor(mins/60)}h ${mins%60}m`;
+
+  const nearby = data.nearby_markers;
+  const summaryEl = document.getElementById("routeFrictionSummary");
+  if (nearby.length === 0) {
+    summaryEl.innerHTML = `<span style="color:#4caf50">No friction points on this route</span>`;
+  } else {
+    const high = nearby.filter(m => m.severity === "high").length;
+    const med  = nearby.filter(m => m.severity === "medium").length;
+    summaryEl.innerHTML =
+      `<span style="color:#ffc800">${nearby.length} friction point${nearby.length > 1 ? "s" : ""} found</span>` +
+      (high ? ` · <span style="color:#f44336">${high} hard</span>` : "") +
+      (med  ? ` · <span style="color:#ff9800">${med} tricky</span>` : "");
+  }
+
+  const listEl = document.getElementById("routeMarkerList");
+  listEl.innerHTML = "";
+  nearby.forEach(m => {
+    const cat  = getCat(m.type);
+    const item = document.createElement("div");
+    item.className = "route-marker-item";
+    item.innerHTML = `
+      <span class="route-marker-icon">${cat.icon}</span>
+      <div class="route-marker-info">
+        <div class="rmi-type">${cat.label}${m.subtype ? ` <span style="font-weight:400;color:#889">· ${m.subtype}</span>` : ""}</div>
+        ${m.note ? `<div class="rmi-sub">${m.note}</div>` : ""}
+      </div>
+      <div class="sev-dot ${m.severity || "none"}"></div>
+      <div class="route-marker-dist">${m.distance_from_route_m}m</div>
+    `;
+    listEl.appendChild(item);
+  });
+}
+
 // ── Toast ─────────────────────────────────────────────────────────────────────
 
+let toastTimer = null;
 function showToast(msg, duration = 2500) {
+  clearTimeout(toastTimer);
   const el = document.getElementById("toast");
   el.textContent = msg;
-  el.classList.add("show");
-  setTimeout(() => el.classList.remove("show"), duration);
+  if (msg) {
+    el.classList.add("show");
+    toastTimer = setTimeout(() => el.classList.remove("show"), duration);
+  } else {
+    el.classList.remove("show");
+  }
 }
 </script>
 </body>
