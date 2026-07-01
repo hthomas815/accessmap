@@ -32,7 +32,7 @@
       position: absolute;
       bottom: 28px; right: 20px;
       z-index: 1000;
-      width: 62px; height: 62px;
+      width: 70px; height: 70px;
       border-radius: 50%;
       background: #e94560;
       border: none; color: #fff;
@@ -47,9 +47,9 @@
     /* ── Locate ── */
     #locateBtn {
       position: absolute;
-      bottom: 108px; right: 20px;
+      bottom: 178px; right: 20px;
       z-index: 1000;
-      width: 46px; height: 46px;
+      width: 52px; height: 52px;
       border-radius: 50%;
       background: #16213e;
       border: 2px solid #e94560;
@@ -59,13 +59,21 @@
       -webkit-tap-highlight-color: transparent;
     }
     #locateBtn:active { background: #e94560; color: #fff; }
+    #locateBtn.locating {
+      animation: locatePulse 1s ease-in-out infinite;
+      border-color: #4fc3f7; color: #4fc3f7;
+    }
+    @keyframes locatePulse {
+      0%,100% { box-shadow: 0 2px 8px rgba(0,0,0,.4); }
+      50%      { box-shadow: 0 0 0 6px rgba(79,195,247,.25); }
+    }
 
     /* ── Route button ── */
     #routeBtn {
       position: absolute;
       bottom: 28px; left: 20px;
       z-index: 1000;
-      width: 62px; height: 62px;
+      width: 70px; height: 70px;
       border-radius: 50%;
       background: #16213e;
       border: 2px solid #4fc3f7;
@@ -82,7 +90,7 @@
     /* ── Route instruction banner ── */
     #routeBanner {
       position: absolute;
-      top: 16px; left: 50%;
+      top: 74px; left: 50%;
       transform: translateX(-50%);
       z-index: 1001;
       background: #16213e;
@@ -109,12 +117,14 @@
       transform: translateY(100%);
       transition: transform .28s cubic-bezier(.32,0,.67,0);
       max-height: 90dvh;
+      pointer-events: none;
       overflow-y: auto;
       overflow-x: hidden;
     }
     #sheet.open {
       transform: translateY(0);
       transition: transform .28s cubic-bezier(.33,1,.68,1);
+      pointer-events: auto;
     }
 
     .drag-handle {
@@ -359,8 +369,9 @@
       transition: transform .25s ease;
       max-height: 55dvh;
       overflow-y: auto;
+      pointer-events: none;
     }
-    #routePanel.open { transform: translateY(0); }
+    #routePanel.open { transform: translateY(0); pointer-events: auto; }
 
     .route-panel-handle {
       width: 36px; height: 4px; background: #334;
@@ -483,90 +494,10 @@
 
     .leaflet-tile-pane { filter: brightness(.85) saturate(.9); }
 
-    /* ── Coverage toggle button ── */
-    #coverageBtn {
-      position: absolute;
-      bottom: 100px; left: 20px;
-      z-index: 1000;
-      width: 46px; height: 46px;
-      border-radius: 50%;
-      background: #16213e;
-      border: 2px solid #66bb6a;
-      color: #66bb6a;
-      font-size: 18px; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,.4);
-      transition: background .15s, color .15s, transform .1s;
-      -webkit-tap-highlight-color: transparent;
-    }
-    #coverageBtn.active { background: #66bb6a; color: #16213e; }
-    #coverageBtn:active { transform: scale(.93); }
-
-    /* ── GPX import button (shown when coverage is on) ── */
-    #gpxImportBtn {
-      position: absolute;
-      bottom: 158px; left: 20px;
-      z-index: 1000;
-      width: 46px; height: 46px;
-      border-radius: 50%;
-      background: #16213e;
-      border: 2px solid #66bb6a;
-      color: #66bb6a;
-      font-size: 22px; cursor: pointer;
-      display: none;
-      align-items: center; justify-content: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,.4);
-      transition: background .15s, color .15s;
-      -webkit-tap-highlight-color: transparent;
-    }
-    #gpxImportBtn.show { display: flex; }
-    #gpxImportBtn:active { background: #66bb6a; color: #16213e; }
-
-    /* ── Save offline button ── */
-    #saveOfflineBtn {
-      position: absolute;
-      bottom: 216px; left: 20px;
-      z-index: 1000;
-      width: 46px; height: 46px;
-      border-radius: 50%;
-      background: #16213e;
-      border: 2px solid #66bb6a;
-      color: #66bb6a;
-      font-size: 18px; cursor: pointer;
-      display: none;
-      align-items: center; justify-content: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,.4);
-      transition: background .15s, color .15s;
-      -webkit-tap-highlight-color: transparent;
-    }
-    #saveOfflineBtn.show  { display: flex; }
-    #saveOfflineBtn:active { background: #66bb6a; color: #16213e; }
-
-    /* ── Grid toggle button ── */
-    #gridBtn {
-      position: absolute;
-      bottom: 274px; left: 20px;
-      z-index: 1000;
-      width: 46px; height: 46px;
-      border-radius: 50%;
-      background: #16213e;
-      border: 2px solid #66bb6a;
-      color: #66bb6a;
-      font-size: 20px; cursor: pointer;
-      display: none;
-      align-items: center; justify-content: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,.4);
-      transition: background .15s, color .15s;
-      -webkit-tap-highlight-color: transparent;
-    }
-    #gridBtn.show  { display: flex; }
-    #gridBtn.active { background: #66bb6a; color: #16213e; }
-    #gridBtn:active { opacity: .8; }
-
     /* ── Coverage stats pill ── */
     #coverageStats {
       position: absolute;
-      top: 16px; left: 50%;
+      top: 74px; left: 50%;
       transform: translateX(-50%);
       z-index: 1001;
       background: #16213e;
@@ -581,8 +512,81 @@
       pointer-events: none;
     }
 
-    /* ── FAB place-mode state ── */
-    #fab.place-mode { background: #4fc3f7; }
+    /* ── Menu button ── */
+    #menuBtn {
+      position: absolute;
+      top: 16px; right: 16px;
+      z-index: 1003;
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: #16213e;
+      border: 2px solid #a0a8c8;
+      color: #a0a8c8; font-size: 18px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 12px rgba(0,0,0,.5);
+      -webkit-tap-highlight-color: transparent;
+    }
+    #menuBtn:active { background: #a0a8c8; color: #16213e; }
+    #menuPanel {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      z-index: 2100;
+      background: #111827;
+      border-radius: 24px 24px 0 0;
+      transform: translateY(100%);
+      transition: transform .28s cubic-bezier(.33,1,.68,1);
+      pointer-events: none;
+    }
+    #menuPanel.open { transform: translateY(0); pointer-events: auto; }
+    .menu-handle { width: 40px; height: 4px; border-radius: 2px; background: #3a4a6a; margin: 12px auto 0; }
+    .menu-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px 10px; border-bottom: 1px solid #1e2d50; }
+    .menu-title { font-size: 16px; font-weight: 700; color: #eee; }
+    .menu-close-btn { background: none; border: none; color: #6a7a9a; font-size: 20px; cursor: pointer; padding: 4px 8px; }
+    .menu-rows { padding: 8px 0 24px; }
+    .menu-row { display: flex; align-items: center; gap: 14px; padding: 14px 20px; border-bottom: 1px solid #1a2540; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    .menu-row:last-child { border-bottom: none; }
+    .menu-row:active { background: #1a2540; }
+    .menu-row-icon { width: 40px; height: 40px; flex-shrink: 0; border-radius: 12px; border: 1.5px solid #2a3a5a; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    .menu-row-text { flex: 1; }
+    .menu-row-label { font-size: 15px; font-weight: 600; color: #dde; }
+    .menu-row-sub { font-size: 12px; color: #6a7a9a; margin-top: 2px; }
+    .menu-row-indicator { width: 10px; height: 10px; border-radius: 50%; background: #2a3a5a; flex-shrink: 0; }
+    .menu-row-indicator.on { background: #66bb6a; }
+    #menuGridRow { opacity: 0.4; pointer-events: none; }
+    #menuGridRow.enabled { opacity: 1; pointer-events: auto; }
+
+    /* ── Target button ── */
+    #targetBtn {
+      position: absolute;
+      bottom: 112px; right: 20px;
+      z-index: 1000;
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      background: #16213e;
+      border: 2px solid #e94560;
+      color: #e94560; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,.4);
+      -webkit-tap-highlight-color: transparent;
+    }
+    #targetBtn.place-mode { background: #4fc3f7; color: #16213e; border-color: #4fc3f7; }
+    #targetBtn:active { opacity: .8; }
+
+    /* ── North button ── */
+    #northBtn {
+      position: absolute;
+      bottom: 244px; right: 20px;
+      z-index: 1000;
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      background: #16213e;
+      border: 2px solid #a0a8c8;
+      color: #a0a8c8; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,.4);
+      -webkit-tap-highlight-color: transparent;
+    }
+    #northBtn:active { background: #a0a8c8; color: #16213e; }
 
     /* ══════════════════════════════════════
        MARKER PANEL (comments / updates)
@@ -597,8 +601,9 @@
       transition: transform .28s cubic-bezier(.33,1,.68,1);
       max-height: 72dvh;
       overflow-y: auto;
+      pointer-events: none;
     }
-    #markerPanel.open { transform: translateY(0); }
+    #markerPanel.open { transform: translateY(0); pointer-events: auto; }
 
     .mp-header {
       display: flex; align-items: center;
@@ -728,18 +733,87 @@
     }
     .mp-edit-save-btn:active { opacity: .85; }
     .mp-edit-save-btn:disabled { opacity: .5; }
+
+    /* ── Search bar ── */
+    #searchBar {
+      position: absolute;
+      top: 16px; left: 16px; right: 72px;
+      z-index: 1002;
+      display: flex; gap: 8px;
+    }
+    #searchInput {
+      flex: 1;
+      padding: 11px 16px;
+      border-radius: 24px;
+      border: 1.5px solid #2a3a5a;
+      background: #16213e;
+      color: #eee; font-size: 15px; font-family: inherit;
+      outline: none;
+      box-shadow: 0 2px 12px rgba(0,0,0,.5);
+    }
+    #searchInput::placeholder { color: #4a5a7a; }
+    #searchInput:focus { border-color: #e94560; }
+    #searchClearBtn {
+      display: none;
+      position: absolute; right: 58px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: #6a7a9a; font-size: 18px; cursor: pointer;
+      padding: 4px 8px;
+    }
+    #searchSubmitBtn {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      border: 1.5px solid #e94560;
+      background: #16213e; color: #e94560;
+      font-size: 18px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 12px rgba(0,0,0,.5);
+      flex-shrink: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #searchResults {
+      position: absolute;
+      top: 68px; left: 16px; right: 16px;
+      z-index: 1002;
+      background: #16213e;
+      border: 1.5px solid #2a3a5a;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,.5);
+      display: none;
+    }
+    .search-result-item {
+      padding: 12px 16px;
+      border-bottom: 1px solid #1e2e4a;
+      cursor: pointer; color: #ccc; font-size: 14px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .search-result-item:last-child { border-bottom: none; }
+    .search-result-item:active { background: #1e2e4a; }
+    .search-result-name { font-weight: 600; color: #eee; margin-bottom: 2px; }
+    .search-result-detail { font-size: 12px; color: #6a7a9a; }
+
   </style>
 </head>
 <body>
 
 <div id="map"></div>
+
+<!-- ── Search bar ── -->
+<div id="searchBar">
+  <div style="position:relative;flex:1;display:flex;">
+    <input id="searchInput" type="text" placeholder="🔍  Search for a place…" autocomplete="off" />
+    <button id="searchClearBtn" title="Clear">✕</button>
+  </div>
+  <button id="searchSubmitBtn" title="Search">🔍</button>
+</div>
+<div id="searchResults"></div>
+
 <button id="locateBtn" title="Go to my location">⊕</button>
-<button id="fab" title="Drop a marker">＋</button>
-<button id="routeBtn" title="Plan a route">↗</button>
-<button id="coverageBtn" title="Show explored paths">◉</button>
-<button id="gpxImportBtn" title="Import GPX walk">＋</button>
-<button id="saveOfflineBtn" title="Save this area for offline use">📥</button>
-<button id="gridBtn" title="Toggle coverage grid">⊞</button>
+<button id="fab" title="Drop marker at my location">＋</button>
+<button id="routeBtn" title="Plan a route"><svg width="28" height="28" viewBox="0 0 40 40" fill="none"><circle cx="8" cy="33" r="5" stroke="currentColor" stroke-width="3"/><path d="M13 33 H30 Q36 33 36 27 Q36 21 30 21 H12 Q6 21 6 15 Q6 9 12 9 H28" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/><polyline points="23,4 28,9 23,14" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<button id="menuBtn" title="Menu">☰</button>
+<button id="targetBtn" title="Place marker on map"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="6"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg></button>
+<button id="northBtn" title="Map orientation"><span style="display:flex;flex-direction:column;align-items:center;line-height:1;gap:1px"><span style="color:#e94560;font-size:11px">▲</span><span style="font-size:10px;font-weight:700">N</span></span></button>
 <input type="file" id="gpxFileInput" accept=".gpx,.xml" style="display:none" />
 <div id="routeBanner"></div>
 <div id="coverageStats"></div>
@@ -838,6 +912,47 @@
 </div>
 
 <div id="toast"></div>
+
+<!-- ── Menu panel ── -->
+<div id="menuPanel">
+  <div class="menu-handle"></div>
+  <div class="menu-header">
+    <div class="menu-title">Layers &amp; tools</div>
+    <button class="menu-close-btn" onclick="closeMenu()">✕</button>
+  </div>
+  <div class="menu-rows">
+    <div class="menu-row" onclick="toggleCoverage()">
+      <div class="menu-row-icon" style="background:#1a3020;border-color:#66bb6a55">◉</div>
+      <div class="menu-row-text">
+        <div class="menu-row-label">Explored paths</div>
+        <div class="menu-row-sub">Show your coverage layer</div>
+      </div>
+      <div class="menu-row-indicator" id="menuCoverageIndicator"></div>
+    </div>
+    <div class="menu-row" id="menuGridRow" onclick="toggleGridFromMenu()">
+      <div class="menu-row-icon" style="background:#1a3020;border-color:#66bb6a55">⊞</div>
+      <div class="menu-row-text">
+        <div class="menu-row-label">Coverage grid</div>
+        <div class="menu-row-sub">Overlay a grid on coverage</div>
+      </div>
+      <div class="menu-row-indicator" id="menuGridIndicator"></div>
+    </div>
+    <div class="menu-row" onclick="document.getElementById('gpxFileInput').click()">
+      <div class="menu-row-icon" style="background:#1a2030;border-color:#4fc3f755">📂</div>
+      <div class="menu-row-text">
+        <div class="menu-row-label">Import GPX walk</div>
+        <div class="menu-row-sub">Upload a recorded walk</div>
+      </div>
+    </div>
+    <div class="menu-row" onclick="saveAreaOffline()">
+      <div class="menu-row-icon" style="background:#1a2030;border-color:#4fc3f755">📥</div>
+      <div class="menu-row-text">
+        <div class="menu-row-label">Save area offline</div>
+        <div class="menu-row-sub">Cache map tiles for offline use</div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- ── Marker detail / comments panel ── -->
 <div id="markerPanel">
@@ -1244,10 +1359,10 @@ let placeMarkerMode = false;
 
 function enterPlaceMarkerMode() {
   placeMarkerMode = true;
-  document.getElementById("fab").classList.add("place-mode");
+  document.getElementById("targetBtn").classList.add("place-mode");
   showBanner(
-    "Tap anywhere on the map to place your marker " +
-    "<button onclick=\"exitPlaceMarkerMode()\" style=\"margin-left:10px;padding:3px 10px;border-radius:10px;border:none;background:#e94560;color:#fff;font-size:12px;font-weight:700;cursor:pointer;\">Cancel</button>",
+    "Tap the map to place your marker " +
+    "<button onclick=\"exitPlaceMarkerMode()\" style=\"margin-left:6px;padding:3px 10px;border-radius:10px;border:none;background:#e94560;color:#fff;font-size:12px;font-weight:700;cursor:pointer;\">Cancel</button>",
     false
   );
   document.getElementById("routeBanner").style.pointerEvents = "auto";
@@ -1255,16 +1370,29 @@ function enterPlaceMarkerMode() {
 
 function exitPlaceMarkerMode() {
   placeMarkerMode = false;
-  document.getElementById("fab").classList.remove("place-mode");
+  document.getElementById("targetBtn").classList.remove("place-mode");
   hideBanner();
 }
 
 // ── FAB ───────────────────────────────────────────────────────────────────────
 
 document.getElementById("fab").addEventListener("click", () => {
-  if (routeMode) exitRouteMode();
-  if (placeMarkerMode) { exitPlaceMarkerMode(); return; }
-  enterPlaceMarkerMode();
+  if (routeMode) { exitRouteMode(); return; }
+  const btn = document.getElementById("locateBtn");
+  btn.classList.add("locating");
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      btn.classList.remove("locating");
+      const { latitude: lat, longitude: lng } = pos.coords;
+      map.setView([lat, lng], Math.max(map.getZoom(), 17));
+      openSheet(lat, lng);
+    },
+    err => {
+      btn.classList.remove("locating");
+      showToast("Location unavailable: " + err.message);
+    },
+    { enableHighAccuracy: true, timeout: 12000 }
+  );
 });
 
 // ── Long-press ────────────────────────────────────────────────────────────────
@@ -1329,9 +1457,12 @@ document.getElementById("saveBtn").addEventListener("click", async () => {
 
 // ── Locate ────────────────────────────────────────────────────────────────────
 
-document.getElementById("locateBtn").addEventListener("click", () => {
+const locateBtn = document.getElementById("locateBtn");
+locateBtn.addEventListener("click", () => {
+  locateBtn.classList.add("locating");
   navigator.geolocation.getCurrentPosition(
     pos => {
+      locateBtn.classList.remove("locating");
       const { latitude: lat, longitude: lng } = pos.coords;
       if (locationMarker) locationMarker.setLatLng([lat, lng]);
       else locationMarker = L.circleMarker([lat, lng], {
@@ -1339,17 +1470,118 @@ document.getElementById("locateBtn").addEventListener("click", () => {
       }).addTo(map);
 
       if (routePolyline) {
-        // Show the user's dot alongside the full route
         const bounds = routePolyline.getBounds().extend([lat, lng]);
         map.fitBounds(bounds, { padding: [40, 40], paddingBottomRight: [40, 280] });
       } else {
         map.setView([lat, lng], 17);
       }
     },
-    err => showToast("Location error: " + err.message),
-    { enableHighAccuracy: true, timeout: 8000 },
+    err => {
+      locateBtn.classList.remove("locating");
+      showToast("Location error: " + err.message);
+    },
+    { enableHighAccuracy: true, timeout: 12000 },
   );
 });
+
+// ── Search / geocoding ────────────────────────────────────────────────────────
+
+const searchInput    = document.getElementById("searchInput");
+const searchResults  = document.getElementById("searchResults");
+const searchClearBtn = document.getElementById("searchClearBtn");
+let searchDebounce   = null;
+
+async function geocodeSearch(q) {
+  if (!q.trim()) { searchResults.style.display = "none"; return; }
+  try {
+    const url = `https://nominatim.openstreetmap.org/search?format=json&limit=5&q=${encodeURIComponent(q)}`;
+    const res  = await fetch(url, { headers: { "Accept-Language": "en" } });
+    const data = await res.json();
+    renderSearchResults(data);
+  } catch { showToast("Search unavailable offline"); }
+}
+
+function renderSearchResults(items) {
+  if (!items.length) {
+    searchResults.innerHTML = `<div class="search-result-item"><div class="search-result-name">No results found</div></div>`;
+  } else {
+    searchResults.innerHTML = items.map((item, i) => {
+      const name   = item.display_name.split(",")[0];
+      const detail = item.display_name.split(",").slice(1, 3).join(",").trim();
+      return `<div class="search-result-item" onclick="selectSearchResult(${i})">
+        <div class="search-result-name">${name}</div>
+        <div class="search-result-detail">${detail}</div>
+      </div>`;
+    }).join("");
+    searchResults._items = items;
+  }
+  searchResults.style.display = "block";
+}
+
+function selectSearchResult(i) {
+  const item = searchResults._items?.[i];
+  if (!item) return;
+  const lat = parseFloat(item.lat), lng = parseFloat(item.lon);
+  const bbox = item.boundingbox; // [minLat, maxLat, minLng, maxLng]
+  if (bbox) {
+    map.fitBounds([[+bbox[0], +bbox[2]], [+bbox[1], +bbox[3]]], { padding: [40, 40] });
+  } else {
+    map.setView([lat, lng], 15);
+  }
+  // Drop a temporary pin
+  if (window._searchPin) window._searchPin.remove();
+  window._searchPin = L.circleMarker([lat, lng], {
+    radius: 8, fillColor: "#4fc3f7", color: "#fff", weight: 2, fillOpacity: 1,
+  }).addTo(map).bindPopup(item.display_name.split(",")[0]).openPopup();
+  setTimeout(() => { if (window._searchPin) { window._searchPin.remove(); window._searchPin = null; } }, 8000);
+  searchResults.style.display = "none";
+  searchInput.blur();
+}
+
+searchInput.addEventListener("input", () => {
+  const q = searchInput.value;
+  searchClearBtn.style.display = q ? "block" : "none";
+  clearTimeout(searchDebounce);
+  if (q.length < 2) { searchResults.style.display = "none"; return; }
+  searchDebounce = setTimeout(() => geocodeSearch(q), 400);
+});
+
+searchInput.addEventListener("keydown", e => {
+  if (e.key === "Enter") { clearTimeout(searchDebounce); geocodeSearch(searchInput.value); }
+  if (e.key === "Escape") { searchResults.style.display = "none"; searchInput.blur(); }
+});
+
+document.getElementById("searchSubmitBtn").addEventListener("click", () => {
+  clearTimeout(searchDebounce); geocodeSearch(searchInput.value);
+});
+
+searchClearBtn.addEventListener("click", () => {
+  searchInput.value = ""; searchClearBtn.style.display = "none";
+  searchResults.style.display = "none";
+  if (window._searchPin) { window._searchPin.remove(); window._searchPin = null; }
+});
+
+// Close results when tapping elsewhere
+document.addEventListener("click", e => {
+  if (!e.target.closest("#searchBar") && !e.target.closest("#searchResults")) {
+    searchResults.style.display = "none";
+  }
+});
+
+// ── Menu ─────────────────────────────────────────────────────────────────────
+function openMenu()  { document.getElementById("menuPanel").classList.add("open"); }
+function closeMenu() { document.getElementById("menuPanel").classList.remove("open"); }
+document.getElementById("menuBtn").addEventListener("click", openMenu);
+document.getElementById("menuPanel").addEventListener("click", e => {
+  if (e.target === document.getElementById("menuPanel")) closeMenu();
+});
+
+document.getElementById("targetBtn").addEventListener("click", () => {
+  if (placeMarkerMode) { exitPlaceMarkerMode(); return; }
+  enterPlaceMarkerMode();
+});
+
+document.getElementById("northBtn").addEventListener("click", () => showToast("Map is always oriented north ↑"));
 
 // ── Map marker rendering ──────────────────────────────────────────────────────
 
@@ -1893,17 +2125,10 @@ let allTrackPoints = []; // all {lat,lng} from loaded tracks
 let areaName       = "this area";
 let areaNameTimer  = null;
 
-document.getElementById("coverageBtn").addEventListener("click", toggleCoverage);
-document.getElementById("gpxImportBtn").addEventListener("click", () => {
-  document.getElementById("gpxFileInput").click();
-});
-
 function toggleCoverage() {
   coverageVisible = !coverageVisible;
-  document.getElementById("coverageBtn").classList.toggle("active", coverageVisible);
-  document.getElementById("gpxImportBtn").classList.toggle("show", coverageVisible);
-  document.getElementById("saveOfflineBtn").classList.toggle("show", coverageVisible);
-  document.getElementById("gridBtn").classList.toggle("show", coverageVisible);
+  document.getElementById("menuCoverageIndicator").classList.toggle("on", coverageVisible);
+  document.getElementById("menuGridRow").classList.toggle("enabled", coverageVisible);
   if (coverageVisible) {
     coverageLayer.addTo(map);
     loadTracks();
@@ -1911,10 +2136,9 @@ function toggleCoverage() {
   } else {
     map.removeLayer(coverageLayer);
     document.getElementById("coverageStats").style.display = "none";
-    // Also hide grid if it was on
     if (gridVisible) {
       gridVisible = false;
-      document.getElementById("gridBtn").classList.remove("active");
+      document.getElementById("menuGridIndicator").classList.remove("on");
       map.removeLayer(gridLayer);
     }
   }
@@ -2055,17 +2279,21 @@ async function loadDistanceStats() {
   } catch (_) {}
 }
 
-function toggleGrid() {
+function toggleGridFromMenu() {
+  if (!coverageVisible) return;
   gridVisible = !gridVisible;
-  document.getElementById("gridBtn").classList.toggle("active", gridVisible);
+  document.getElementById("menuGridIndicator").classList.toggle("on", gridVisible);
   if (gridVisible) {
+    buildGrid();
     gridLayer.addTo(map);
-    drawGrid();
-    fetchAreaName();
   } else {
     map.removeLayer(gridLayer);
-    document.getElementById("coverageStats").style.display = "none";
   }
+}
+
+function buildGrid() {
+  drawGrid();
+  fetchAreaName();
 }
 
 async function fetchAreaName() {
@@ -2084,8 +2312,6 @@ async function fetchAreaName() {
     } catch (_) { areaName = "this area"; }
   }, 400);
 }
-
-document.getElementById("gridBtn").addEventListener("click", toggleGrid);
 
 map.on("zoomend", () => { if (gridVisible) drawGrid(); });
 
@@ -2152,7 +2378,7 @@ function tilesForBoundsAtZoom(bounds, z) {
   return urls;
 }
 
-document.getElementById("saveOfflineBtn").addEventListener("click", async () => {
+async function saveAreaOffline() {
   const sw = navigator.serviceWorker?.controller;
   if (!sw) {
     showToast("Reload the page once to enable offline saving");
@@ -2185,7 +2411,7 @@ document.getElementById("saveOfflineBtn").addEventListener("click", async () => 
 
   // Kick off tile prefetch in the service worker
   sw.postMessage({ type: "PREFETCH_TILES", urls: tileUrls });
-});
+}
 </script>
 </body>
 </html>
