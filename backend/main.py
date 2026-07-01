@@ -9,6 +9,7 @@ from fastapi.responses import FileResponse
 
 from routers.markers import router as markers_router
 from routers.routes import router as routes_router
+from routers.tracks import router as tracks_router
 
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://access:access@localhost:5432/accessmap")
 
@@ -38,6 +39,19 @@ async def migrate_db(pool: asyncpg.Pool) -> None:
         await conn.execute(
             "ALTER TABLE markers ADD COLUMN IF NOT EXISTS subtype TEXT;"
         )
+        # v3: tracks table for GPX coverage layer
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS tracks (
+                id          SERIAL PRIMARY KEY,
+                name        TEXT,
+                path        GEOMETRY(LineString, 4326),
+                recorded_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                gpx_source  TEXT
+            );
+        """)
+        await conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_tracks_path ON tracks USING GIST (path);"
+        )
 
 
 @asynccontextmanager
@@ -61,6 +75,7 @@ app.add_middleware(
 
 app.include_router(markers_router, prefix="/api")
 app.include_router(routes_router, prefix="/api")
+app.include_router(tracks_router, prefix="/api")
 
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 

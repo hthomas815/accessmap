@@ -401,6 +401,45 @@
     .leaflet-popup-content { margin: 12px 14px !important; }
 
     .leaflet-tile-pane { filter: brightness(.85) saturate(.9); }
+
+    /* ── Coverage toggle button ── */
+    #coverageBtn {
+      position: absolute;
+      bottom: 100px; left: 20px;
+      z-index: 1000;
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      background: #16213e;
+      border: 2px solid #66bb6a;
+      color: #66bb6a;
+      font-size: 18px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,.4);
+      transition: background .15s, color .15s, transform .1s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #coverageBtn.active { background: #66bb6a; color: #16213e; }
+    #coverageBtn:active { transform: scale(.93); }
+
+    /* ── GPX import button (shown when coverage is on) ── */
+    #gpxImportBtn {
+      position: absolute;
+      bottom: 158px; left: 20px;
+      z-index: 1000;
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      background: #16213e;
+      border: 2px solid #66bb6a;
+      color: #66bb6a;
+      font-size: 22px; cursor: pointer;
+      display: none;
+      align-items: center; justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,.4);
+      transition: background .15s, color .15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #gpxImportBtn.show { display: flex; }
+    #gpxImportBtn:active { background: #66bb6a; color: #16213e; }
   </style>
 </head>
 <body>
@@ -409,6 +448,9 @@
 <button id="locateBtn" title="Go to my location">⊕</button>
 <button id="fab" title="Drop a marker">＋</button>
 <button id="routeBtn" title="Plan a route">↗</button>
+<button id="coverageBtn" title="Show explored paths">◉</button>
+<button id="gpxImportBtn" title="Import GPX walk">＋</button>
+<input type="file" id="gpxFileInput" accept=".gpx,.xml" style="display:none" />
 <div id="routeBanner"></div>
 
 <!-- ── Marker sheet ── -->
@@ -497,14 +539,24 @@ const API = "/api";
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 
+const ICONS = {
+  gate: `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Gate icon"> <rect x="13" y="20" width="7" height="44" rx="3" fill="#E7A13E"/> <rect x="60" y="20" width="7" height="44" rx="3" fill="#E7A13E"/> <rect x="19" y="27" width="42" height="6" rx="3" fill="#F2C36B"/> <rect x="19" y="47" width="42" height="6" rx="3" fill="#F2C36B"/> <path d="M22 52L58 28" stroke="#B46A22" stroke-width="5" stroke-linecap="round"/> <path d="M22 29L58 52" stroke="#B46A22" stroke-width="5" stroke-linecap="round"/> <circle cx="20" cy="30" r="2" fill="#7B451A"/><circle cx="60" cy="30" r="2" fill="#7B451A"/> </svg>`,
+  stile: `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Stile icon"> <path d="M14 60H66" stroke="#4E7A37" stroke-width="5" stroke-linecap="round"/> <path d="M24 22V61" stroke="#91C65A" stroke-width="6" stroke-linecap="round"/> <path d="M56 18V61" stroke="#91C65A" stroke-width="6" stroke-linecap="round"/> <path d="M20 32H60M18 43H62M22 54H58" stroke="#B4D86F" stroke-width="5" stroke-linecap="round"/> <path d="M39 30V61" stroke="#6EA846" stroke-width="5" stroke-linecap="round"/> <path d="M10 50C18 48 20 45 23 40M70 50C62 48 60 45 57 40" stroke="#6EA846" stroke-width="3" stroke-linecap="round"/> </svg>`,
+  steep: `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Steep icon"> <path d="M10 61L34 28C36 25 40 25 43 29L70 61H10Z" fill="#B8B4EA"/> <path d="M25 61L46 36C48 34 51 34 53 37L72 61H25Z" fill="#D6D3F5"/> <path d="M35 28L41 39L46 35" stroke="#F3F0FF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/> <path d="M14 65H68" stroke="#8A819E" stroke-width="4" stroke-linecap="round"/> <path d="M19 61L60 44" stroke="#514B68" stroke-width="4" stroke-linecap="round"/> <path d="M58 44L52 42M58 44L55 50" stroke="#514B68" stroke-width="4" stroke-linecap="round"/> </svg>`,
+  mud: `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mud icon"> <ellipse cx="40" cy="54" rx="28" ry="10" fill="#79B9EA"/> <ellipse cx="29" cy="51" rx="10" ry="5" fill="#A8D7F5"/> <ellipse cx="51" cy="56" rx="11" ry="5" fill="#5CA5D8"/> <path d="M24 35C20 30 21 25 25 20C30 27 31 32 24 35Z" fill="#5CB7E8"/> <path d="M44 30C40 25 41 20 45 15C50 22 51 27 44 30Z" fill="#8CCDF2"/> <path d="M58 39C61 33 65 31 71 32C69 39 65 42 58 39Z" fill="#8CCDF2"/> <path d="M19 46C12 44 9 40 8 35C16 35 20 39 19 46Z" fill="#8CCDF2"/> </svg>`,
+  narrow: `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Narrow path icon"> <path d="M31 68C32 54 34 41 37 18" stroke="#D7D7D7" stroke-width="5" stroke-linecap="round"/> <path d="M49 68C48 54 46 41 43 18" stroke="#D7D7D7" stroke-width="5" stroke-linecap="round"/> <path d="M18 64C22 58 24 52 24 46M15 50C21 47 24 42 25 36M62 64C58 58 56 52 56 46M65 50C59 47 56 42 55 36" stroke="#7DBB5A" stroke-width="4" stroke-linecap="round"/> <path d="M40 16V69" stroke="#5A6270" stroke-width="2" stroke-dasharray="6 7" stroke-linecap="round"/> </svg>`,
+  rough: `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Rough terrain icon"> <path d="M28 51L38 33C40 30 45 30 47 34L58 51H28Z" fill="#B8AA96"/> <path d="M13 59L22 45C24 42 28 42 30 46L39 59H13Z" fill="#D6C5A7"/> <path d="M44 61L54 49C57 46 61 47 63 51L70 61H44Z" fill="#C6B8A4"/> <ellipse cx="38" cy="65" rx="25" ry="4" fill="#8B8276" opacity="0.5"/> <circle cx="21" cy="66" r="3" fill="#D6C5A7"/><circle cx="58" cy="68" r="3" fill="#B8AA96"/><circle cx="67" cy="63" r="2" fill="#D6C5A7"/> </svg>`,
+  other: `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Other icon"> <circle cx="40" cy="40" r="28" stroke="#B99BEA" stroke-width="5"/> <circle cx="28" cy="40" r="4" fill="#B99BEA"/> <circle cx="40" cy="40" r="4" fill="#B99BEA"/> <circle cx="52" cy="40" r="4" fill="#B99BEA"/> </svg>`,
+};
+
 const CATEGORIES = [
-  { id: "gate",          icon: "🚪", label: "Gate",   iconBg: "#c47a2a", iconBorder: "#c47a2a40" },
-  { id: "stile",         icon: "🪜", label: "Stile",  iconBg: "#3a8f58", iconBorder: "#3a8f5840" },
-  { id: "steep",         icon: "⛰️",  label: "Steep",  iconBg: "#4a6aaa", iconBorder: "#4a6aaa40" },
-  { id: "mud",           icon: "💧", label: "Mud",    iconBg: "#2e7da0", iconBorder: "#2e7da040" },
-  { id: "narrow",        icon: "↔️",  label: "Narrow", iconBg: "#3a9060", iconBorder: "#3a906040" },
-  { id: "rough_surface", icon: "🪨", label: "Rough",  iconBg: "#8a6040", iconBorder: "#8a604040" },
-  { id: "other",         icon: "···", label: "Other", iconBg: "#4a5080", iconBorder: "#4a508040" },
+  { id: "gate",          label: "Gate",   iconBg: "#2a1e0a", iconBorder: "#E7A13E55" },
+  { id: "stile",         label: "Stile",  iconBg: "#0e2010", iconBorder: "#91C65A55" },
+  { id: "steep",         label: "Steep",  iconBg: "#16142a", iconBorder: "#B8B4EA55" },
+  { id: "mud",           label: "Mud",    iconBg: "#0a1a28", iconBorder: "#79B9EA55" },
+  { id: "narrow",        label: "Narrow", iconBg: "#0e1e10", iconBorder: "#7DBB5A55" },
+  { id: "rough_surface", label: "Rough",  iconBg: "#1e1810", iconBorder: "#B8AA9655" },
+  { id: "other",         label: "Other",  iconBg: "#18142a", iconBorder: "#B99BEA55" },
 ];
 
 const SUBTYPES = {
@@ -595,10 +647,11 @@ let currentPhoto   = null;
 const mapMarkers = {};
 
 // Route state
-let routeMode  = false;
-let routeStart = null;
-let routeEnd   = null;
-let routeLayer = null;
+let routeMode     = false;
+let routeStart    = null;
+let routeEnd      = null;
+let routeLayer    = null;
+let routePolyline = null;  // kept for bounds-fitting (locate + auto-fit)
 
 // ── Build category grid ────────────────────────────────────────────────────────
 
@@ -606,10 +659,9 @@ const categoryGrid = document.getElementById("categoryGrid");
 CATEGORIES.forEach(cat => {
   const btn = document.createElement("button");
   btn.className = "cat-btn" + (cat.id === "other" ? " other-btn" : "");
-  const iconSize = cat.id === "other" ? "18px" : "36px";
   btn.innerHTML = `
-    <div class="cat-icon-wrap" style="background:${cat.iconBg}22;border:1.5px solid ${cat.iconBorder}">
-      <span style="font-size:${iconSize}">${cat.icon}</span>
+    <div class="cat-icon-wrap" style="background:${cat.iconBg};border:1.5px solid ${cat.iconBorder};padding:10px;">
+      ${ICONS[cat.id]}
     </div>
     <span class="cat-label">${cat.label}</span>
   `;
@@ -627,8 +679,8 @@ function goToStep2(cat) {
 
   // Hero header
   const hero = document.getElementById("heroIcon");
-  hero.textContent = cat.icon;
-  hero.style.cssText = `background:${cat.iconBg}28;border:1.5px solid ${cat.iconBorder};width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;`;
+  hero.innerHTML = ICONS[cat.id];
+  hero.style.cssText = `background:${cat.iconBg};border:1.5px solid ${cat.iconBorder};width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;padding:8px;`;
   document.getElementById("selectedCatLabel").textContent = cat.label;
 
   // Subtype buttons
@@ -758,7 +810,14 @@ document.getElementById("locateBtn").addEventListener("click", () => {
       else locationMarker = L.circleMarker([lat, lng], {
         radius: 8, fillColor: "#e94560", color: "#fff", weight: 2, fillOpacity: 1,
       }).addTo(map);
-      map.setView([lat, lng], 17);
+
+      if (routePolyline) {
+        // Show the user's dot alongside the full route
+        const bounds = routePolyline.getBounds().extend([lat, lng]);
+        map.fitBounds(bounds, { padding: [40, 40], paddingBottomRight: [40, 280] });
+      } else {
+        map.setView([lat, lng], 17);
+      }
     },
     err => showToast("Location error: " + err.message),
     { enableHighAccuracy: true, timeout: 8000 },
@@ -774,9 +833,10 @@ function getCat(id) {
 function makeIcon(type) {
   const cat   = getCat(type);
   const color = TYPE_COLORS[type] || "#4a5080";
+  const svg   = ICONS[cat.id] || ICONS.other;
   return L.divIcon({
     className: "",
-    html: `<div style="background:${color};border:2px solid rgba(255,255,255,.25);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 2px 10px rgba(0,0,0,.5);">${cat.icon}</div>`,
+    html: `<div style="background:${color}cc;border:2px solid rgba(255,255,255,.3);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(0,0,0,.5);overflow:hidden;padding:5px;">${svg}</div>`,
     iconSize: [36, 36], iconAnchor: [18, 18],
   });
 }
@@ -784,9 +844,10 @@ function makeIcon(type) {
 function makeHighlightedIcon(type) {
   const cat   = getCat(type);
   const color = TYPE_COLORS[type] || "#4a5080";
+  const svg   = ICONS[cat.id] || ICONS.other;
   return L.divIcon({
     className: "",
-    html: `<div class="marker-highlighted" style="background:${color};border:2px solid #ffc800;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 2px 10px rgba(0,0,0,.5);">${cat.icon}</div>`,
+    html: `<div class="marker-highlighted" style="background:${color}cc;border:2px solid #ffc800;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(0,0,0,.5);overflow:hidden;padding:5px;">${svg}</div>`,
     iconSize: [36, 36], iconAnchor: [18, 18],
   });
 }
@@ -857,6 +918,7 @@ function exitRouteMode() {
 
 function clearRoute() {
   if (routeLayer) { map.removeLayer(routeLayer); routeLayer = null; }
+  routePolyline = null;
   Object.values(mapMarkers).forEach(({ marker, data }) => marker.setIcon(makeIcon(data.type)));
   document.getElementById("routePanel").classList.remove("open");
 }
@@ -910,9 +972,12 @@ async function fetchAndDrawRoute() {
 }
 
 function drawRouteResult(data) {
+  if (!routeLayer) routeLayer = L.layerGroup().addTo(map);
   showToast("Route found ✓");
   const coords = data.geometry.coordinates.map(([lng, lat]) => [lat, lng]);
-  L.polyline(coords, { color: "#4fc3f7", weight: 5, opacity: 0.85 }).addTo(routeLayer);
+  routePolyline = L.polyline(coords, { color: "#4fc3f7", weight: 5, opacity: 0.85 }).addTo(routeLayer);
+  // Fit map to show the full route; extra bottom padding leaves room for the info panel
+  map.fitBounds(routePolyline.getBounds(), { padding: [40, 40], paddingBottomRight: [40, 280] });
   const nearbyIds = new Set(data.nearby_markers.map(m => m.id));
   Object.entries(mapMarkers).forEach(([id, { marker, data: mData }]) => {
     if (nearbyIds.has(parseInt(id))) marker.setIcon(makeHighlightedIcon(mData.type));
@@ -960,6 +1025,87 @@ function renderRoutePanel(data) {
     listEl.appendChild(item);
   });
 }
+
+// ── Coverage / GPX layer ──────────────────────────────────────────────────────
+
+let coverageVisible = false;
+const coverageLayer = L.layerGroup(); // not added to map until toggled on
+
+document.getElementById("coverageBtn").addEventListener("click", toggleCoverage);
+document.getElementById("gpxImportBtn").addEventListener("click", () => {
+  document.getElementById("gpxFileInput").click();
+});
+
+function toggleCoverage() {
+  coverageVisible = !coverageVisible;
+  document.getElementById("coverageBtn").classList.toggle("active", coverageVisible);
+  document.getElementById("gpxImportBtn").classList.toggle("show", coverageVisible);
+  if (coverageVisible) {
+    coverageLayer.addTo(map);
+    loadTracks();
+  } else {
+    map.removeLayer(coverageLayer);
+  }
+}
+
+document.getElementById("gpxFileInput").addEventListener("change", async e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  e.target.value = ""; // reset so same file can be re-imported
+  try {
+    const text = await file.text();
+    const points = parseGpx(text);
+    if (points.length < 2) { showToast("GPX has no track points"); return; }
+    showToast("Importing walk…", 10000);
+    const res = await fetch(`${API}/tracks`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: file.name.replace(/\.gpx$/i, ""), points, gpx_source: "gpx" }),
+    });
+    if (!res.ok) throw new Error(await res.text());
+    const { point_count } = await res.json();
+    showToast(`Walk imported ✓ (${point_count} points)`);
+    coverageLayer.clearLayers();
+    loadTracks();
+  } catch (err) {
+    showToast("Import failed: " + err.message);
+  }
+});
+
+function parseGpx(xmlText) {
+  const doc = new DOMParser().parseFromString(xmlText, "application/xml");
+  const pts = doc.querySelectorAll("trkpt, rtept, wpt");
+  const points = [];
+  pts.forEach(pt => {
+    const lat = parseFloat(pt.getAttribute("lat"));
+    const lng = parseFloat(pt.getAttribute("lon"));
+    if (!isNaN(lat) && !isNaN(lng)) points.push({ lat, lng });
+  });
+  return points;
+}
+
+async function loadTracks() {
+  if (!coverageVisible) return;
+  const b = map.getBounds();
+  try {
+    const res = await fetch(
+      `${API}/tracks?min_lat=${b.getSouth()}&min_lng=${b.getWest()}&max_lat=${b.getNorth()}&max_lng=${b.getEast()}`
+    );
+    if (!res.ok) return;
+    coverageLayer.clearLayers();
+    (await res.json()).forEach(track => {
+      if (!track.geojson) return;
+      const geo = JSON.parse(track.geojson);
+      if (geo.type !== "LineString") return;
+      const lls = geo.coordinates.map(([lng, lat]) => [lat, lng]);
+      // Wide semi-transparent glow = coverage buffer feel
+      L.polyline(lls, { color: "#66bb6a", weight: 22, opacity: 0.10 }).addTo(coverageLayer);
+      L.polyline(lls, { color: "#66bb6a", weight: 4,  opacity: 0.50 }).addTo(coverageLayer);
+    });
+  } catch (_) {}
+}
+
+map.on("moveend", () => { if (coverageVisible) loadTracks(); });
 
 // ── Toast ─────────────────────────────────────────────────────────────────────
 

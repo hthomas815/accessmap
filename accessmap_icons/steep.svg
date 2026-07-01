@@ -1,0 +1,8 @@
+<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Steep icon">
+  <path d="M10 61L34 28C36 25 40 25 43 29L70 61H10Z" fill="#B8B4EA"/>
+  <path d="M25 61L46 36C48 34 51 34 53 37L72 61H25Z" fill="#D6D3F5"/>
+  <path d="M35 28L41 39L46 35" stroke="#F3F0FF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M14 65H68" stroke="#8A819E" stroke-width="4" stroke-linecap="round"/>
+  <path d="M19 61L60 44" stroke="#514B68" stroke-width="4" stroke-linecap="round"/>
+  <path d="M58 44L52 42M58 44L55 50" stroke="#514B68" stroke-width="4" stroke-linecap="round"/>
+</svg>
