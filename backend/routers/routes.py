@@ -81,7 +81,7 @@ async def get_avoid_polygons(
         ) AS geojson
         FROM markers
         WHERE archived = FALSE
-          AND severity = ANY($2::text[])
+          AND severity::text = ANY($2::text[])
         """,
         float(avoid_radius_m), severities,
     )
@@ -198,30 +198,41 @@ async def preview_route(body: RouteRequest, db: Connection = Depends(get_db)):
 
         elif body.avoid_severities and not ORS_API_KEY:
             # Fallback: OSRM alternatives, pick least-obstructed
-            candidates = await route_via_osrm(body.start, body.end, alternatives=True)
+            try:
+                candidates = await route_via_osrm(body.start, body.end, alternatives=True)
+            except Exception:
+                # Alternatives request failed — fall back to single route
+                candidates = await route_via_osrm(body.start, body.end, alternatives=False)
+
             best = candidates[0]
             best_score = float("inf")
-            for candidate in candidates:
-                geom_json = json.dumps(candidate["geometry"])
-                row = await db.fetchrow(
-                    """
-                    SELECT COUNT(*) AS cnt FROM markers
-                    WHERE archived = FALSE
-                      AND severity = ANY($1::text[])
-                      AND ST_DWithin(
-                            location::geography,
-                            ST_GeomFromGeoJSON($2)::geography,
-                            $3
-                          )
-                    """,
-                    body.avoid_severities,
-                    geom_json,
-                    float(body.avoid_radius_m * 3),
-                )
-                score = row["cnt"]
-                if score < best_score:
-                    best_score = score
-                    best = candidate
+
+            if len(candidates) > 1:
+                for candidate in candidates:
+                    try:
+                        geom_json = json.dumps(candidate["geometry"])
+                        row = await db.fetchrow(
+                            """
+                            SELECT COUNT(*) AS cnt FROM markers
+                            WHERE archived = FALSE
+                              AND severity::text = ANY($1::text[])
+                              AND ST_DWithin(
+                                    location::geography,
+                                    ST_GeomFromGeoJSON($2)::geography,
+                                    $3
+                                  )
+                            """,
+                            body.avoid_severities,
+                            geom_json,
+                            float(body.avoid_radius_m * 3),
+                        )
+                        score = int(row["cnt"])
+                        if score < best_score:
+                            best_score = score
+                            best = candidate
+                    except Exception:
+                        continue  # skip this candidate if scoring fails
+
             route_data = best
             avoidance_method = f"osrm_best_of_{len(candidates)}"
 
@@ -242,6 +253,8 @@ async def preview_route(body: RouteRequest, db: Connection = Depends(get_db)):
         raise HTTPException(status_code=503, detail=f"Routing service unavailable: {exc}")
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc))
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Routing failed: {exc}")
 
     # ── Find markers near the chosen route ────────────────────────────────────
     geometry      = route_data["geometry"]

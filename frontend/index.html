@@ -680,6 +680,54 @@
       color: #e94560; font-size: 13px; cursor: pointer;
       -webkit-tap-highlight-color: transparent;
     }
+    .mp-edit-btn {
+      padding: 10px 20px; border-radius: 10px;
+      border: 1.5px solid #243050; background: transparent;
+      color: #c8d2e8; font-size: 13px; cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Edit form inside marker panel */
+    .mp-edit-form { padding: 12px 16px 0; }
+    .mp-edit-label {
+      font-size: 11px; font-weight: 700;
+      letter-spacing: .08em; text-transform: uppercase;
+      color: #3a4a68; margin-bottom: 8px; display: block;
+    }
+    .mp-edit-select {
+      width: 100%; padding: 10px 12px; border-radius: 10px;
+      border: 1.5px solid #243050; background: #1a2540;
+      color: #d0d8ee; font-size: 14px; margin-bottom: 14px;
+      font-family: inherit; appearance: none;
+    }
+    .mp-edit-select:focus { outline: none; border-color: #3a5080; }
+    .mp-edit-diff-row { display: flex; gap: 8px; margin-bottom: 14px; }
+    .mp-edit-diff-btn {
+      flex: 1; padding: 9px 4px;
+      border-radius: 10px; border: 1.5px solid #243050;
+      background: #1a2540; color: #5a6a8a;
+      font-size: 13px; font-weight: 500; cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: border-color .12s, color .12s, background .12s;
+    }
+    .mp-edit-diff-btn.selected { border-color: #e94560; color: #f0f0f8; background: #1e1530; }
+    .mp-edit-note {
+      width: 100%; padding: 10px 12px; border-radius: 10px;
+      border: 1.5px solid #243050; background: #1a2540;
+      color: #d0d8ee; font-size: 13px; resize: none;
+      font-family: inherit; line-height: 1.5; margin-bottom: 14px;
+    }
+    .mp-edit-note::placeholder { color: #2e3c55; }
+    .mp-edit-note:focus { outline: none; border-color: #3a5080; }
+    .mp-edit-save-btn {
+      width: 100%; padding: 13px; border-radius: 12px;
+      border: none; background: #e94560; color: #fff;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      margin-bottom: 24px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .mp-edit-save-btn:active { opacity: .85; }
+    .mp-edit-save-btn:disabled { opacity: .5; }
   </style>
 </head>
 <body>
@@ -1387,8 +1435,9 @@ function openMarkerPanel(m) {
         <button id="mpCommentBtn" onclick="submitComment()">Post</button>
       </div>
     </div>
-    <div class="mp-actions">
-      <button class="mp-delete-btn" onclick="deleteMarkerFromPanel(${m.id})">🗑 Delete marker</button>
+    <div class="mp-actions" style="display:flex;gap:8px;">
+      <button class="mp-edit-btn" onclick="openEditForm()">✏️ Edit</button>
+      <button class="mp-delete-btn" onclick="deleteMarkerFromPanel(${m.id})">🗑 Delete</button>
     </div>
   `;
 
@@ -1450,6 +1499,110 @@ async function submitComment() {
 async function deleteMarkerFromPanel(id) {
   closeMarkerPanel();
   await deleteMarker(id);
+}
+
+// ── Edit marker form ──────────────────────────────────────────────────────────
+
+function openEditForm() {
+  const m = mapMarkers[currentMarkerPanelId]?.data;
+  if (!m) return;
+
+  // Build type options
+  const typeOptions = CATEGORIES.map(c =>
+    `<option value="${c.id}" ${c.id === m.type ? "selected" : ""}>${c.label}</option>`
+  ).join("");
+
+  // Build subtype options for current type
+  const subtypeOptions = buildSubtypeOptions(m.type, m.subtype);
+
+  const content = document.getElementById("markerPanelContent");
+  content.innerHTML = `
+    <div class="drag-handle"></div>
+    <div class="mp-header">
+      <button class="mp-close-btn" style="margin-right:4px" onclick="openMarkerPanel(mapMarkers[${m.id}].data)">‹</button>
+      <div class="mp-title"><div class="mp-type">Edit marker</div></div>
+      <button class="mp-close-btn" onclick="closeMarkerPanel()">✕</button>
+    </div>
+    <div class="mp-edit-form">
+      <label class="mp-edit-label">Type</label>
+      <select class="mp-edit-select" id="editType" onchange="onEditTypeChange()">${typeOptions}</select>
+
+      <label class="mp-edit-label">Subtype</label>
+      <select class="mp-edit-select" id="editSubtype">${subtypeOptions}</select>
+
+      <label class="mp-edit-label">Difficulty</label>
+      <div class="mp-edit-diff-row">
+        <button class="mp-edit-diff-btn ${m.severity==="low"?"selected":""}"    data-val="low"    onclick="selectEditDiff(this)">🟢 Easy</button>
+        <button class="mp-edit-diff-btn ${m.severity==="medium"?"selected":""}" data-val="medium" onclick="selectEditDiff(this)">🟡 Tricky</button>
+        <button class="mp-edit-diff-btn ${m.severity==="high"?"selected":""}"   data-val="high"   onclick="selectEditDiff(this)">🔴 Hard</button>
+      </div>
+
+      <label class="mp-edit-label">Note</label>
+      <textarea class="mp-edit-note" id="editNote" rows="2" placeholder="Optional note…">${m.note || ""}</textarea>
+
+      <button class="mp-edit-save-btn" id="editSaveBtn" onclick="saveMarkerEdit(${m.id})">Save changes</button>
+    </div>
+  `;
+}
+
+function buildSubtypeOptions(typeId, currentSubtype) {
+  const subs = SUBTYPES[typeId] || [];
+  const blank = `<option value="">— none —</option>`;
+  return blank + subs.map(s =>
+    `<option value="${s.label}" ${s.label === currentSubtype ? "selected" : ""}>${s.label}</option>`
+  ).join("");
+}
+
+function onEditTypeChange() {
+  const typeId = document.getElementById("editType").value;
+  document.getElementById("editSubtype").innerHTML = buildSubtypeOptions(typeId, null);
+}
+
+function selectEditDiff(btn) {
+  document.querySelectorAll(".mp-edit-diff-btn").forEach(b => b.classList.remove("selected"));
+  btn.classList.add("selected");
+}
+
+async function saveMarkerEdit(id) {
+  const typeEl     = document.getElementById("editType");
+  const subtypeEl  = document.getElementById("editSubtype");
+  const noteEl     = document.getElementById("editNote");
+  const sevEl      = document.querySelector(".mp-edit-diff-btn.selected");
+  const saveBtn    = document.getElementById("editSaveBtn");
+
+  const payload = {
+    type:     typeEl.value,
+    subtype:  subtypeEl.value || null,
+    severity: sevEl ? sevEl.dataset.val : null,
+    note:     noteEl.value.trim() || null,
+  };
+
+  saveBtn.disabled = true;
+  saveBtn.textContent = "Saving…";
+
+  try {
+    const res = await fetch(`${API}/markers/${id}`, {
+      method:  "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error(await res.text());
+    const updated = await res.json();
+
+    // Update local state
+    if (mapMarkers[id]) {
+      mapMarkers[id].data = updated;
+      // Refresh icon on map in case type changed
+      mapMarkers[id].marker.setIcon(makeIcon(updated.type));
+    }
+
+    showToast("Marker updated ✓");
+    openMarkerPanel(updated); // return to detail view
+  } catch (err) {
+    showToast("Save failed: " + err.message);
+    saveBtn.disabled = false;
+    saveBtn.textContent = "Save changes";
+  }
 }
 
 async function loadMarkers() {

@@ -10,6 +10,13 @@ from models.marker import MarkerCreate, MarkerResponse, MarkerType, Severity, Co
 
 class CommentCreate(BaseModel):
     body: str
+
+
+class MarkerUpdate(BaseModel):
+    type: Optional[MarkerType] = None
+    subtype: Optional[str] = None
+    severity: Optional[Severity] = None
+    note: Optional[str] = None
 from db import get_db
 
 router = APIRouter(prefix="/markers", tags=["markers"])
@@ -104,6 +111,36 @@ async def get_marker(marker_id: int, db: Connection = Depends(get_db)):
     if not row:
         raise HTTPException(status_code=404, detail="Marker not found")
     return dict(row)
+
+
+@router.patch("/{marker_id}", response_model=MarkerResponse)
+async def update_marker(marker_id: int, body: MarkerUpdate, db: Connection = Depends(get_db)):
+    row = await db.fetchrow(
+        "SELECT * FROM markers WHERE id = $1 AND archived = FALSE", marker_id
+    )
+    if not row:
+        raise HTTPException(status_code=404, detail="Marker not found")
+
+    new_type     = body.type.value     if body.type     is not None else row["type"]
+    new_subtype  = body.subtype        if body.subtype  is not None else row["subtype"]
+    new_severity = body.severity.value if body.severity is not None else row["severity"]
+    new_note     = body.note           if body.note     is not None else row["note"]
+
+    updated = await db.fetchrow(
+        """
+        UPDATE markers
+        SET type = $1, subtype = $2, severity = $3, note = $4
+        WHERE id = $5
+        RETURNING
+            id,
+            ST_Y(location) AS lat,
+            ST_X(location) AS lng,
+            type, subtype, severity, note, photo_url, source, created_at, updated_at
+        """,
+        new_type, new_subtype, new_severity, new_note, marker_id,
+    )
+    count = await db.fetchval("SELECT COUNT(*) FROM confirmations WHERE marker_id = $1", marker_id)
+    return {**dict(updated), "confirmation_count": count}
 
 
 @router.delete("/{marker_id}", status_code=204)
