@@ -1,4 +1,5 @@
 import os
+import asyncio
 import asyncpg
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -54,9 +55,21 @@ async def migrate_db(pool: asyncpg.Pool) -> None:
         )
 
 
+async def create_pool_with_retry(url: str, retries: int = 10, delay: float = 3.0):
+    """Retry DB connection — handles Render free-tier cold-start where DB wakes up after the app."""
+    for attempt in range(1, retries + 1):
+        try:
+            return await asyncpg.create_pool(url, min_size=2, max_size=10)
+        except Exception as exc:
+            if attempt == retries:
+                raise
+            print(f"DB connect attempt {attempt}/{retries} failed ({exc}), retrying in {delay}s…")
+            await asyncio.sleep(delay)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    pool = await asyncpg.create_pool(DATABASE_URL, min_size=2, max_size=10)
+    pool = await create_pool_with_retry(DATABASE_URL)
     await init_db(pool)
     await migrate_db(pool)
     app.state.pool = pool

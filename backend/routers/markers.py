@@ -27,13 +27,17 @@ async def create_marker(
 ):
     photo_url = None
     if photo:
-        ext = os.path.splitext(photo.filename)[1].lower() or ".jpg"
-        filename = f"{uuid.uuid4()}{ext}"
-        path = os.path.join(UPLOAD_DIR, filename)
-        async with aiofiles.open(path, "wb") as f:
-            content = await photo.read()
-            await f.write(content)
-        photo_url = f"/uploads/{filename}"
+        try:
+            ext = os.path.splitext(photo.filename or "")[1].lower() or ".jpg"
+            filename = f"{uuid.uuid4()}{ext}"
+            path = os.path.join(UPLOAD_DIR, filename)
+            async with aiofiles.open(path, "wb") as f:
+                content = await photo.read()
+                await f.write(content)
+            photo_url = f"/uploads/{filename}"
+        except Exception as exc:
+            # Non-fatal: save marker without photo rather than crashing
+            print(f"Photo save failed (marker saved without photo): {exc}")
 
     row = await db.fetchrow(
         """
