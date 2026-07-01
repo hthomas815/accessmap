@@ -268,23 +268,58 @@
 
     /* Photo section */
     .photo-section {
+      margin-bottom: 20px;
+    }
+    .photo-btn-row {
+      display: flex; gap: 10px;
+    }
+    .photo-opt-btn {
+      flex: 1; padding: 14px 10px;
       background: #1a2540; border: 1.5px solid #243050;
-      border-radius: 12px; padding: 14px;
-      display: flex; align-items: center; gap: 12px;
-      margin-bottom: 20px; cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
+      border-radius: 12px; color: #6a7a9a;
+      font-size: 13px; font-weight: 600;
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      cursor: pointer; -webkit-tap-highlight-color: transparent;
+      transition: border-color .12s, background .12s;
     }
-    .photo-section:active { border-color: #3a5080; }
-    .photo-icon-wrap {
-      width: 40px; height: 40px; border-radius: 10px;
-      background: #243050;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 20px; flex-shrink: 0;
+    .photo-opt-btn span { font-size: 22px; }
+    .photo-opt-btn:active { border-color: #e94560; background: #1e2d4e; }
+    .photo-opt-btn.has-photo { border-color: #4caf50; color: #4caf50; }
+    .photo-preview {
+      margin-top: 10px; border-radius: 10px; overflow: hidden;
+      display: none;
     }
-    .photo-text { display: flex; flex-direction: column; gap: 2px; }
-    .photo-title { font-size: 14px; font-weight: 600; color: #6a7a9a; }
-    .photo-sub   { font-size: 12px; color: #3a4a68; }
-    #photoInput  { display: none; }
+    .photo-preview img {
+      width: 100%; max-height: 140px; object-fit: cover; display: block;
+      border-radius: 10px;
+    }
+
+    /* Custom confirm dialog */
+    #confirmOverlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,.6); z-index: 6000;
+      align-items: flex-end;
+    }
+    #confirmOverlay.show { display: flex; }
+    .confirm-sheet {
+      background: #111827; border-radius: 24px 24px 0 0;
+      padding: 28px 20px 44px; width: 100%;
+    }
+    .confirm-msg {
+      font-size: 16px; font-weight: 600; color: #f0f0f8;
+      text-align: center; margin-bottom: 22px;
+    }
+    .confirm-btns { display: flex; gap: 10px; }
+    .confirm-cancel {
+      flex: 1; padding: 14px; border-radius: 12px;
+      border: 1.5px solid #243050; background: transparent;
+      color: #4a5a78; font-size: 15px; cursor: pointer;
+    }
+    .confirm-ok {
+      flex: 1; padding: 14px; border-radius: 12px;
+      border: none; background: #e94560;
+      color: #fff; font-size: 15px; font-weight: 700; cursor: pointer;
+    }
 
     /* Action row */
     .action-row { display: flex; gap: 10px; align-items: center; }
@@ -495,13 +530,20 @@
     <div class="sec-label">Optional note</div>
     <textarea id="noteInput" rows="2" placeholder="Add a note..."></textarea>
 
-    <div class="photo-section" id="photoSection">
-      <div class="photo-icon-wrap">📷</div>
-      <div class="photo-text">
-        <div class="photo-title">Add photo</div>
-        <div class="photo-sub" id="photoSub">Tap to add a photo</div>
+    <div class="photo-section">
+      <div class="photo-btn-row">
+        <button type="button" class="photo-opt-btn" id="photoCameraBtn">
+          <span>📷</span>Camera
+        </button>
+        <button type="button" class="photo-opt-btn" id="photoLibraryBtn">
+          <span>🖼</span>Library
+        </button>
       </div>
-      <input type="file" id="photoInput" accept="image/*" />
+      <div class="photo-preview" id="photoPreview">
+        <img id="photoPreviewImg" alt="Selected photo" />
+      </div>
+      <input type="file" id="photoCamera"  accept="image/*" capture="environment" style="display:none" />
+      <input type="file" id="photoLibrary" accept="image/*" style="display:none" />
     </div>
 
     <div class="action-row">
@@ -532,6 +574,17 @@
 </div>
 
 <div id="toast"></div>
+
+<!-- ── Custom confirm dialog ── -->
+<div id="confirmOverlay">
+  <div class="confirm-sheet">
+    <div class="confirm-msg" id="confirmMsg"></div>
+    <div class="confirm-btns">
+      <button class="confirm-cancel" id="confirmCancel">Cancel</button>
+      <button class="confirm-ok"     id="confirmOk">Delete</button>
+    </div>
+  </div>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
@@ -784,8 +837,11 @@ function goToStep2(cat) {
 
   document.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("selected"));
   document.getElementById("noteInput").value = "";
-  document.getElementById("photoSub").textContent = "Tap to add a photo";
-  document.getElementById("photoInput").value = "";
+  document.getElementById("photoPreview").style.display = "none";
+  document.getElementById("photoCameraBtn").classList.remove("has-photo");
+  document.getElementById("photoLibraryBtn").classList.remove("has-photo");
+  document.getElementById("photoCamera").value  = "";
+  document.getElementById("photoLibrary").value = "";
 
   document.getElementById("step1").style.display = "none";
   document.getElementById("step2").classList.add("active");
@@ -825,15 +881,54 @@ document.querySelectorAll(".diff-btn").forEach(btn => {
 
 // ── Photo ─────────────────────────────────────────────────────────────────────
 
-document.getElementById("photoSection").addEventListener("click", () => {
-  saveFormState(); // persist before iOS might suspend the page
-  document.getElementById("photoInput").click();
+async function compressPhoto(file, maxWidth = 1200, quality = 0.8) {
+  return new Promise(resolve => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      let { width, height } = img;
+      if (width > maxWidth) { height = Math.round(height * maxWidth / width); width = maxWidth; }
+      const canvas = document.createElement("canvas");
+      canvas.width = width; canvas.height = height;
+      canvas.getContext("2d").drawImage(img, 0, 0, width, height);
+      canvas.toBlob(
+        blob => resolve(new File([blob], "photo.jpg", { type: "image/jpeg" })),
+        "image/jpeg", quality
+      );
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
+    img.src = url;
+  });
+}
+
+function setPhotoPreview(file) {
+  currentPhoto = file;
+  const preview = document.getElementById("photoPreview");
+  const previewImg = document.getElementById("photoPreviewImg");
+  previewImg.src = URL.createObjectURL(file);
+  preview.style.display = "block";
+  document.getElementById("photoCameraBtn").classList.add("has-photo");
+  document.getElementById("photoLibraryBtn").classList.add("has-photo");
+}
+
+async function handlePhotoFile(file) {
+  if (!file) return;
+  saveFormState();
+  const compressed = await compressPhoto(file);
+  setPhotoPreview(compressed);
+}
+
+document.getElementById("photoCameraBtn").addEventListener("click", () => {
+  saveFormState();
+  document.getElementById("photoCamera").click();
 });
-document.getElementById("photoInput").addEventListener("change", e => {
-  currentPhoto = e.target.files[0] || null;
-  document.getElementById("photoSub").textContent =
-    currentPhoto ? currentPhoto.name : "Tap to add a photo";
+document.getElementById("photoLibraryBtn").addEventListener("click", () => {
+  saveFormState();
+  document.getElementById("photoLibrary").click();
 });
+document.getElementById("photoCamera").addEventListener("change",  e => handlePhotoFile(e.target.files[0]));
+document.getElementById("photoLibrary").addEventListener("change", e => handlePhotoFile(e.target.files[0]));
 
 // ── FAB ───────────────────────────────────────────────────────────────────────
 
@@ -997,20 +1092,22 @@ loadMarkers();
 
 // ── Route mode ────────────────────────────────────────────────────────────────
 
+let routeWaypoints = []; // replaces routeStart / routeEnd
+
 document.getElementById("routeBtn").addEventListener("click", () => {
   routeMode ? exitRouteMode() : enterRouteMode();
 });
 document.getElementById("clearRouteBtn").addEventListener("click", exitRouteMode);
 
 function enterRouteMode() {
-  routeMode = true; routeStart = null; routeEnd = null;
+  routeMode = true; routeWaypoints = [];
   closeSheet();
   document.getElementById("routeBtn").classList.add("active");
-  showBanner("Tap to set start point");
+  showBanner("Tap to add waypoints · Done when ready", true);
 }
 
 function exitRouteMode() {
-  routeMode = false; routeStart = null; routeEnd = null;
+  routeMode = false; routeWaypoints = [];
   document.getElementById("routeBtn").classList.remove("active");
   hideBanner();
   clearRoute();
@@ -1023,9 +1120,13 @@ function clearRoute() {
   document.getElementById("routePanel").classList.remove("open");
 }
 
-function showBanner(msg) {
+function showBanner(msg, showDoneBtn = false) {
   const el = document.getElementById("routeBanner");
-  el.textContent = msg; el.classList.add("show");
+  el.innerHTML = showDoneBtn
+    ? `${msg} <button onclick="finishRoute()" style="margin-left:10px;padding:3px 10px;border-radius:10px;border:none;background:#4fc3f7;color:#16213e;font-size:12px;font-weight:700;cursor:pointer;">Done</button>`
+    : msg;
+  el.style.pointerEvents = showDoneBtn ? "auto" : "none";
+  el.classList.add("show");
 }
 function hideBanner() {
   document.getElementById("routeBanner").classList.remove("show");
@@ -1033,42 +1134,69 @@ function hideBanner() {
 
 async function handleRouteClick(lat, lng) {
   if (!routeLayer) routeLayer = L.layerGroup().addTo(map);
+  const n = routeWaypoints.length;
+  const color = n === 0 ? "#4caf50" : "#4fc3f7";
+  const label = n === 0 ? "Start" : `Point ${n + 1}`;
+  L.circleMarker([lat, lng], { radius: 9, fillColor: color, color: "#fff", weight: 2.5, fillOpacity: 1 })
+    .bindPopup(label).addTo(routeLayer);
+  routeWaypoints.push({ lat, lng });
+  showBanner(`${routeWaypoints.length} point${routeWaypoints.length > 1 ? "s" : ""} · keep tapping or tap Done`, true);
+}
 
-  if (!routeStart) {
-    routeStart = { lat, lng };
-    L.circleMarker([lat, lng], { radius: 10, fillColor: "#4caf50", color: "#fff", weight: 2.5, fillOpacity: 1 })
-      .bindPopup("Start").addTo(routeLayer);
-    showBanner("Tap to set end point");
-  } else if (!routeEnd) {
-    routeEnd = { lat, lng };
-    L.circleMarker([lat, lng], { radius: 10, fillColor: "#f44336", color: "#fff", weight: 2.5, fillOpacity: 1 })
-      .bindPopup("End").addTo(routeLayer);
-    hideBanner();
-    routeMode = false;
-    document.getElementById("routeBtn").classList.remove("active");
-    await fetchAndDrawRoute();
-  }
+async function finishRoute() {
+  if (routeWaypoints.length < 2) { showToast("Add at least 2 points first"); return; }
+  hideBanner();
+  routeMode = false;
+  document.getElementById("routeBtn").classList.remove("active");
+  await fetchAndDrawRoute();
 }
 
 async function fetchAndDrawRoute() {
   showToast("Finding route…", 10000);
   try {
-    const res = await fetch(`${API}/routes/preview`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ start: routeStart, end: routeEnd, buffer_m: 50 }),
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.detail || `HTTP ${res.status}`);
+    // Chain waypoints: A→B, B→C, etc., then merge geometries
+    const legs = [];
+    for (let i = 0; i < routeWaypoints.length - 1; i++) {
+      const res = await fetch(`${API}/routes/preview`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ start: routeWaypoints[i], end: routeWaypoints[i + 1], buffer_m: 50 }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.detail || `HTTP ${res.status}`);
+      }
+      legs.push(await res.json());
     }
-    drawRouteResult(await res.json());
+    drawRouteResult(mergeLegs(legs));
   } catch (err) {
     showToast("Route error: " + err.message);
-    routeEnd = null; routeMode = true;
+    routeMode = true;
     document.getElementById("routeBtn").classList.add("active");
-    showBanner("Tap to set end point");
+    showBanner(`${routeWaypoints.length} point${routeWaypoints.length > 1 ? "s" : ""} · keep tapping or tap Done`, true);
   }
+}
+
+function mergeLegs(legs) {
+  // Combine all leg geometries into one LineString
+  const allCoords = [];
+  let totalDist = 0, totalDur = 0;
+  const seenIds = new Set();
+  const allNearby = [];
+  legs.forEach(leg => {
+    allCoords.push(...leg.geometry.coordinates);
+    totalDist += leg.distance_m;
+    totalDur  += leg.duration_s;
+    leg.nearby_markers.forEach(m => {
+      if (!seenIds.has(m.id)) { seenIds.add(m.id); allNearby.push(m); }
+    });
+  });
+  return {
+    geometry: { type: "LineString", coordinates: allCoords },
+    distance_m: totalDist,
+    duration_s: totalDur,
+    nearby_markers: allNearby,
+  };
 }
 
 function drawRouteResult(data) {
@@ -1126,10 +1254,33 @@ function renderRoutePanel(data) {
   });
 }
 
+// ── Custom confirm dialog ─────────────────────────────────────────────────────
+
+function showConfirm(msg, okLabel = "Delete") {
+  return new Promise(resolve => {
+    document.getElementById("confirmMsg").textContent = msg;
+    document.getElementById("confirmOk").textContent = okLabel;
+    const overlay = document.getElementById("confirmOverlay");
+    overlay.classList.add("show");
+    const ok     = document.getElementById("confirmOk");
+    const cancel = document.getElementById("confirmCancel");
+    const done = result => {
+      overlay.classList.remove("show");
+      ok.removeEventListener("click", onOk);
+      cancel.removeEventListener("click", onCancel);
+      resolve(result);
+    };
+    const onOk     = () => done(true);
+    const onCancel = () => done(false);
+    ok.addEventListener("click", onOk);
+    cancel.addEventListener("click", onCancel);
+  });
+}
+
 // ── Delete marker ─────────────────────────────────────────────────────────────
 
 async function deleteMarker(id) {
-  if (!confirm("Delete this marker?")) return;
+  if (!(await showConfirm("Delete this marker?"))) return;
   try {
     const res = await fetch(`${API}/markers/${id}`, { method: "DELETE" });
     if (!res.ok && res.status !== 204) throw new Error(await res.text());
