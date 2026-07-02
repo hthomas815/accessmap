@@ -1,9 +1,0 @@
-<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Kissing gate icon">
-
-<rect x="13" y="20" width="7" height="44" rx="3" fill="#E7A13E"/>
-<rect x="60" y="20" width="7" height="44" rx="3" fill="#E7A13E"/>
-<path d="M20 29C33 29 36 40 40 40C44 40 47 29 60 29" stroke="#F2C36B" stroke-width="6" stroke-linecap="round" fill="none"/>
-<path d="M20 51C33 51 36 40 40 40C44 40 47 51 60 51" stroke="#F2C36B" stroke-width="6" stroke-linecap="round" fill="none"/>
-<circle cx="40" cy="40" r="4" fill="#B46A22"/>
-
-</svg>

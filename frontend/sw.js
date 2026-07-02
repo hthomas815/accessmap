@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v2';
+const CACHE_VERSION = 'v3';
 const APP_CACHE  = `accessmap-app-${CACHE_VERSION}`;
 const TILE_CACHE = `accessmap-tiles-${CACHE_VERSION}`;
 const API_CACHE  = `accessmap-api-${CACHE_VERSION}`;

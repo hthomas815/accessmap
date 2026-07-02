@@ -1,7 +1,0 @@
-<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Rough terrain icon">
-  <path d="M28 51L38 33C40 30 45 30 47 34L58 51H28Z" fill="#B8AA96"/>
-  <path d="M13 59L22 45C24 42 28 42 30 46L39 59H13Z" fill="#D6C5A7"/>
-  <path d="M44 61L54 49C57 46 61 47 63 51L70 61H44Z" fill="#C6B8A4"/>
-  <ellipse cx="38" cy="65" rx="25" ry="4" fill="#8B8276" opacity="0.5"/>
-  <circle cx="21" cy="66" r="3" fill="#D6C5A7"/><circle cx="58" cy="68" r="3" fill="#B8AA96"/><circle cx="67" cy="63" r="2" fill="#D6C5A7"/>
-</svg>

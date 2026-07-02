@@ -35,7 +35,7 @@
       width: 84px; height: 84px;
       border-radius: 50%;
       background: #e0761f;
-      border: 3px solid #4a2545; color: #180e08;
+      border: 3px solid #ffc98a; color: #180e08;
       font-size: 38px; cursor: pointer;
       box-shadow: 0 6px 28px rgba(224,118,31,.5);
       display: flex; align-items: center; justify-content: center;
@@ -51,8 +51,8 @@
       z-index: 1000;
       width: 54px; height: 54px;
       border-radius: 50%;
-      background: #351735;
-      border: 2.5px solid #6b3a63;
+      background: #42204a;
+      border: 2.5px solid #7d4a75;
       color: #f2872e; font-size: 24px; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 2px 12px rgba(0,0,0,.5);
@@ -77,8 +77,8 @@
       z-index: 1000;
       width: 70px; height: 70px;
       border-radius: 50%;
-      background: #180e08;
-      border: 2px solid #f2872e;
+      background: #42204a;
+      border: 2px solid #7d4a75;
       color: #f2872e;
       font-size: 24px; cursor: pointer;
       box-shadow: 0 4px 16px rgba(0,0,0,.4);
@@ -405,6 +405,15 @@
       flex-shrink: 0; -webkit-tap-highlight-color: transparent;
     }
     #clearRouteBtn:active { background: #334; }
+    #addStopBtn {
+      flex-shrink: 0; margin-left: auto;
+      padding: 8px 14px; border-radius: 18px;
+      background: #C75A1C; border: none; color: #FFF6E6;
+      font-size: 13px; font-weight: 700; cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #addStopBtn.active { background: #2e9e5b; }
+    #addStopBtn:active { opacity: .85; }
 
     .route-friction-summary {
       padding: 4px 16px 12px; font-size: 13px; color: #889;
@@ -618,14 +627,14 @@
       z-index: 1003;
       width: 44px; height: 44px;
       border-radius: 50%;
-      background: #351735;
-      border: 2px solid #6b3a63;
+      background: #42204a;
+      border: 2px solid #7d4a75;
       color: #e8d6e4; font-size: 18px; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 2px 12px rgba(0,0,0,.5);
       -webkit-tap-highlight-color: transparent;
     }
-    #menuBtn:active { background: #6b3a63; color: #fff; }
+    #menuBtn:active { background: #7d4a75; color: #fff; }
     #menuPanel {
       position: absolute;
       bottom: 0; left: 0; right: 0;
@@ -661,14 +670,14 @@
       z-index: 1000;
       width: 48px; height: 48px;
       border-radius: 50%;
-      background: #351735;
-      border: 2.5px solid #6b3a63;
+      background: #42204a;
+      border: 2.5px solid #7d4a75;
       color: #f2872e; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 2px 10px rgba(0,0,0,.45);
       -webkit-tap-highlight-color: transparent;
     }
-    #targetBtn.place-mode { background: #8a3e18; color: #e8e4da; border-color: #6b3a63; }
+    #targetBtn.place-mode { background: #8a3e18; color: #e8e4da; border-color: #7d4a75; }
     #targetBtn:active { opacity: .8; }
 
     /* ── North button — directly above FAB (radial fan) ── */
@@ -678,8 +687,8 @@
       z-index: 1000;
       width: 46px; height: 46px;
       border-radius: 50%;
-      background: #351735;
-      border: 2.5px solid #6b3a63;
+      background: #42204a;
+      border: 2.5px solid #7d4a75;
       color: #f2872e; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 2px 10px rgba(0,0,0,.45);
@@ -890,8 +899,8 @@
       flex: 1;
       padding: 11px 16px;
       border-radius: 24px;
-      border: 1.5px solid #5e2d55;
-      background: #2b1428;
+      border: 1.5px solid #6e3a66;
+      background: #3a1c38;
       color: #f3e8f0; font-size: 15px; font-family: inherit;
       outline: none;
       box-shadow: 0 2px 12px rgba(0,0,0,.5);
@@ -1163,34 +1172,99 @@
     #catBurst.open { display: block; }
     .burst-item {
       position: absolute;
-      width: 84px;
-      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      width: 128px;
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
       background: none; border: none; cursor: pointer; padding: 0;
       transform: translate(-50%, -50%);
-      transition: transform .36s cubic-bezier(.34,1.42,.5,1), opacity .3s ease;
+      transition: transform .38s cubic-bezier(.34,1.42,.5,1), opacity .3s ease;
       -webkit-tap-highlight-color: transparent;
     }
+    .burst-item:active { transform: translate(-50%, -50%) scale(.94); }
     .burst-circle {
-      width: 62px; height: 62px; border-radius: 50%;
+      width: 116px; height: 116px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      background: rgba(224,118,31,.82);
-      border: 2px solid rgba(255,224,188,.6);
-      box-shadow: 0 6px 20px rgba(0,0,0,.38);
+      background: rgba(224,118,31,.62);
+      border: 2.5px solid rgba(255,224,188,.55);
+      box-shadow: 0 8px 26px rgba(0,0,0,.4);
       color: #2A132A;
-      -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
     }
-    .burst-circle svg { width: 32px; height: 32px; }
+    .burst-circle svg { width: 54px; height: 54px; }
     .burst-cap {
-      font-size: 12px; font-weight: 700; color: #fff;
-      text-shadow: 0 1px 5px rgba(0,0,0,.75); white-space: nowrap;
+      font-size: 14px; font-weight: 700; color: #fff;
+      text-shadow: 0 1px 6px rgba(0,0,0,.8); white-space: nowrap;
     }
+
+    /* ── In-burst marker detail (subtypes / difficulty / note / photo) ── */
+    .bd-card {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: min(93vw, 400px); max-height: 88dvh; overflow-y: auto;
+      background: rgba(255,240,210,.98);
+      -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+      border-radius: 22px; padding: 18px 18px 22px;
+      box-shadow: 0 12px 44px rgba(42,19,42,.4);
+      color: #2A132A;
+    }
+    .bd-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .bd-tile {
+      width: 52px; height: 52px; border-radius: 14px; flex-shrink: 0;
+      background: #C75A1C; color: #2A132A;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .bd-tile svg { width: 30px; height: 30px; }
+    .bd-title { font-size: 22px; font-weight: 800; color: #2A132A; flex: 1; }
+    .bd-back {
+      width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
+      background: #FFF6E6; border: 1.5px solid #e7cfa0; color: #2A132A;
+      font-size: 18px; cursor: pointer;
+    }
+    .bd-label { font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #7A4A2A; margin: 14px 0 8px; }
+    .bd-subs { display: flex; flex-wrap: wrap; gap: 8px; }
+    .bd-sub {
+      padding: 10px 14px; border-radius: 14px; cursor: pointer;
+      background: #FFF6E6; border: 1.5px solid #e7cfa0; color: #4a2e15;
+      font-size: 14px; font-weight: 600; -webkit-tap-highlight-color: transparent;
+    }
+    .bd-sub.on { background: #ffe0b8; border-color: #C75A1C; color: #2A132A; }
+    .bd-diff-row { display: flex; gap: 10px; }
+    .bd-diff {
+      flex: 1; padding: 16px 6px; border-radius: 16px; cursor: pointer;
+      background: #FFF6E6; border: 2px solid #e7cfa0; color: #4a2e15;
+      font-size: 15px; font-weight: 700; text-align: center; -webkit-tap-highlight-color: transparent;
+    }
+    .bd-diff .bd-diff-dot { display: block; width: 16px; height: 16px; border-radius: 50%; margin: 0 auto 6px; }
+    .bd-diff.on { border-width: 3px; background: #fff; }
+    .bd-diff.on[data-val="low"]    { border-color: #43a047; }
+    .bd-diff.on[data-val="medium"] { border-color: #FFC43B; }
+    .bd-diff.on[data-val="high"]   { border-color: #e0483f; }
+    .bd-note {
+      width: 100%; padding: 12px 14px; border-radius: 14px; resize: none;
+      background: #FFF6E6; border: 1.5px solid #e7cfa0; color: #2A132A;
+      font-size: 14px; font-family: inherit; line-height: 1.4;
+    }
+    .bd-note::placeholder { color: #b08a6a; }
+    .bd-photo-row { display: flex; gap: 10px; }
+    .bd-photo-btn {
+      flex: 1; padding: 14px; border-radius: 14px; cursor: pointer;
+      background: #FFF6E6; border: 1.5px solid #e7cfa0; color: #7A4A2A;
+      font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #bdPhotoPreview { margin-top: 10px; border-radius: 14px; overflow: hidden; display: none; }
+    #bdPhotoPreview img { width: 100%; max-height: 34vh; object-fit: cover; display: block; }
+    .bd-save {
+      width: 100%; margin-top: 18px; padding: 16px; border-radius: 16px; border: none;
+      background: #C75A1C; color: #FFF6E6; font-size: 16px; font-weight: 800; cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .bd-save:disabled { opacity: .6; }
     /* Hide the other floating controls while the burst is open; FAB becomes a close */
     body.burst-open #locateBtn, body.burst-open #targetBtn, body.burst-open #northBtn,
     body.burst-open #routeBtn, body.burst-open #showRoutesBtn, body.burst-open #menuBtn {
       opacity: 0; pointer-events: none; transition: opacity .2s;
     }
     body.burst-open #fab {
-      z-index: 1700; background: #4a2545; border-color: #6b3a63;
+      z-index: 1700; background: #4a2545; border-color: #7d4a75;
       transform: rotate(45deg); box-shadow: 0 6px 24px rgba(0,0,0,.4);
     }
 
@@ -1200,7 +1274,7 @@
     ══════════════════════════════════════ */
     :root {
       --md-plum:      #2A132A;
-      --md-aubergine: #351735;
+      --md-aubergine: #42204a;
       --md-burnt:     #C75A1C;
       --md-orange:    #F28A2E;
       --md-parchment: #FFF0D2;
@@ -1422,6 +1496,7 @@
         <div class="lbl">Walk time</div>
       </div>
     </div>
+    <button id="addStopBtn" title="Add a stop">＋ Stop</button>
     <button id="clearRouteBtn" title="Clear route">✕</button>
   </div>
   <div class="route-friction-summary" id="routeFrictionSummary"></div>
@@ -1612,6 +1687,26 @@ function isSignedIn() {
   return authDisabled || !!authSession?.access_token;
 }
 
+// Centre the map on the user's location once, on first successful boot.
+let didInitialLocate = false;
+function centerOnCurrentLocation() {
+  if (didInitialLocate || !navigator.geolocation) return;
+  didInitialLocate = true;
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const { latitude: lat, longitude: lng } = pos.coords;
+      map.setView([lat, lng], 16);
+      if (locationMarker) { locationMarker.setLatLng([lat, lng]); locationHalo.setLatLng([lat, lng]); }
+      else {
+        locationHalo = L.circleMarker([lat, lng], { radius: 16, fillColor: "#1a73e8", color: "#1a73e8", weight: 0, fillOpacity: 0.15, interactive: false }).addTo(map);
+        locationMarker = L.circleMarker([lat, lng], { radius: 8, fillColor: "#1a73e8", color: "#fff", weight: 3, fillOpacity: 1 }).addTo(map);
+      }
+    },
+    () => {},
+    { enableHighAccuracy: true, timeout: 10000 }
+  );
+}
+
 function getAccessToken() {
   return authSession?.access_token || null;
 }
@@ -1684,6 +1779,7 @@ async function handleSignedIn(session, restoreDraft = false) {
   if (restoreDraft) restoreFormState();
   await refreshAppData();
   hideSplash();
+  centerOnCurrentLocation();
 }
 
 async function handleSignedOut(showOverlay = false) {
@@ -1754,6 +1850,7 @@ async function initAuth() {
     updateUserBadge();
     await refreshAppData();
     hideSplash();
+    centerOnCurrentLocation();
     return;
   }
 
@@ -2139,15 +2236,17 @@ function openCategoryBurst() {
   overlay.innerHTML = "";
   const ox = window.innerWidth  - 62;                 // ＋ button centre
   const oy = window.innerHeight - 66;
-  const cx = window.innerWidth  / 2;                  // ring centre (middle-ish)
-  const cy = window.innerHeight * 0.42;
-  const r  = Math.min(window.innerWidth, window.innerHeight) * 0.30;
-  const n  = CATEGORIES.length;
+  const cols  = 3;
+  const rows  = Math.ceil(CATEGORIES.length / cols);
+  const stepX = Math.min(window.innerWidth / 3.1, 138);
+  const stepY = 148;
+  const cx    = window.innerWidth  / 2;
+  const cy    = window.innerHeight * 0.40;
 
   CATEGORIES.forEach((cat, i) => {
-    const ang = -Math.PI / 2 + i * (2 * Math.PI / n); // start at top, go round
-    const fx  = cx + r * Math.cos(ang);
-    const fy  = cy + r * Math.sin(ang);
+    const col = i % cols, row = Math.floor(i / cols);
+    const fx  = cx + (col - (cols - 1) / 2) * stepX;   // centre the 3 columns
+    const fy  = cy + (row - (rows - 1) / 2) * stepY;   // centre the rows
     const item = document.createElement("button");
     item.className = "burst-item";
     item.style.left = `${fx}px`;
@@ -2155,7 +2254,7 @@ function openCategoryBurst() {
     item.innerHTML =
       `<span class="burst-circle">${MONO_ICONS[cat.id] || MONO_ICONS.other}</span>` +
       `<span class="burst-cap">${cat.label}</span>`;
-    // Start collapsed at the ＋ origin, then animate out to the ring.
+    // Start collapsed at the ＋ origin, then burst out to the grid.
     item.style.transform = `translate(-50%,-50%) translate(${ox - fx}px, ${oy - fy}px) scale(.2)`;
     item.style.opacity = "0";
     item.style.transitionDelay = `${i * 0.03}s`;
@@ -2184,17 +2283,112 @@ function closeCategoryBurst(clear = true) {
 function selectBurstCategory(catId) {
   const cat = CATEGORIES.find(c => c.id === catId);
   if (!cat) return;
-  closeCategoryBurst(false);          // keep pending location + any accumulated tags
-  goToStep2(cat);
-  document.getElementById("sheet").classList.add("open");
+  renderBurstDetail(cat);            // stay in the overlay; show the detail step
 }
 
-// Re-open the burst from step 2 (Back / Add another category) without resetting.
+// Detail step, rendered inside the burst overlay: subtypes + difficulty + note + photo.
+function renderBurstDetail(cat) {
+  selectedCategory = cat;
+  const overlay = document.getElementById("catBurst");
+  overlay.innerHTML = "";
+  overlay.classList.add("open");
+  document.body.classList.add("burst-open");
+  burstOpen = true;
+
+  const subs = SUBTYPES[cat.id] || [];
+  const card = document.createElement("div");
+  card.className = "bd-card";
+  card.addEventListener("click", e => e.stopPropagation());
+  card.innerHTML = `
+    <div class="bd-head">
+      <button class="bd-back" title="Back">‹</button>
+      <div class="bd-tile">${MONO_ICONS[cat.id] || MONO_ICONS.other}</div>
+      <div class="bd-title">${cat.label}</div>
+    </div>
+    ${subs.length ? `<div class="bd-label">Type · tap all that apply</div><div class="bd-subs" id="bdSubs"></div>` : ""}
+    <div class="bd-label">Difficulty</div>
+    <div class="bd-diff-row" id="bdDiff">
+      <button class="bd-diff" data-val="low"><span class="bd-diff-dot" style="background:#43a047"></span>Easy</button>
+      <button class="bd-diff" data-val="medium"><span class="bd-diff-dot" style="background:#FFC43B"></span>Tricky</button>
+      <button class="bd-diff" data-val="high"><span class="bd-diff-dot" style="background:#e0483f"></span>Hard</button>
+    </div>
+    <div class="bd-label">Note (optional)</div>
+    <textarea class="bd-note" id="bdNote" rows="2" placeholder="E.g. gate stiff, path overgrown…"></textarea>
+    <div class="bd-label">Photo (optional)</div>
+    <div class="bd-photo-row">
+      <button class="bd-photo-btn" id="bdCam">📷 Camera</button>
+      <button class="bd-photo-btn" id="bdLib">🖼 Library</button>
+    </div>
+    <div id="bdPhotoPreview"><img id="bdPhotoImg" alt="photo"/></div>
+    <button class="bd-save" id="bdSave">✓ Save marker</button>
+  `;
+  overlay.appendChild(card);
+
+  // Subtype toggles (multi-select, shared with selectedTags)
+  if (subs.length) {
+    const wrap = card.querySelector("#bdSubs");
+    subs.forEach(st => {
+      const b = document.createElement("button");
+      b.className = "bd-sub" + (selectedTags.some(t => t.key === st.key) ? " on" : "");
+      b.textContent = st.label;
+      b.onclick = () => {
+        const idx = selectedTags.findIndex(t => t.key === st.key);
+        if (idx >= 0) { selectedTags.splice(idx, 1); b.classList.remove("on"); }
+        else { selectedTags.push({ type: cat.id, key: st.key, label: st.label }); b.classList.add("on"); }
+      };
+      wrap.appendChild(b);
+    });
+  }
+
+  // Difficulty
+  card.querySelectorAll(".bd-diff").forEach(b => {
+    if (selectedDifficulty === b.dataset.val) b.classList.add("on");
+    b.onclick = () => {
+      card.querySelectorAll(".bd-diff").forEach(x => x.classList.remove("on"));
+      b.classList.add("on");
+      selectedDifficulty = b.dataset.val;
+    };
+  });
+
+  // Note (persisted via the hidden #noteInput so Back keeps it)
+  const noteEl = card.querySelector("#bdNote");
+  noteEl.value = document.getElementById("noteInput").value || "";
+
+  // Photo — reuse the existing hidden inputs + pipeline
+  card.querySelector("#bdCam").onclick = () => { saveFormState(); document.getElementById("photoCamera").click(); };
+  card.querySelector("#bdLib").onclick = () => { saveFormState(); document.getElementById("photoLibrary").click(); };
+  if (currentPhotoURL) {
+    card.querySelector("#bdPhotoImg").src = currentPhotoURL;
+    card.querySelector("#bdPhotoPreview").style.display = "block";
+  }
+
+  // Back → category grid (keeping note + selections)
+  card.querySelector(".bd-back").onclick = () => {
+    document.getElementById("noteInput").value = noteEl.value;
+    openCategoryBurst();
+  };
+
+  // Save
+  card.querySelector("#bdSave").onclick = async () => {
+    const btn = card.querySelector("#bdSave");
+    btn.disabled = true; btn.textContent = "Saving…";
+    try {
+      const ok = await saveMarker(noteEl.value.trim());
+      if (ok) { closeCategoryBurst(true); showToast("Marker saved ✓"); }
+      else { btn.disabled = false; btn.textContent = "✓ Save marker"; }
+    } catch (err) {
+      showToast("Save failed: " + err.message);
+      btn.disabled = false; btn.textContent = "✓ Save marker";
+    }
+  };
+}
+
+// The old bottom-sheet creation flow is superseded by the burst overlay, but its
+// controls still exist in the DOM — keep them wired harmlessly.
 function reopenCategoryBurst() {
   document.getElementById("sheet").classList.remove("open");
   openCategoryBurst();
 }
-
 document.getElementById("cancelBtn1").addEventListener("click", closeSheet);
 document.getElementById("cancelBtn2").addEventListener("click", closeSheet);
 document.getElementById("backBtn").addEventListener("click", reopenCategoryBurst);
@@ -2259,14 +2453,19 @@ async function compressPhoto(file, maxWidth = 800, quality = 0.75) {
   });
 }
 
+let currentPhotoURL = null;
 function setPhotoPreview(file) {
   currentPhoto = file;
+  currentPhotoURL = URL.createObjectURL(file);
   const preview = document.getElementById("photoPreview");
   const previewImg = document.getElementById("photoPreviewImg");
-  previewImg.src = URL.createObjectURL(file);
-  preview.style.display = "block";
-  document.getElementById("photoCameraBtn").classList.add("has-photo");
-  document.getElementById("photoLibraryBtn").classList.add("has-photo");
+  if (preview && previewImg) { previewImg.src = currentPhotoURL; preview.style.display = "block"; }
+  document.getElementById("photoCameraBtn")?.classList.add("has-photo");
+  document.getElementById("photoLibraryBtn")?.classList.add("has-photo");
+  // Mirror into the in-burst detail card preview if it's open
+  const bdWrap = document.getElementById("bdPhotoPreview");
+  const bdImg  = document.getElementById("bdPhotoImg");
+  if (bdWrap && bdImg) { bdImg.src = currentPhotoURL; bdWrap.style.display = "block"; }
 }
 
 async function handlePhotoFile(file) {
@@ -2334,7 +2533,7 @@ document.getElementById("fab").addEventListener("click", () => {
 
 let pressTimer = null;
 map.on("mousedown touchstart", e => {
-  if (routeMode) return;
+  if (routeMode || addingStop) return;
   const ll = e.latlng || (e.touches && map.mouseEventToLatLng(e.touches[0]));
   if (!ll) return;
   pressTimer = setTimeout(() => openSheet(ll.lat, ll.lng), 600);
@@ -2344,6 +2543,7 @@ map.on("mouseup touchend mousemove touchmove", () => clearTimeout(pressTimer));
 // ── Map click (route mode / place-marker mode) ────────────────────────────────
 
 map.on("click", e => {
+  if (addingStop) { insertRouteStop(e.latlng.lat, e.latlng.lng); return; }
   if (routeMode) { handleRouteClick(e.latlng.lat, e.latlng.lng); return; }
   if (placeMarkerMode) {
     exitPlaceMarkerMode();
@@ -2354,43 +2554,39 @@ map.on("click", e => {
 
 // ── Save marker ───────────────────────────────────────────────────────────────
 
-document.getElementById("saveBtn").addEventListener("click", async () => {
-  if (!isSignedIn()) { showAuthOverlay("Sign in before saving a marker."); return; }
-  if (!selectedCategory) { showToast("Please select a category first"); return; }
-  if (pendingLat == null) { showToast("No location set — tap the map first"); return; }
-
-  const btn  = document.getElementById("saveBtn");
-  const note = document.getElementById("noteInput").value.trim();
-  // Primary type = first selected tag's category, else the current category
+// Shared save used by the burst detail step (and the legacy sheet). Returns true
+// on success; throws on a network/server error so callers can show a message.
+async function saveMarker(note) {
+  if (!isSignedIn()) { showAuthOverlay("Sign in before saving a marker."); return false; }
+  if (!selectedCategory) { showToast("Please pick a category first"); return false; }
+  if (pendingLat == null) { showToast("No location set"); return false; }
   const primaryType = selectedTags[0]?.type || selectedCategory.id;
-  const fd   = new FormData();
-  fd.append("lat",  pendingLat);
-  fd.append("lng",  pendingLng);
+  const fd = new FormData();
+  fd.append("lat", pendingLat);
+  fd.append("lng", pendingLng);
   fd.append("type", primaryType);
   fd.append("subtypes", JSON.stringify(selectedTags));
   if (selectedTags[0])    fd.append("subtype",  selectedTags[0].label);
   if (selectedDifficulty) fd.append("severity", selectedDifficulty);
   if (note)               fd.append("note",     note);
   if (currentPhoto)       fd.append("photo",    currentPhoto);
+  const res = await apiFetch(`${API}/markers`, { method: "POST", body: fd });
+  if (!res.ok) throw new Error(`${res.status} — ${await res.text()}`);
+  addMarkerToMap(await res.json());
+  return true;
+}
 
-  btn.disabled   = true;
-  btn.textContent = "Saving…";
+document.getElementById("saveBtn").addEventListener("click", async () => {
+  const btn = document.getElementById("saveBtn");
+  const note = document.getElementById("noteInput").value.trim();
+  btn.disabled = true; btn.textContent = "Saving…";
   try {
-    const res = await apiFetch(`${API}/markers`, { method: "POST", body: fd });
-    if (!res.ok) {
-      const body = await res.text();
-      throw new Error(`${res.status} — ${body}`);
-    }
-    addMarkerToMap(await res.json());
-    clearFormState();
-    closeSheet();
-    showToast("Marker saved ✓");
+    const ok = await saveMarker(note);
+    if (ok) { clearFormState(); closeSheet(); showToast("Marker saved ✓"); }
   } catch (err) {
     showToast("Save failed: " + err.message);
-    console.error("Save marker error:", err);
   } finally {
-    btn.disabled   = false;
-    btn.textContent = "✓ Save marker";
+    btn.disabled = false; btn.textContent = "✓ Save marker";
   }
 });
 
@@ -3247,6 +3443,28 @@ document.getElementById("routeBtn").addEventListener("click", () => {
 });
 document.getElementById("clearRouteBtn").addEventListener("click", exitRouteMode);
 
+// ── Add a stop to an existing route ───────────────────────────────────────────
+let addingStop = false;
+document.getElementById("addStopBtn").addEventListener("click", () => {
+  addingStop = !addingStop;
+  document.getElementById("addStopBtn").classList.toggle("active", addingStop);
+  if (addingStop) showBanner("Tap the map to add a stop", false);
+  else hideBanner();
+});
+
+async function insertRouteStop(lat, lng) {
+  addingStop = false;
+  document.getElementById("addStopBtn").classList.remove("active");
+  hideBanner();
+  if (routeWaypoints.length < 2) return;
+  // Insert as a via-point just before the destination, then reroute.
+  routeWaypoints.splice(routeWaypoints.length - 1, 0, { lat, lng });
+  if (!routeLayer) routeLayer = L.layerGroup().addTo(map);
+  L.circleMarker([lat, lng], { radius: 9, fillColor: "#f2872e", color: "#fff", weight: 2.5, fillOpacity: 1 })
+    .bindPopup("Stop").addTo(routeLayer);
+  await fetchAndDrawRoute(Array.from(avoidSeverities), Array.from(forceGapIds));
+}
+
 function enterRouteMode() {
   routeMode = true; routeWaypoints = []; forceGapIds.clear();
   closeSheet();
@@ -3295,6 +3513,8 @@ function syncAvoidChips() {
 }
 
 function clearRoute() {
+  addingStop = false;
+  document.getElementById("addStopBtn")?.classList.remove("active");
   if (routeLayer) { map.removeLayer(routeLayer); routeLayer = null; }
   routePolyline = null;
   routeDashedLines = [];

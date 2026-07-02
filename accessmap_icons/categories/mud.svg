@@ -1,9 +1,0 @@
-<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mud icon">
-  <ellipse cx="40" cy="54" rx="28" ry="10" fill="#79B9EA"/>
-  <ellipse cx="29" cy="51" rx="10" ry="5" fill="#A8D7F5"/>
-  <ellipse cx="51" cy="56" rx="11" ry="5" fill="#5CA5D8"/>
-  <path d="M24 35C20 30 21 25 25 20C30 27 31 32 24 35Z" fill="#5CB7E8"/>
-  <path d="M44 30C40 25 41 20 45 15C50 22 51 27 44 30Z" fill="#8CCDF2"/>
-  <path d="M58 39C61 33 65 31 71 32C69 39 65 42 58 39Z" fill="#8CCDF2"/>
-  <path d="M19 46C12 44 9 40 8 35C16 35 20 39 19 46Z" fill="#8CCDF2"/>
-</svg>

@@ -1,9 +1,0 @@
-<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Drop off exposed edge icon">
-
-<path d="M18 18C18 24 18 32 20 40C22 48 24 56 24 62" stroke="#77A582" stroke-width="7" stroke-linecap="round"/>
-<path d="M31 18L40 62" stroke="#D9D9D2" stroke-width="8" stroke-linecap="round"/>
-<path d="M49 18L40 62" stroke="#AAB7AA" stroke-width="8" stroke-linecap="round" opacity="0.95"/>
-<path d="M58 18V62" stroke="#75685D" stroke-width="3.5" stroke-dasharray="4 5" stroke-linecap="round"/>
-<path d="M58 30L67 26" stroke="#D95C54" stroke-width="3.5" stroke-linecap="round"/>
-
-</svg>

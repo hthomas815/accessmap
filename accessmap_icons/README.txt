@@ -1,12 +1,6 @@
-AccessMap SVG icon pack
-=======================
+AccessMap image assets
+======================
 
-This pack contains:
-- categories/: top-level category icons
-- subtypes/: subtype icons for each category
-
-Naming pattern:
-- categories/<category>.svg
-- subtypes/<category>_<subtype>.svg
-
-All icons use a 80x80 viewBox and are simple inline-SVG-friendly assets.
+This folder now contains:
+- icon.png: source image used to generate the app icons in `frontend/`
+- background.jpg: legacy background artwork kept for reference

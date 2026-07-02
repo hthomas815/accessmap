@@ -1,8 +1,0 @@
-<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Flooding icon">
-
-<path d="M18 26H62V46H18Z" fill="#6F60A9" opacity="0.25"/>
-<path d="M16 54C21 50 26 50 31 54C36 58 41 58 46 54C51 50 56 50 61 54C64 56 67 56 69 54" stroke="#5DB6E6" stroke-width="4" stroke-linecap="round" fill="none"/>
-<path d="M14 64C19 60 24 60 29 64C34 68 39 68 44 64C49 60 54 60 59 64C62 66 65 66 67 64" stroke="#5DB6E6" stroke-width="4" stroke-linecap="round" fill="none"/>
-<path d="M26 20V32" stroke="#1F2430" stroke-width="3" stroke-linecap="round"/>
-
-</svg>
