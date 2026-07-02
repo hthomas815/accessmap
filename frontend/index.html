@@ -737,6 +737,27 @@
     .mp-edit-save-btn:active { opacity: .85; }
     .mp-edit-save-btn:disabled { opacity: .5; }
 
+    /* ── Help panel ── */
+    #helpOverlay {
+      display: none; position: fixed; inset: 0; z-index: 3000;
+      background: rgba(0,0,0,.65); align-items: flex-end;
+    }
+    #helpOverlay.open { display: flex; }
+    #helpSheet {
+      width: 100%; max-height: 88dvh; background: #111827;
+      border-radius: 24px 24px 0 0; overflow-y: auto; padding: 0 0 32px;
+    }
+    .help-handle { width: 40px; height: 4px; border-radius: 2px; background: #3a4a6a; margin: 12px auto 0; }
+    .help-title { font-size: 18px; font-weight: 700; color: #eee; padding: 18px 20px 8px; }
+    .help-section { padding: 4px 20px; }
+    .help-section-title { font-size: 13px; font-weight: 700; color: #e94560; text-transform: uppercase; letter-spacing: .06em; margin: 16px 0 8px; }
+    .help-row { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; }
+    .help-icon { width: 36px; height: 36px; flex-shrink: 0; border-radius: 10px; background: #16213e; border: 1.5px solid #2a3a5a; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    .help-text { flex: 1; }
+    .help-text strong { display: block; font-size: 14px; color: #dde; margin-bottom: 2px; }
+    .help-text span { font-size: 13px; color: #7a8aaa; line-height: 1.4; }
+    .help-close-btn { display: block; width: calc(100% - 40px); margin: 20px 20px 0; padding: 14px; border-radius: 14px; border: none; background: #e94560; color: #fff; font-size: 15px; font-weight: 700; cursor: pointer; }
+
     /* ── Search bar ── */
     #searchBar {
       position: absolute;
@@ -955,6 +976,48 @@
         <div class="menu-row-sub">Cache map tiles for offline use</div>
       </div>
     </div>
+    <div class="menu-row" onclick="closeMenu();openHelp()">
+      <div class="menu-row-icon" style="background:#1a1a2e;border-color:#a0a8c855">❓</div>
+      <div class="menu-row-text">
+        <div class="menu-row-label">How to use</div>
+        <div class="menu-row-sub">Guide to all buttons and features</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Help panel ── -->
+<div id="helpOverlay">
+  <div id="helpSheet">
+    <div class="help-handle"></div>
+    <div class="help-title">How to use AccessMap</div>
+    <div class="help-section">
+
+      <div class="help-section-title">Map controls</div>
+      <div class="help-row"><div class="help-icon">🔍</div><div class="help-text"><strong>Search bar</strong><span>Type a place or pub/café name. Tap a result then "↗ Route here" to navigate there from your location.</span></div></div>
+      <div class="help-row"><div class="help-icon">⊕</div><div class="help-text"><strong>Find me</strong><span>Centres the map on your current GPS location.</span></div></div>
+      <div class="help-row"><div class="help-icon">🔄</div><div class="help-text"><strong>Rotate map</strong><span>Two-finger twist to rotate. Tap the N button to snap back to north-up.</span></div></div>
+
+      <div class="help-section-title">Markers</div>
+      <div class="help-row"><div class="help-icon">＋</div><div class="help-text"><strong>Drop a marker</strong><span>Tap ＋ to drop a marker at your current location. Use the 📍 pin button to tap anywhere on the map instead.</span></div></div>
+      <div class="help-row"><div class="help-icon">👆</div><div class="help-text"><strong>View a marker</strong><span>Tap any marker to open its detail panel — photo, difficulty, and community updates.</span></div></div>
+      <div class="help-row"><div class="help-icon">✏️</div><div class="help-text"><strong>Edit a marker</strong><span>In the marker panel, tap ✏️ Edit to change type, difficulty or note.</span></div></div>
+      <div class="help-row"><div class="help-icon">💬</div><div class="help-text"><strong>Add an update</strong><span>In the marker panel, type a comment (e.g. "gate removed") and tap Post.</span></div></div>
+
+      <div class="help-section-title">Routes</div>
+      <div class="help-row"><div class="help-icon">↗</div><div class="help-text"><strong>Plan a route</strong><span>Tap the route button, then tap start and end points. Tap Done when finished.</span></div></div>
+      <div class="help-row"><div class="help-icon">🚧</div><div class="help-text"><strong>Avoid obstacles</strong><span>After a route is drawn, use the avoid panel to route around hard or tricky markers.</span></div></div>
+
+      <div class="help-section-title">Coverage (☰ menu)</div>
+      <div class="help-row"><div class="help-icon">◉</div><div class="help-text"><strong>Explored paths</strong><span>Shows all walks you've imported as a blue overlay, plus total distance explored.</span></div></div>
+      <div class="help-row"><div class="help-icon">📂</div><div class="help-text"><strong>Import GPX</strong><span>Import a recorded walk. Only new ground is added — already-covered sections are skipped.</span></div></div>
+      <div class="help-row"><div class="help-icon">📥</div><div class="help-text"><strong>Save offline</strong><span>Caches the current map view for use without internet. Turn on coverage layer first.</span></div></div>
+
+      <div class="help-section-title">Install as an app</div>
+      <div class="help-row"><div class="help-icon">📱</div><div class="help-text"><strong>Add to home screen</strong><span>iPhone: Share → Add to Home Screen. Android: menu → Install app.</span></div></div>
+
+    </div>
+    <button class="help-close-btn" onclick="closeHelp()">Got it</button>
   </div>
 </div>
 
@@ -1129,7 +1192,9 @@ const map = L.map("map", { zoomControl: false, rotate: true, touchRotate: true }
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution: "© OpenStreetMap contributors", maxZoom: 19,
 }).addTo(map);
-L.control.zoom({ position: "topleft" }).addTo(map);
+// Remove any zoom/rotate controls added by leaflet-rotate
+if (map.zoomControl) map.zoomControl.remove();
+if (map.rotateControl) map.rotateControl.remove();
 
 // ── State ─────────────────────────────────────────────────────────────────────
 
@@ -1637,6 +1702,11 @@ document.addEventListener("click", e => {
 // ── Menu ─────────────────────────────────────────────────────────────────────
 function openMenu()  { document.getElementById("menuPanel").classList.add("open"); }
 function closeMenu() { document.getElementById("menuPanel").classList.remove("open"); }
+function openHelp()  { document.getElementById("helpOverlay").classList.add("open"); }
+function closeHelp() { document.getElementById("helpOverlay").classList.remove("open"); }
+document.getElementById("helpOverlay").addEventListener("click", e => {
+  if (e.target === document.getElementById("helpOverlay")) closeHelp();
+});
 document.getElementById("menuBtn").addEventListener("click", openMenu);
 document.getElementById("menuPanel").addEventListener("click", e => {
   if (e.target === document.getElementById("menuPanel")) closeMenu();
