@@ -34,10 +34,10 @@
       z-index: 1000;
       width: 84px; height: 84px;
       border-radius: 50%;
-      background: #8a3e18;
-      border: none; color: #e8e4da;
+      background: #f2872e;
+      border: 3px solid #ffb066; color: #180e08;
       font-size: 38px; cursor: pointer;
-      box-shadow: 0 6px 28px rgba(138,62,24,.55);
+      box-shadow: 0 6px 28px rgba(242,135,46,.55);
       display: flex; align-items: center; justify-content: center;
       transition: transform .1s;
       -webkit-tap-highlight-color: transparent;
@@ -52,7 +52,7 @@
       width: 54px; height: 54px;
       border-radius: 50%;
       background: #f2872e;
-      border: 2px solid #ffb066;
+      border: 2.5px solid #4a2545;
       color: #180e08; font-size: 24px; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 2px 12px rgba(0,0,0,.5), 0 0 14px rgba(242,135,46,.55);
@@ -134,6 +134,16 @@
       background: #201408;
       border-radius: 2px;
       margin: 14px auto 0;
+    }
+
+    /* Always-visible close on the add-marker sheet */
+    .sheet-close-btn {
+      position: absolute; top: 12px; right: 14px; z-index: 5;
+      width: 34px; height: 34px; border-radius: 50%;
+      background: #fff3e2; border: 1.5px solid #d6741f;
+      color: #2e1a0b; font-size: 16px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      -webkit-tap-highlight-color: transparent;
     }
 
     /* ── Step 1: Category picker ── */
@@ -536,6 +546,71 @@
       pointer-events: none;
     }
 
+    /* ── Live walk-recording banner ── */
+    #recordBanner {
+      position: absolute;
+      top: 74px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 1002;
+      display: none; align-items: center; gap: 10px;
+      background: #180e08;
+      border: 1.5px solid #e0483f;
+      color: #fff;
+      padding: 8px 10px 8px 14px;
+      border-radius: 22px;
+      font-size: 14px; font-weight: 600;
+      white-space: nowrap;
+      box-shadow: 0 2px 14px rgba(0,0,0,.5);
+      -webkit-tap-highlight-color: transparent;
+    }
+    #recordBanner.show { display: flex; }
+    #recordBanner .rec-dot {
+      width: 11px; height: 11px; border-radius: 50%;
+      background: #e0483f; flex-shrink: 0;
+      animation: recPulse 1.3s ease-in-out infinite;
+    }
+    @keyframes recPulse { 0%,100% { opacity: 1; } 50% { opacity: .25; } }
+    #recFinishBtn {
+      padding: 6px 14px; border-radius: 16px; border: none;
+      background: #c67e86; color: #2e1a0b; font-size: 13px; font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* ── Show-my-routes button (home screen) ── */
+    #showRoutesBtn {
+      position: absolute;
+      bottom: 108px; left: 20px;
+      z-index: 1000;
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: #180e08;
+      border: 2px solid #2e9e5b;
+      color: #2e9e5b; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 16px rgba(0,0,0,.4);
+      transition: background .15s, color .15s, transform .1s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #showRoutesBtn.active { background: #2e9e5b; color: #fff; }
+    #showRoutesBtn:active { transform: scale(.93); }
+
+    /* ── Track-type chooser (exploration vs accessible) ── */
+    #trackTypeOverlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,.6); z-index: 6000; align-items: flex-end;
+    }
+    #trackTypeOverlay.show { display: flex; }
+    .tt-choice {
+      width: 100%; padding: 15px; border-radius: 12px; border: none;
+      color: #fff; font-size: 15px; font-weight: 700; cursor: pointer;
+      text-align: center; -webkit-tap-highlight-color: transparent;
+    }
+    #recDiscardBtn {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: #2e1a0a; border: none; color: #d0a0a0;
+      font-size: 14px; cursor: pointer; flex-shrink: 0;
+    }
+
     /* ── Menu button ── */
     #menuBtn {
       position: absolute;
@@ -543,14 +618,14 @@
       z-index: 1003;
       width: 44px; height: 44px;
       border-radius: 50%;
-      background: #180e08;
-      border: 2px solid #c09060;
-      color: #c09060; font-size: 18px; cursor: pointer;
+      background: #351735;
+      border: 2px solid #6b3a63;
+      color: #e8d6e4; font-size: 18px; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 2px 12px rgba(0,0,0,.5);
       -webkit-tap-highlight-color: transparent;
     }
-    #menuBtn:active { background: #c09060; color: #180e08; }
+    #menuBtn:active { background: #6b3a63; color: #fff; }
     #menuPanel {
       position: absolute;
       bottom: 0; left: 0; right: 0;
@@ -587,13 +662,13 @@
       width: 48px; height: 48px;
       border-radius: 50%;
       background: #1c1008;
-      border: 2px solid #8a5020;
+      border: 2.5px solid #4a2545;
       color: #f2872e; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 2px 10px rgba(0,0,0,.45);
       -webkit-tap-highlight-color: transparent;
     }
-    #targetBtn.place-mode { background: #8a3e18; color: #e8e4da; border-color: #8a3e18; }
+    #targetBtn.place-mode { background: #8a3e18; color: #e8e4da; border-color: #4a2545; }
     #targetBtn:active { opacity: .8; }
 
     /* ── North button — directly above FAB (radial fan) ── */
@@ -604,7 +679,7 @@
       width: 46px; height: 46px;
       border-radius: 50%;
       background: #1c1008;
-      border: 2px solid #8a5020;
+      border: 2.5px solid #4a2545;
       color: #f2872e; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 2px 10px rgba(0,0,0,.45);
@@ -815,14 +890,14 @@
       flex: 1;
       padding: 11px 16px;
       border-radius: 24px;
-      border: 1.5px solid #2e1a0a;
-      background: #180e08;
-      color: #eee; font-size: 15px; font-family: inherit;
+      border: 1.5px solid #5e2d55;
+      background: #2b1428;
+      color: #f3e8f0; font-size: 15px; font-family: inherit;
       outline: none;
       box-shadow: 0 2px 12px rgba(0,0,0,.5);
     }
-    #searchInput::placeholder { color: #5a3818; }
-    #searchInput:focus { border-color: #8a3e18; }
+    #searchInput::placeholder { color: #9a7a92; }
+    #searchInput:focus { border-color: #8a4a80; }
     #searchClearBtn {
       display: none;
       position: absolute; right: 58px; top: 50%; transform: translateY(-50%);
@@ -1059,6 +1134,90 @@
       white-space: nowrap;
     }
 
+    /* ══════════════════════════════════════
+       MARKER DETAIL SHEET — 1970s parchment redesign
+       (scoped to #markerPanel; overrides the global mauve theme)
+    ══════════════════════════════════════ */
+    :root {
+      --md-plum:      #2A132A;
+      --md-aubergine: #351735;
+      --md-burnt:     #C75A1C;
+      --md-orange:    #F28A2E;
+      --md-parchment: #FFF0D2;
+      --md-cream:     #FFF6E6;
+      --md-brown:     #7A4A2A;
+      --md-yellow:    #FFC43B;
+    }
+    #markerPanel {
+      background: rgba(255,240,210,.97) !important;
+      -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+      color: var(--md-plum) !important;
+      border-radius: 26px 26px 0 0;
+      box-shadow: 0 -8px 40px rgba(42,19,42,.28);
+      max-height: 66dvh;
+    }
+    #markerPanel .drag-handle { background: var(--md-plum) !important; width: 44px; height: 5px; }
+    #markerPanelContent { position: relative; padding-bottom: 22px; }
+
+    .md-close {
+      position: absolute; top: 14px; right: 16px; z-index: 3;
+      width: 42px; height: 42px; border-radius: 50%;
+      background: var(--md-cream); border: 1.5px solid #e7cfa0;
+      color: var(--md-plum); font-size: 18px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 8px rgba(42,19,42,.15);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .md-header { display: flex; align-items: center; gap: 14px; padding: 8px 66px 0 18px; }
+    .md-tile {
+      width: 60px; height: 60px; border-radius: 16px; flex-shrink: 0;
+      background: var(--md-burnt); color: var(--md-plum);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 12px rgba(199,90,28,.4);
+    }
+    .md-tile svg { width: 34px; height: 34px; }
+    .md-titles { min-width: 0; }
+    .md-title { font-size: 26px; font-weight: 800; color: var(--md-plum); line-height: 1.05; letter-spacing: -.01em; }
+    .md-sub { font-size: 15px; color: #6b3f56; margin-top: 3px; font-weight: 500; }
+    .md-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      margin: 14px 18px 0; padding: 8px 14px;
+      background: var(--md-cream); border: 1px solid #efd7ab;
+      border-radius: 20px; font-size: 14px; color: var(--md-plum); font-weight: 600;
+    }
+    .md-dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
+    .md-pill-sep { color: #b98a5c; }
+    .md-divider { height: 1px; background: rgba(42,19,42,.13); margin: 14px 18px 0; }
+    .md-photo { margin: 14px 18px 0; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 14px rgba(42,19,42,.18); }
+    .md-photo img { width: 100%; max-height: 46vh; object-fit: cover; display: block; cursor: zoom-in; }
+    .md-nophoto {
+      margin: 14px 18px 0; border-radius: 16px; padding: 26px; text-align: center;
+      background: var(--md-cream); border: 1px dashed #e2c390; color: #b08a6a; font-size: 14px;
+    }
+    .md-note { margin: 14px 18px 0; font-size: 14px; color: var(--md-brown); line-height: 1.5; }
+    .md-comments { padding: 16px 18px 0; }
+    .md-comments-label { font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--md-plum); margin-bottom: 8px; }
+    .md-empty { color: var(--md-brown); font-size: 14px; }
+    #markerPanel .mp-comment-list { display: flex; flex-direction: column; gap: 8px; }
+    #markerPanel .mp-comment { background: var(--md-cream) !important; border: 1px solid #efd7ab !important; border-radius: 12px; padding: 10px 12px; }
+    #markerPanel .mp-comment-body { color: var(--md-plum) !important; font-size: 13px; line-height: 1.45; }
+    #markerPanel .mp-comment-date { color: #9a7a5c !important; font-size: 11px; }
+    .md-add-row { display: flex; gap: 10px; align-items: stretch; padding: 12px 18px 0; }
+    #markerPanel #mpCommentInput {
+      flex: 1; background: var(--md-cream) !important; border: 1.5px solid #e7cfa0 !important;
+      border-radius: 16px; padding: 13px 15px; color: var(--md-plum) !important;
+      font-size: 14px; resize: none; font-family: inherit; line-height: 1.4;
+    }
+    #markerPanel #mpCommentInput::placeholder { color: #b08a6a !important; }
+    #markerPanel #mpCommentBtn {
+      align-self: stretch; padding: 0 22px; border: none; border-radius: 16px;
+      background: var(--md-burnt) !important; color: #fff6e6 !important;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+    }
+    .md-actions { display: flex; gap: 16px; align-items: center; padding: 16px 18px 0; }
+    .md-link { background: none; border: none; color: var(--md-brown); font-size: 14px; font-weight: 600; cursor: pointer; padding: 6px 2px; -webkit-tap-highlight-color: transparent; }
+    .md-link.danger { color: #a8321c; margin-left: auto; }
+
   </style>
 </head>
 <body>
@@ -1068,7 +1227,7 @@
 <!-- ── Search bar ── -->
 <div id="searchBar">
   <div style="position:relative;flex:1;display:flex;align-items:center;">
-    <svg style="position:absolute;left:14px;pointer-events:none;flex-shrink:0" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8a5020" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
+    <svg style="position:absolute;left:14px;pointer-events:none;flex-shrink:0" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#f2872e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
     <input id="searchInput" type="text" placeholder="Search for a place…" autocomplete="off" style="padding-left:40px!important" />
     <button id="searchClearBtn" title="Clear">✕</button>
   </div>
@@ -1078,12 +1237,21 @@
 <button id="locateBtn" title="Go to my location">⊕</button>
 <button id="fab" title="Drop marker at my location">＋</button>
 <button id="routeBtn" title="Plan a route"><svg width="28" height="28" viewBox="0 0 40 40" fill="none"><circle cx="8" cy="33" r="5" stroke="currentColor" stroke-width="3"/><path d="M13 33 H30 Q36 33 36 27 Q36 21 30 21 H12 Q6 21 6 15 Q6 9 12 9 H28" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/><polyline points="23,4 28,9 23,14" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<button id="showRoutesBtn" title="Show routes I've walked" onclick="toggleAccessibleRoutes()"><svg width="26" height="26" viewBox="0 0 40 40" fill="none"><path d="M8 33 Q8 24 18 22 Q28 20 28 12 Q28 6 34 6" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke-dasharray="1 6"/><circle cx="8" cy="33" r="4" fill="currentColor"/><path d="M31 4 L34 7 L31 10" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></button>
 <button id="menuBtn" title="Menu">☰</button>
 <button id="targetBtn" title="Place marker on map"><svg width="20" height="26" viewBox="0 0 24 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 1C7.03 1 3 5.03 3 10c0 7.25 9 19 9 19s9-11.75 9-19c0-4.97-4.03-9-9-9z" fill="currentColor"/><circle cx="12" cy="10" r="3.5" fill="#180e08"/></svg></button>
 <button id="northBtn" title="Map orientation"><span class="north-arrow" style="display:flex;flex-direction:column;align-items:center;line-height:1;gap:1px;transition:transform 0.3s ease"><span style="color:#f2872e;font-size:11px">▲</span><span style="font-size:10px;font-weight:700;color:#d0c0a0">N</span></span></button>
 <input type="file" id="gpxFileInput" accept=".gpx,.xml" style="display:none" />
 <div id="routeBanner"></div>
 <div id="coverageStats"></div>
+
+<!-- ── Live walk-recording banner ── -->
+<div id="recordBanner">
+  <span class="rec-dot"></span>
+  <span id="recStats">0.0 km · 0:00</span>
+  <button id="recFinishBtn" onclick="stopRecording(true)">Finish</button>
+  <button id="recDiscardBtn" onclick="stopRecording(false)" title="Discard">✕</button>
+</div>
 
 <div id="authOverlay">
   <div id="authCard">
@@ -1100,6 +1268,7 @@
 <!-- ── Marker sheet ── -->
 <div id="sheet">
   <div class="drag-handle"></div>
+  <button class="sheet-close-btn" onclick="closeSheet()" title="Close">✕</button>
 
   <!-- Step 1: Category picker -->
   <div id="step1">
@@ -1131,7 +1300,7 @@
       <div id="selectedTagsRow" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
     </div>
 
-    <div class="sec-label">Type <span style="font-weight:500;text-transform:none;letter-spacing:0;color:#7a5a38;">· tap all that apply</span></div>
+    <div class="sec-label" id="subtypeLabel">Type <span style="font-weight:500;text-transform:none;letter-spacing:0;color:#7a5a38;">· tap all that apply</span></div>
     <div id="subtypeGrid" class="subtype-grid"></div>
 
     <button type="button" id="addAnotherBtn" style="width:100%;padding:12px;margin-bottom:20px;border-radius:12px;border:1.5px dashed #8a5020;background:transparent;color:#c08a4a;font-size:14px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;">＋ Add another category</button>
@@ -1220,13 +1389,6 @@
       </div>
       <div class="menu-row-indicator" id="menuCoverageIndicator"></div>
     </div>
-    <div class="menu-row" onclick="cycleCoverageMode()">
-      <div class="menu-row-icon" style="background:#211609;border-color:#e8bd8e">◌</div>
-      <div class="menu-row-text">
-        <div class="menu-row-label">Coverage view</div>
-        <div class="menu-row-sub" id="menuCoverageModeSub">My explored area</div>
-      </div>
-    </div>
     <div class="menu-row" id="menuGridRow" onclick="toggleGridFromMenu()">
       <div class="menu-row-icon" style="background:#1a3020;border-color:#66bb6a55">⊞</div>
       <div class="menu-row-text">
@@ -1235,20 +1397,19 @@
       </div>
       <div class="menu-row-indicator" id="menuGridIndicator"></div>
     </div>
+    <div class="menu-row" onclick="startRecording()">
+      <div class="menu-row-icon" style="background:#2a0e0e;border-color:#e0483f55">⏺</div>
+      <div class="menu-row-text">
+        <div class="menu-row-label">Record a walk</div>
+        <div class="menu-row-sub">Track your route live with GPS — no Strava needed</div>
+      </div>
+    </div>
     <div class="menu-row" onclick="document.getElementById('gpxFileInput').click()">
       <div class="menu-row-icon" style="background:#160e08;border-color:#f2872e55">📂</div>
       <div class="menu-row-text">
         <div class="menu-row-label">Import GPX walk</div>
         <div class="menu-row-sub">Upload a recorded walk</div>
       </div>
-    </div>
-    <div class="menu-row" onclick="openStrava()">
-      <div class="menu-row-icon" style="background:#2a1408;border-color:#fc4c0255">🔗</div>
-      <div class="menu-row-text">
-        <div class="menu-row-label">Strava sync</div>
-        <div class="menu-row-sub" id="menuStravaSub">Auto-import walks from Strava</div>
-      </div>
-      <div class="menu-row-indicator" id="menuStravaIndicator"></div>
     </div>
     <div class="menu-row" onclick="saveAreaOffline()">
       <div class="menu-row-icon" style="background:#160e08;border-color:#f2872e55">📥</div>
@@ -1324,6 +1485,18 @@
   <div id="photoLightboxHint">Swipe down or tap to close</div>
   <button id="photoLightboxClose" onclick="closePhotoLightbox()">✕</button>
   <img id="photoLightboxImg" alt="Photo full view" />
+</div>
+
+<!-- ── Track-type chooser (exploration vs accessible) ── -->
+<div id="trackTypeOverlay">
+  <div class="confirm-sheet">
+    <div class="confirm-msg">How should this walk be saved?</div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <button class="tt-choice" style="background:#8a3410;" onclick="_resolveTrackType('exploration')">🧭 Exploration<br><span style="font-weight:500;font-size:13px;opacity:.85;">Add new ground to my explored areas</span></button>
+      <button class="tt-choice" style="background:#2e9e5b;" onclick="_resolveTrackType('accessible')">✓ Accessible route<br><span style="font-weight:500;font-size:13px;opacity:.85;">A route I know works — save the whole path</span></button>
+      <button class="confirm-cancel" onclick="_resolveTrackType(null)">Cancel</button>
+    </div>
+  </div>
 </div>
 
 <!-- ── Custom confirm dialog ── -->
@@ -1437,6 +1610,10 @@ async function handleSignedOut(showOverlay = false) {
   clearRoute();
   map.removeLayer(coverageLayer);
   map.removeLayer(gridLayer);
+  map.removeLayer(accessibleLayer);
+  accessibleLayer.clearLayers();
+  accessibleVisible = false;
+  document.getElementById("showRoutesBtn").classList.remove("active");
   clearMapData();
   coverageVisible = false;
   gridVisible = false;
@@ -1500,30 +1677,44 @@ async function initAuth() {
     return;
   }
 
+  // Capture auth params from the URL BEFORE creating the client — detectSessionInUrl
+  // can strip the hash during init, and we need these as a reliable fallback.
+  const rawHash   = location.hash.startsWith("#") ? location.hash.slice(1) : location.hash;
+  const rawSearch = location.search.startsWith("?") ? location.search.slice(1) : location.search;
+  const q = new URLSearchParams(rawSearch);
+  const h = new URLSearchParams(rawHash);
+
   supabaseClient = window.supabase.createClient(appConfig.supabase_url, appConfig.supabase_anon_key, {
     auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
   });
   document.getElementById("authMagicBtn").addEventListener("click", signInWithMagicLink);
 
-  // A magic link can land back here in a few shapes. `detectSessionInUrl` handles
-  // the ?code= (PKCE) and #access_token= (implicit) forms automatically. The
-  // token_hash form needs an explicit verify, so handle that here too.
-  const q = new URLSearchParams(location.search);
-  const h = new URLSearchParams(location.hash.replace(/^#/, ""));
-  const authErr   = q.get("error_description") || h.get("error_description");
-  const tokenHash = q.get("token_hash");
-  const otpType   = q.get("type");
-  if (tokenHash && otpType) {
-    const { error } = await supabaseClient.auth.verifyOtp({ token_hash: tokenHash, type: otpType });
-    history.replaceState(null, "", location.pathname);
-    if (error) {
-      authBooted = true;
-      showAuthOverlay("That sign-in link didn’t work — please request a fresh one.");
-      return;
+  // A magic link can come back in several shapes — handle each explicitly so login
+  // works regardless of the Supabase flow type (this is what was failing before):
+  //   • implicit   → #access_token & #refresh_token → setSession
+  //   • token_hash → ?token_hash & type             → verifyOtp
+  //   • pkce       → ?code=                          → handled by detectSessionInUrl
+  const authErr     = q.get("error_description") || h.get("error_description");
+  const hashAccess  = h.get("access_token");
+  const hashRefresh = h.get("refresh_token");
+  const tokenHash   = q.get("token_hash");
+  const otpType     = q.get("type") || h.get("type");
+  try {
+    if (hashAccess && hashRefresh) {
+      await supabaseClient.auth.setSession({ access_token: hashAccess, refresh_token: hashRefresh });
+      history.replaceState(null, "", location.pathname);
+    } else if (tokenHash && otpType) {
+      const { error } = await supabaseClient.auth.verifyOtp({ token_hash: tokenHash, type: otpType });
+      history.replaceState(null, "", location.pathname);
+      if (error) {
+        authBooted = true;
+        showAuthOverlay("That sign-in link didn’t work — please request a fresh one.");
+        return;
+      }
+    } else if (authErr) {
+      showAuthOverlay(decodeURIComponent(authErr));
     }
-  } else if (authErr) {
-    showAuthOverlay(decodeURIComponent(authErr));
-  }
+  } catch (_) { /* fall through to getSession below */ }
 
   const { data: { session } } = await supabaseClient.auth.getSession();
   authBooted = true;
@@ -1554,11 +1745,9 @@ const CATEGORIES = [
   { id: "gate",          label: "Gate",   iconBg: "#2a1e0a", iconBorder: "#E7A13E55" },
   { id: "stile",         label: "Stile",  iconBg: "#0e2010", iconBorder: "#91C65A55" },
   { id: "steep",         label: "Steep",  iconBg: "#16142a", iconBorder: "#B8B4EA55" },
-  { id: "mud",           label: "Mud / Flooding", iconBg: "#0a1a28", iconBorder: "#79B9EA55" },
   { id: "narrow",        label: "Narrow", iconBg: "#0e1e10", iconBorder: "#7DBB5A55" },
-  { id: "rough_surface", label: "Rough",  iconBg: "#1e1810", iconBorder: "#B8AA9655" },
-  { id: "field",         label: "Field",  iconBg: "#0d1e0d", iconBorder: "#68b26b55" },
-  { id: "passage", label: "Passage", iconBg: "#1a1008", iconBorder: "#f2872e55" },
+  { id: "rough_surface", label: "Rough Terrain", iconBg: "#1e1810", iconBorder: "#B8AA9655" },
+  { id: "passage",       label: "Passage", iconBg: "#1a1008", iconBorder: "#f2872e55" },
   { id: "other",         label: "Other",  iconBg: "#18142a", iconBorder: "#B99BEA55" },
 ];
 
@@ -1607,76 +1796,45 @@ const SUBTYPE_ICONS = {
   "stile_standard_stile": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Stile icon"> <rect x="18" y="22" rx="3" fill="#5FA86D"/> <rect x="55" y="22" rx="3" fill="#5FA86D"/> <rect x="27" y="28" rx="2.5" fill="#8FD29A"/> <rect x="27" y="40" rx="2.5" fill="#8FD29A"/> <rect x="27" y="52" rx="2.5" fill="#8FD29A"/> <path d="M12 46H18" stroke="#2F6B43" stroke-width="4" stroke-linecap="round"/> <path d="M62 46H68" stroke="#2F6B43" stroke-width="4" stroke-linecap="round"/> <path d="M20 61L29 16" stroke="#2F6B43" stroke-width="3.5" stroke-linecap="round" opacity="0.8"/> <path d="M60 61L51 16" stroke="#2F6B43" stroke-width="3.5" stroke-linecap="round" opacity="0.8"/> </svg>`,
 };
 
+// Trimmed subtype lists — a few of the most useful per category. Subtypes stay
+// optional; the whole step can be skipped by just picking a difficulty.
 const SUBTYPES = {
   gate: [
     { label: "Standard gate",  key: "gate_standard_gate"  },
     { label: "Kissing gate",   key: "gate_kissing_gate"   },
     { label: "Locked gate",    key: "gate_locked_gate"    },
     { label: "Narrow gate",    key: "gate_narrow_gate"    },
-    { label: "Heavy gate",     key: "gate_heavy_gate"     },
-    { label: "Other gate",     key: "gate_other_gate"     },
   ],
-  stile: [
-    { label: "Standard stile",   key: "stile_standard_stile"      },
-    { label: "Ladder stile",     key: "stile_ladder_stile"        },
-    { label: "Narrow stile",     key: "stile_narrow_stile"        },
-    { label: "High step",        key: "stile_high_step"           },
-    { label: "Broken / awkward", key: "stile_broken_awkward_stile"},
-    { label: "Other stile",      key: "stile_other_stile"         },
-  ],
+  stile: [],
   steep: [
-    { label: "Short steep",    key: "steep_short_steep_section"  },
-    { label: "Long climb",     key: "steep_long_climb"           },
-    { label: "Long descent",   key: "steep_long_descent"         },
-    { label: "Slippery slope", key: "steep_slippery_slope"       },
-    { label: "Steps",          key: "steep_steps"                },
-    { label: "Other steep",    key: "steep_other_steep_section"  },
-  ],
-  mud: [
-    { label: "Light mud",      key: "mud_light_mud"           },
-    { label: "Deep mud",       key: "mud_deep_mud"            },
-    { label: "Standing water", key: "mud_standing_water"      },
-    { label: "Boggy ground",   key: "mud_boggy_ground"        },
-    { label: "Seasonal mud",   key: "mud_seasonal_mud"        },
-    { label: "Other mud",      key: "mud_other_muddy_section" },
+    { label: "Steep climb",    key: "steep_long_climb"     },
+    { label: "Steep descent",  key: "steep_long_descent"   },
+    { label: "Steps",          key: "steep_steps"          },
+    { label: "Slippery",       key: "steep_slippery_slope" },
   ],
   narrow: [
     { label: "Narrow path",    key: "narrow_narrow_path"           },
-    { label: "Overgrown path", key: "narrow_overgrown_path"        },
+    { label: "Overgrown",      key: "narrow_overgrown_path"        },
     { label: "Narrow bridge",  key: "narrow_narrow_bridge"         },
-    { label: "Narrow gap",     key: "narrow_narrow_gap"            },
     { label: "Exposed edge",   key: "narrow_drop_off_exposed_edge" },
-    { label: "Other narrow",   key: "narrow_other_narrow_section"  },
   ],
+  // Rough Terrain now also covers the old Mud / Flooding category
   rough_surface: [
-    { label: "Uneven ground",  key: "rough_uneven_ground"     },
-    { label: "Loose stones",   key: "rough_loose_stones"      },
-    { label: "Tree roots",     key: "rough_tree_roots"        },
-    { label: "Ruts",           key: "rough_ruts"              },
-    { label: "Broken surface", key: "rough_broken_surface"    },
-    { label: "Other rough",    key: "rough_other_rough_terrain"},
+    { label: "Uneven ground",  key: "rough_uneven_ground" },
+    { label: "Loose stones",   key: "rough_loose_stones"  },
+    { label: "Mud",            key: "mud_light_mud"       },
+    { label: "Flooding",       key: "mud_standing_water"  },
+    { label: "Tree roots",     key: "rough_tree_roots"    },
+  ],
+  passage: [
+    { label: "Hedge gap",  key: "passage_hedge_gap" },
+    { label: "Fence gap",  key: "passage_fence_gap" },
   ],
   other: [
     { label: "Fallen tree",  key: "other_fallen_tree"  },
     { label: "Livestock",    key: "other_livestock"    },
     { label: "Blocked path", key: "other_blocked_path" },
     { label: "Poor signage", key: "other_poor_signage" },
-    { label: "Other",        key: "other_other"        },
-  ],
-  field: [
-    { label: "Grassy / accessible",       key: "field_grassy_accessible"       },
-    { label: "Boggy / partly accessible", key: "field_boggy_partial"           },
-    { label: "Overgrown / inaccessible",  key: "field_overgrown_inaccessible"  },
-    { label: "Rough / uneven",            key: "field_rough_uneven"            },
-    { label: "Livestock present",         key: "field_livestock"               },
-    { label: "Other",                     key: "field_other"                   },
-  ],
-  passage: [
-    { label: "Hedge gap",        key: "passage_hedge_gap"         },
-    { label: "Field gap",        key: "passage_field_gap"         },
-    { label: "Fence gap",        key: "passage_fence_gap"         },
-    { label: "Shortcut path",    key: "passage_shortcut_path"     },
-    { label: "Other",            key: "passage_other"             },
   ],
 };
 
@@ -1804,10 +1962,14 @@ function goToStep2(cat) {
   hero.style.cssText = `background:${cat.iconBg};border:1.5px solid ${cat.iconBorder};width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;padding:8px;`;
   document.getElementById("selectedCatLabel").textContent = cat.label;
 
-  // Subtype buttons (multi-select toggles)
+  // Subtype buttons (multi-select toggles). Some categories (e.g. Stile) have none.
+  const subs = SUBTYPES[cat.id] || [];
+  const hasSubs = subs.length > 0;
+  document.getElementById("subtypeLabel").style.display = hasSubs ? "" : "none";
   const grid = document.getElementById("subtypeGrid");
+  grid.style.display = hasSubs ? "" : "none";
   grid.innerHTML = "";
-  (SUBTYPES[cat.id] || []).forEach(st => {
+  subs.forEach(st => {
     const btn = document.createElement("button");
     btn.className = "sub-btn";
     if (selectedTags.some(t => t.key === st.key)) btn.classList.add("selected");
@@ -1887,6 +2049,32 @@ document.getElementById("cancelBtn1").addEventListener("click", closeSheet);
 document.getElementById("cancelBtn2").addEventListener("click", closeSheet);
 document.getElementById("backBtn").addEventListener("click", goToStep1);
 document.getElementById("addAnotherBtn").addEventListener("click", goToStep1);
+
+// ── Swipe-down-to-dismiss for bottom sheets ───────────────────────────────────
+// Pull down from the top of a sheet to close it (like a native bottom sheet).
+// Only engages when the sheet is scrolled to the top, so it doesn't fight scrolling.
+function enableSwipeDismiss(sheet, closeFn) {
+  let startY = null, dy = 0, dragging = false;
+  sheet.addEventListener("touchstart", e => {
+    if (e.touches.length !== 1 || sheet.scrollTop > 0) { dragging = false; return; }
+    startY = e.touches[0].clientY; dy = 0; dragging = true;
+  }, { passive: true });
+  sheet.addEventListener("touchmove", e => {
+    if (!dragging || startY == null) return;
+    dy = e.touches[0].clientY - startY;
+    if (dy > 0) { sheet.style.transition = "none"; sheet.style.transform = `translateY(${dy}px)`; }
+  }, { passive: true });
+  sheet.addEventListener("touchend", () => {
+    if (!dragging) return;
+    dragging = false;
+    sheet.style.transition = "";
+    sheet.style.transform = "";      // clears inline transform so the .open class takes over
+    if (dy > 90) closeFn();
+    startY = null; dy = 0;
+  });
+}
+enableSwipeDismiss(document.getElementById("sheet"), closeSheet);
+enableSwipeDismiss(document.getElementById("markerPanel"), closeMarkerPanel);
 
 // ── Difficulty ────────────────────────────────────────────────────────────────
 
@@ -2255,18 +2443,15 @@ document.getElementById("menuPanel").addEventListener("click", e => {
 let stravaState = { configured: false, connected: false };
 
 async function refreshStravaStatus() {
-  if (!isSignedIn()) {
-    stravaState = { configured: false, connected: false };
-    document.getElementById("menuStravaSub").textContent = "Sign in to connect Strava";
-    document.getElementById("menuStravaIndicator").classList.remove("on");
-    return;
-  }
+  // Strava sync UI is currently removed (Strava's API now needs a paid
+  // subscription). The backend endpoints stay dormant; nothing to update here.
+  const sub = document.getElementById("menuStravaSub");
+  const ind = document.getElementById("menuStravaIndicator");
+  if (!sub || !ind) return;
   try {
     const res = await apiFetch(`${API}/strava/status`);
     if (!res.ok) return;
     stravaState = await res.json();
-    const sub = document.getElementById("menuStravaSub");
-    const ind = document.getElementById("menuStravaIndicator");
     if (!stravaState.configured) {
       sub.textContent = "Not set up on the server yet";
       ind.classList.remove("on");
@@ -2547,43 +2732,68 @@ function mpTagChips(m) {
     `</div>`;
 }
 
+// Simple single-colour (currentColor) category glyphs for the detail header tile.
+const MONO_ICONS = {
+  gate:          `<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 13v24M39 13v24"/><path d="M9 19h30M9 31h30"/><path d="M11 20l26 10M37 20 11 30"/></svg>`,
+  stile:         `<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 37v-7h9v-8h9v-8h8"/><path d="M8 41h32"/></svg>`,
+  steep:         `<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 39 20 13l7 12 4-6 11 20z"/></svg>`,
+  narrow:        `<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8 20 40M32 8 28 40"/><path d="M24 12v24" stroke-dasharray="2.5 5"/></svg>`,
+  rough_surface: `<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 33l8-10 7 8 6-12 7 10 8-8"/><path d="M6 40h36"/></svg>`,
+  passage:       `<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 10v28M36 10v28"/><path d="M15 24h16"/><path d="M26 18l7 6-7 6"/></svg>`,
+  other:         `<svg viewBox="0 0 48 48" fill="currentColor"><circle cx="14" cy="24" r="3.4"/><circle cx="24" cy="24" r="3.4"/><circle cx="34" cy="24" r="3.4"/></svg>`,
+};
+const SEV_DETAIL = {
+  low:    { label: "Easy",   dot: "#43a047" },
+  medium: { label: "Tricky", dot: "#FFC43B" },
+  high:   { label: "Hard",   dot: "#e0483f" },
+};
+
 function openMarkerPanel(m) {
   currentMarkerPanelId = m.id;
-  const cat   = getCat(m.type);
-  const color = TYPE_COLORS[m.type] || "#4a5080";
-  const svg   = ICONS[cat.id] || ICONS.other;
-  const sevLabel = { low: "🟢 Easy", medium: "🟡 Tricky", high: "🔴 Hard" };
+  const cat  = getCat(m.type);
+  const mono = MONO_ICONS[cat.id] || MONO_ICONS.other;
+  const tags = mpTags(m);
+  const sub  = tags.map(t => t.label).join(", ");
+  const sev  = SEV_DETAIL[m.severity];
 
   document.getElementById("markerPanelContent").innerHTML = `
     <div class="drag-handle"></div>
-    <div class="mp-header">
-      <div class="mp-icon" style="background:${color}cc">${svg}</div>
-      <div class="mp-title">
-        <div class="mp-type">${cat.label}</div>
-        ${mpTagLine(m)}
+    <button class="md-close" onclick="closeMarkerPanel()" aria-label="Close">✕</button>
+
+    <div class="md-header">
+      <div class="md-tile">${mono}</div>
+      <div class="md-titles">
+        <div class="md-title">${cat.label}</div>
+        ${sub ? `<div class="md-sub">${sub}</div>` : ""}
       </div>
-      <button class="mp-close-btn" onclick="closeMarkerPanel()">✕</button>
     </div>
-    ${mpTagChips(m)}
-    <div class="mp-meta">
-      ${m.severity ? `<span>${sevLabel[m.severity] || m.severity}</span>` : ""}
+
+    <div class="md-pill">
+      <span class="md-dot" style="background:${sev ? sev.dot : "#b98a5c"}"></span>
+      ${sev ? `<span>${sev.label}</span><span class="md-pill-sep">·</span>` : ""}
       <span>Updated: ${fmt(m.updated_at)}</span>
     </div>
-    ${m.photo_url ? `<div class="mp-photo"><img src="${m.photo_url}" alt="Photo" onclick="openPhotoLightbox(this.src)"></div>` : ""}
-    ${m.note ? `<div class="mp-note">${m.note}</div>` : ""}
-    <div class="mp-comments-section">
-      <div class="mp-comments-label">Updates &amp; comments</div>
+    <div class="md-divider"></div>
+
+    ${m.photo_url
+      ? `<div class="md-photo"><img src="${m.photo_url}" alt="Marker photo" onclick="openPhotoLightbox(this.src)"></div>`
+      : `<div class="md-nophoto">No photo yet</div>`}
+    ${m.note ? `<div class="md-note">${m.note}</div>` : ""}
+
+    <div class="md-comments">
+      <div class="md-comments-label">Updates &amp; comments</div>
       <div class="mp-comment-list" id="mpCommentList">
-        <div style="color:#583618;font-size:13px">Loading…</div>
-      </div>
-      <div class="mp-add-row">
-        <textarea id="mpCommentInput" rows="1" placeholder="E.g. gate removed, path less muddy…"></textarea>
-        <button id="mpCommentBtn" onclick="submitComment()">Post</button>
+        <div class="md-empty">Loading…</div>
       </div>
     </div>
-    ${m.created_by_me ? `<div class="mp-actions" style="display:flex;gap:8px;">
-      <button class="mp-edit-btn" onclick="openEditForm()">✏️ Edit</button>
-      <button class="mp-delete-btn" onclick="deleteMarkerFromPanel(${m.id})">🗑 Delete</button>
+    <div class="md-add-row">
+      <textarea id="mpCommentInput" rows="1" placeholder="E.g. gate removed, path less muddy…"></textarea>
+      <button id="mpCommentBtn" onclick="submitComment()">Post</button>
+    </div>
+
+    ${m.created_by_me ? `<div class="md-actions">
+      <button class="md-link" onclick="openEditForm()">Edit</button>
+      <button class="md-link danger" onclick="deleteMarkerFromPanel(${m.id})">Delete</button>
     </div>` : ""}
   `;
 
@@ -2639,7 +2849,7 @@ async function loadComments(markerId) {
     const listEl = document.getElementById("mpCommentList");
     if (!listEl) return;
     if (comments.length === 0) {
-      listEl.innerHTML = `<div style="color:#382614;font-size:13px">No updates yet — be the first.</div>`;
+      listEl.innerHTML = `<div class="md-empty">No updates yet — be the first.</div>`;
       return;
     }
     listEl.innerHTML = comments.map(c => `
@@ -3232,35 +3442,11 @@ let areaNameTimer  = null;
 
 function coverageSummaryText() {
   const me = coverageStatsModel.km_me || 0;
-  const all = coverageStatsModel.km_all || 0;
-  if (coverageMode === "me") return `${me.toFixed(1)} km explored by me`;
-  if (coverageMode === "all") return `${all.toFixed(1)} km explored by everyone`;
-  return `Mine ${me.toFixed(1)} km · Everyone ${all.toFixed(1)} km`;
+  return `${me.toFixed(1)} km explored`;
 }
 
-function updateCoverageModeUI() {
-  const sub = document.getElementById("menuCoverageModeSub");
-  const cov = document.getElementById("menuCoverageSub");
-  if (coverageMode === "me") {
-    sub.textContent = "My explored area";
-    cov.textContent = "Show only my imported walks";
-  } else if (coverageMode === "all") {
-    sub.textContent = "Everyone's explored area";
-    cov.textContent = "Show community coverage";
-  } else {
-    sub.textContent = "Mine + everyone's";
-    cov.textContent = "Overlay my walks and community coverage";
-  }
-}
-
-function cycleCoverageMode() {
-  coverageMode = coverageMode === "me" ? "all" : coverageMode === "all" ? "both" : "me";
-  updateCoverageModeUI();
-  if (coverageVisible) {
-    loadTracks();
-    loadDistanceStats();
-  }
-}
+// Coverage is now a simple on/off showing your own explored paths — no mode switch.
+function updateCoverageModeUI() {}
 
 function toggleCoverage() {
   if (!isSignedIn()) { showAuthOverlay("Sign in to keep your own explored area."); return; }
@@ -3291,11 +3477,13 @@ document.getElementById("gpxFileInput").addEventListener("change", async e => {
     const text = await file.text();
     const points = parseGpx(text);
     if (points.length < 2) { showToast("GPX has no track points"); return; }
+    const trackType = await chooseTrackType();
+    if (!trackType) { showToast("Import cancelled"); return; }
     showToast("Importing walk…", 10000);
     const res = await apiFetch(`${API}/tracks`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: file.name.replace(/\.gpx$/i, ""), points, gpx_source: "gpx" }),
+      body: JSON.stringify({ name: file.name.replace(/\.gpx$/i, ""), points, gpx_source: "gpx", track_type: trackType }),
     });
     if (!res.ok) throw new Error(await res.text());
     const data = await res.json();
@@ -3303,10 +3491,189 @@ document.getElementById("gpxFileInput").addEventListener("change", async e => {
     coverageLayer.clearLayers();
     loadTracks();
     loadDistanceStats();
+    if (accessibleVisible) loadAccessibleRoutes();
   } catch (err) {
     showToast("Import failed: " + err.message);
   }
 });
+
+// ── Live walk recording (GPS) ─────────────────────────────────────────────────
+// Records the user's walk directly in-app — no Strava/Garmin needed. Saves the
+// track to their coverage on finish.
+let recording = false;
+let recWatchId = null;
+let recPoints = [];
+let recLine = null;
+let recDistanceM = 0;
+let recStartMs = 0;
+let recTimer = null;
+let recWakeLock = null;
+
+async function _acquireWakeLock() {
+  try {
+    if ("wakeLock" in navigator) {
+      recWakeLock = await navigator.wakeLock.request("screen");
+      // Re-acquire if the page is backgrounded then foregrounded again
+      document.addEventListener("visibilitychange", _reacquireWakeLock);
+    }
+  } catch (_) { /* wake lock unsupported or denied — recording still works */ }
+}
+async function _reacquireWakeLock() {
+  if (recording && recWakeLock === null && document.visibilityState === "visible") {
+    try { recWakeLock = await navigator.wakeLock.request("screen"); } catch (_) {}
+  }
+}
+function _releaseWakeLock() {
+  document.removeEventListener("visibilitychange", _reacquireWakeLock);
+  if (recWakeLock) { recWakeLock.release().catch(() => {}); recWakeLock = null; }
+}
+
+function _haversineM(a, b) {
+  const R = 6371000, toRad = d => d * Math.PI / 180;
+  const dLat = toRad(b.lat - a.lat), dLng = toRad(b.lng - a.lng);
+  const s = Math.sin(dLat/2)**2 + Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.sin(dLng/2)**2;
+  return 2 * R * Math.asin(Math.sqrt(s));
+}
+
+function _recUpdateBanner() {
+  const secs = Math.floor((Date.now() - recStartMs) / 1000);
+  const mm = Math.floor(secs / 60), ss = String(secs % 60).padStart(2, "0");
+  document.getElementById("recStats").textContent =
+    `${(recDistanceM / 1000).toFixed(2)} km · ${mm}:${ss}`;
+}
+
+function startRecording() {
+  if (recording) { showToast("Already recording"); return; }
+  if (!isSignedIn()) { showAuthOverlay("Sign in before recording a walk."); return; }
+  if (!navigator.geolocation) { showToast("GPS not available on this device"); return; }
+  closeMenu();
+
+  recording = true;
+  recPoints = [];
+  recDistanceM = 0;
+  recStartMs = Date.now();
+  _acquireWakeLock();
+  recLine = L.polyline([], { color: "#c67e86", weight: 6, opacity: 0.9, lineCap: "round", lineJoin: "round" }).addTo(map);
+  document.getElementById("recordBanner").classList.add("show");
+  _recUpdateBanner();
+  recTimer = setInterval(_recUpdateBanner, 1000);
+
+  recWatchId = navigator.geolocation.watchPosition(
+    pos => {
+      const p = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+      const last = recPoints[recPoints.length - 1];
+      // Ignore jitter: only add a point once we've moved ~5 m
+      if (last && _haversineM(last, p) < 5) return;
+      if (last) recDistanceM += _haversineM(last, p);
+      recPoints.push(p);
+      recLine.addLatLng([p.lat, p.lng]);
+      if (recPoints.length === 1) map.setView([p.lat, p.lng], Math.max(map.getZoom(), 16));
+      _recUpdateBanner();
+    },
+    err => { showToast("GPS error: " + err.message); },
+    { enableHighAccuracy: true, maximumAge: 2000, timeout: 20000 }
+  );
+  showToast("Recording started — walk on!", 2500);
+}
+
+async function stopRecording(save) {
+  if (!recording) return;
+  recording = false;
+  if (recWatchId != null) navigator.geolocation.clearWatch(recWatchId);
+  recWatchId = null;
+  clearInterval(recTimer);
+  _releaseWakeLock();
+  document.getElementById("recordBanner").classList.remove("show");
+
+  const points = recPoints.slice();
+  if (recLine) { map.removeLayer(recLine); recLine = null; }
+
+  if (!save) { showToast("Recording discarded"); return; }
+  if (points.length < 2) { showToast("Walk too short to save"); return; }
+
+  const trackType = await chooseTrackType();
+  if (!trackType) { showToast("Walk discarded"); return; }
+
+  showToast("Saving walk…", 8000);
+  try {
+    const res = await apiFetch(`${API}/tracks`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: `Walk ${new Date().toLocaleDateString()}`,
+        points,
+        gpx_source: "recorded",
+        track_type: trackType,
+      }),
+    });
+    if (!res.ok) throw new Error(await res.text());
+    const data = await res.json();
+    showToast(data.message || "Walk saved ✓", 4000);
+    if (coverageVisible) { coverageLayer.clearLayers(); loadTracks(); loadDistanceStats(); }
+    if (accessibleVisible) loadAccessibleRoutes();
+  } catch (err) {
+    showToast("Save failed: " + err.message);
+  }
+}
+
+// Warn before leaving mid-recording
+window.addEventListener("beforeunload", e => {
+  if (recording) { e.preventDefault(); e.returnValue = ""; }
+});
+
+// ── Track-type chooser (exploration vs accessible) ────────────────────────────
+let _trackTypeResolver = null;
+function chooseTrackType() {
+  return new Promise(resolve => {
+    _trackTypeResolver = resolve;
+    document.getElementById("trackTypeOverlay").classList.add("show");
+  });
+}
+function _resolveTrackType(v) {
+  document.getElementById("trackTypeOverlay").classList.remove("show");
+  if (_trackTypeResolver) { _trackTypeResolver(v); _trackTypeResolver = null; }
+}
+
+// ── Accessible-routes layer ("routes I know work") ────────────────────────────
+let accessibleVisible = false;
+const accessibleLayer = L.layerGroup();
+
+function toggleAccessibleRoutes() {
+  if (!isSignedIn()) { showAuthOverlay("Sign in to see your saved routes."); return; }
+  accessibleVisible = !accessibleVisible;
+  document.getElementById("showRoutesBtn").classList.toggle("active", accessibleVisible);
+  if (accessibleVisible) {
+    accessibleLayer.addTo(map);
+    loadAccessibleRoutes();
+    showToast("Showing routes you know work", 2000);
+  } else {
+    map.removeLayer(accessibleLayer);
+    accessibleLayer.clearLayers();
+  }
+}
+
+async function loadAccessibleRoutes() {
+  if (!accessibleVisible || !isSignedIn()) return;
+  const b = map.getBounds();
+  try {
+    const res = await apiFetch(
+      `${API}/tracks?scope=me&track_type=accessible&min_lat=${b.getSouth()}&min_lng=${b.getWest()}&max_lat=${b.getNorth()}&max_lng=${b.getEast()}`
+    );
+    if (!res.ok) return;
+    accessibleLayer.clearLayers();
+    (await res.json()).forEach(track => {
+      if (!track.geojson) return;
+      const geo = JSON.parse(track.geojson);
+      if (geo.type !== "LineString") return;
+      const lls = geo.coordinates.map(([lng, lat]) => [lat, lng]);
+      // Casing + solid green line so known-good routes read clearly on the map
+      L.polyline(lls, { color: "#ffffff", weight: 8, opacity: 0.7, lineCap: "round", lineJoin: "round" }).addTo(accessibleLayer);
+      L.polyline(lls, { color: "#2e9e5b", weight: 5, opacity: 0.95, lineCap: "round", lineJoin: "round" })
+        .bindPopup(`✓ Accessible route${track.name ? `<br><b>${track.name}</b>` : ""}`)
+        .addTo(accessibleLayer);
+    });
+  } catch (_) {}
+}
 
 function parseGpx(xmlText) {
   const doc = new DOMParser().parseFromString(xmlText, "application/xml");
@@ -3320,31 +3687,38 @@ function parseGpx(xmlText) {
   return points;
 }
 
+// Convert a real-world width in metres to screen pixels at the current zoom,
+// so the coverage band stays a FIXED ~20 m on the ground instead of changing
+// apparent width as you zoom.
+function metersToPixels(m) {
+  const lat = map.getCenter().lat;
+  const metresPerPixel = 156543.03392 * Math.cos(lat * Math.PI / 180) / Math.pow(2, map.getZoom());
+  return m / metresPerPixel;
+}
+
 async function loadTracks() {
   if (!coverageVisible || !isSignedIn()) return;
   const b = map.getBounds();
   try {
     const res = await apiFetch(
-      `${API}/tracks?scope=${coverageMode}&min_lat=${b.getSouth()}&min_lng=${b.getWest()}&max_lat=${b.getNorth()}&max_lng=${b.getEast()}`
+      `${API}/tracks?scope=me&min_lat=${b.getSouth()}&min_lng=${b.getWest()}&max_lat=${b.getNorth()}&max_lng=${b.getEast()}`
     );
     if (!res.ok) return;
     coverageLayer.clearLayers();
     allTrackPoints = [];
+    // ~20 m wide corridor (≈10 m either side of the path), with a thinner core line.
+    const bandPx = Math.max(4, metersToPixels(20));
+    const corePx = Math.max(2, metersToPixels(8));
     (await res.json()).forEach(track => {
       if (!track.geojson) return;
       const geo = JSON.parse(track.geojson);
       if (geo.type !== "LineString") return;
       const lls = geo.coordinates.map(([lng, lat]) => [lat, lng]);
       geo.coordinates.forEach(([lng, lat]) => allTrackPoints.push({ lat, lng }));
-      const isMine = !!track.is_mine;
-      const outer = coverageMode === "both" && !isMine
-        ? { color: "#d8c2ee", weight: 24, opacity: 0.10 }
-        : { color: "#9b6dd6", weight: 30, opacity: 0.14 };
-      const inner = coverageMode === "both" && !isMine
-        ? { color: "#ddc9f0", weight: 12, opacity: 0.18 }
-        : { color: "#b98fe6", weight: 18, opacity: 0.32 };
-      L.polyline(lls, { ...outer, lineCap: "round", lineJoin: "round", interactive: false }).addTo(coverageLayer);
-      L.polyline(lls, { ...inner, lineCap: "round", lineJoin: "round", interactive: false }).addTo(coverageLayer);
+      L.polyline(lls, { color: "#9b6dd6", weight: bandPx, opacity: 0.28,
+        lineCap: "round", lineJoin: "round", interactive: false }).addTo(coverageLayer);
+      L.polyline(lls, { color: "#b98fe6", weight: corePx, opacity: 0.5,
+        lineCap: "round", lineJoin: "round", interactive: false }).addTo(coverageLayer);
     });
     if (gridVisible) drawGrid();
   } catch (_) {}
@@ -3384,16 +3758,9 @@ function cellCoverage(row, col, coveredSub) {
   return hit / (CELL_SUB * CELL_SUB);
 }
 
-function drawGrid() {
+async function drawGrid() {
   if (!gridVisible) return;      // never draw while hidden
-  gridLayer.clearLayers();
   const b = map.getBounds();
-
-  // Covered sub-cell keys from all loaded track points
-  const coveredSub = new Set();
-  allTrackPoints.forEach(({ lat, lng }) => {
-    coveredSub.add(`${Math.floor((lat - GRID_ORIGIN_LAT) / SUB_LAT)},${Math.floor((lng - GRID_ORIGIN_LNG) / SUB_LNG)}`);
-  });
 
   const rowMin = Math.floor((b.getSouth() - GRID_ORIGIN_LAT) / CELL_LAT);
   const rowMax = Math.floor((b.getNorth() - GRID_ORIGIN_LAT) / CELL_LAT);
@@ -3404,10 +3771,26 @@ function drawGrid() {
   const tooMany    = cellCount > 1200;         // zoomed too far out to draw cells
   const showLabels = map.getZoom() >= 14 && cellCount <= 300;
 
+  // Fetch TRUE per-cell coverage (area within ~10 m of a path ÷ cell area).
+  const fracs = new Map();
+  if (!tooMany && isSignedIn()) {
+    try {
+      const res = await apiFetch(
+        `${API}/tracks/coverage-grid?min_lat=${b.getSouth()}&min_lng=${b.getWest()}` +
+        `&max_lat=${b.getNorth()}&max_lng=${b.getEast()}` +
+        `&origin_lat=${GRID_ORIGIN_LAT}&origin_lng=${GRID_ORIGIN_LNG}` +
+        `&cell_lat=${CELL_LAT}&cell_lng=${CELL_LNG}`
+      );
+      if (res.ok) (await res.json()).cells.forEach(c => fracs.set(`${c.row},${c.col}`, c.frac));
+    } catch (_) {}
+  }
+  if (!gridVisible) return;      // toggled off during the await
+  gridLayer.clearLayers();
+
   if (!tooMany) {
     for (let row = rowMin; row <= rowMax; row++) {
       for (let col = colMin; col <= colMax; col++) {
-        const pct   = cellCoverage(row, col, coveredSub);
+        const pct   = fracs.get(`${row},${col}`) || 0;
         const sLat  = GRID_ORIGIN_LAT + row * CELL_LAT;
         const sLng  = GRID_ORIGIN_LNG + col * CELL_LNG;
         const label = cellLabel(row, col);
@@ -3415,7 +3798,7 @@ function drawGrid() {
           [[sLat, sLng], [sLat + CELL_LAT, sLng + CELL_LNG]],
           {
             fillColor:   pct > 0 ? "#43a047" : "#9b6dd6",
-            fillOpacity: pct > 0 ? 0.10 + pct * 0.45 : 0.03,
+            fillOpacity: pct > 0 ? 0.10 + pct * 0.55 : 0.03,
             color:       "#9b6dd6",
             weight:      0.8,
             opacity:     0.4,
@@ -3441,11 +3824,9 @@ function drawGrid() {
   // Stats pill: the cell under the map centre + total explored
   const c   = map.getCenter();
   const ci  = cellIndices(c.lat, c.lng);
-  const cpc = Math.round(cellCoverage(ci.row, ci.col, coveredSub) * 100);
+  const cpc = Math.round((fracs.get(`${ci.row},${ci.col}`) || 0) * 100);
   const statsEl = document.getElementById("coverageStats");
-  const kmStr = coverageStatsModel.km_all > 0 || coverageStatsModel.km_me > 0
-    ? ` · ${coverageSummaryText()}`
-    : "";
+  const kmStr = totalExploredKm > 0 ? ` · ${coverageSummaryText()}` : "";
   statsEl.textContent = tooMany
     ? `Zoom in to see cells${kmStr}`
     : `Cell ${cellLabel(ci.row, ci.col)} · ${cpc}% explored${kmStr}`;
@@ -3460,13 +3841,11 @@ async function loadDistanceStats() {
     const res = await apiFetch(`${API}/tracks/stats`);
     if (!res.ok) return;
     coverageStatsModel = await res.json();
-    totalExploredKm = coverageMode === "me"
-      ? coverageStatsModel.km_me
-      : coverageStatsModel.km_all;
+    totalExploredKm = coverageStatsModel.km_me || 0;
     const statsEl = document.getElementById("coverageStats");
     if (gridVisible) {
       drawGrid(); // refresh grid stats to include km
-    } else if (coverageVisible && (coverageStatsModel.km_me > 0 || coverageStatsModel.km_all > 0)) {
+    } else if (coverageVisible && totalExploredKm > 0) {
       statsEl.textContent = coverageSummaryText();
       statsEl.style.display = "block";
     } else {
@@ -3506,11 +3885,15 @@ async function fetchAreaName() {
   }, 400);
 }
 
-map.on("zoomend", () => { if (gridVisible) drawGrid(); });
+map.on("zoomend", () => {
+  if (gridVisible) drawGrid();
+  if (coverageVisible) loadTracks();   // recompute the fixed 20 m band width for the new zoom
+});
 
 map.on("moveend", () => {
   if (coverageVisible) loadTracks();
   if (gridVisible) drawGrid();
+  if (accessibleVisible) loadAccessibleRoutes();
 });
 
 // ── Toast ─────────────────────────────────────────────────────────────────────

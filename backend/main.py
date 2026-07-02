@@ -66,8 +66,15 @@ async def migrate_db(pool: asyncpg.Pool) -> None:
         await conn.execute(
             "ALTER TABLE tracks ADD COLUMN IF NOT EXISTS user_id TEXT;"
         )
+        # v10: track_type — 'exploration' (coverage only) or 'accessible' (a known-good route)
+        await conn.execute(
+            "ALTER TABLE tracks ADD COLUMN IF NOT EXISTS track_type TEXT NOT NULL DEFAULT 'exploration';"
+        )
         await conn.execute(
             "CREATE INDEX IF NOT EXISTS idx_tracks_path ON tracks USING GIST (path);"
+        )
+        await conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_tracks_type ON tracks (track_type);"
         )
         await conn.execute(
             "CREATE INDEX IF NOT EXISTS idx_tracks_user_id ON tracks (user_id);"
@@ -154,7 +161,9 @@ async def create_pool_with_retry(url: str, retries: int = 10, delay: float = 3.0
     """Retry DB connection — handles Render free-tier cold-start where DB wakes up after the app."""
     for attempt in range(1, retries + 1):
         try:
-            return await asyncpg.create_pool(url, min_size=2, max_size=10)
+            # statement_cache_size=0 keeps us compatible with Supabase's
+            # transaction pooler (pgbouncer), which rejects prepared statements.
+            return await asyncpg.create_pool(url, min_size=2, max_size=10, statement_cache_size=0)
         except Exception as exc:
             if attempt == retries:
                 raise
