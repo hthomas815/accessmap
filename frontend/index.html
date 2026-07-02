@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.css" />
   <link rel="manifest" href="/manifest.json" />
-  <meta name="theme-color" content="#e94560" />
+  <meta name="theme-color" content="#2d5a3d" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -17,7 +17,7 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #1a1a2e;
+      background: #0e1810;
       color: #eee;
       height: 100dvh;
       display: flex;
@@ -27,47 +27,47 @@
 
     #map { flex: 1; width: 100%; }
 
-    /* ── FAB ── */
+    /* ── FAB — drop marker at current location ── */
     #fab {
       position: absolute;
-      bottom: 28px; right: 20px;
+      bottom: 24px; right: 20px;
       z-index: 1000;
-      width: 70px; height: 70px;
+      width: 84px; height: 84px;
       border-radius: 50%;
-      background: #e94560;
-      border: none; color: #fff;
-      font-size: 28px; cursor: pointer;
-      box-shadow: 0 4px 20px rgba(233,69,96,.5);
+      background: #2d5a3d;
+      border: none; color: #e8e4da;
+      font-size: 38px; cursor: pointer;
+      box-shadow: 0 6px 28px rgba(45,90,61,.55);
       display: flex; align-items: center; justify-content: center;
       transition: transform .1s;
       -webkit-tap-highlight-color: transparent;
     }
     #fab:active { transform: scale(.92); }
 
-    /* ── Locate ── */
+    /* ── Locate — west of FAB (radial fan) ── */
     #locateBtn {
       position: absolute;
-      bottom: 178px; right: 20px;
+      bottom: 42px; right: 126px;
       z-index: 1000;
-      width: 52px; height: 52px;
+      width: 48px; height: 48px;
       border-radius: 50%;
-      background: #16213e;
-      border: 2px solid #e94560;
-      color: #e94560; font-size: 20px; cursor: pointer;
+      background: #162818;
+      border: 2px solid #4a7a5a;
+      color: #7aba7a; font-size: 20px; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,.4);
+      box-shadow: 0 2px 10px rgba(0,0,0,.45);
       -webkit-tap-highlight-color: transparent;
     }
-    #locateBtn:active { background: #e94560; color: #fff; }
+    #locateBtn:active { background: #2d5a3d; color: #e8e4da; }
     #locateBtn.locating {
       animation: locatePulse .8s ease-in-out infinite;
-      border-color: #4fc3f7; color: #fff;
-      background: #4fc3f7;
+      border-color: #7aba7a; color: #fff;
+      background: #2d5a3d;
     }
     @keyframes locatePulse {
-      0%   { box-shadow: 0 0 0 0 rgba(79,195,247,.7); }
-      70%  { box-shadow: 0 0 0 16px rgba(79,195,247,0); }
-      100% { box-shadow: 0 0 0 0 rgba(79,195,247,0); }
+      0%   { box-shadow: 0 0 0 0 rgba(122,186,122,.7); }
+      70%  { box-shadow: 0 0 0 16px rgba(122,186,122,0); }
+      100% { box-shadow: 0 0 0 0 rgba(122,186,122,0); }
     }
 
     /* ── Route button ── */
@@ -77,16 +77,16 @@
       z-index: 1000;
       width: 70px; height: 70px;
       border-radius: 50%;
-      background: #16213e;
-      border: 2px solid #4fc3f7;
-      color: #4fc3f7;
+      background: #132018;
+      border: 2px solid #7aba7a;
+      color: #7aba7a;
       font-size: 24px; cursor: pointer;
       box-shadow: 0 4px 16px rgba(0,0,0,.4);
       display: flex; align-items: center; justify-content: center;
       transition: background .15s, color .15s, transform .1s;
       -webkit-tap-highlight-color: transparent;
     }
-    #routeBtn.active { background: #4fc3f7; color: #16213e; }
+    #routeBtn.active { background: #7aba7a; color: #132018; }
     #routeBtn:active { transform: scale(.93); }
 
     /* ── Route instruction banner ── */
@@ -95,8 +95,8 @@
       top: 74px; left: 50%;
       transform: translateX(-50%);
       z-index: 1001;
-      background: #16213e;
-      border: 1.5px solid #4fc3f7;
+      background: #132018;
+      border: 1.5px solid #7aba7a;
       color: #eee;
       padding: 10px 20px;
       border-radius: 20px;
@@ -114,7 +114,7 @@
       position: absolute;
       bottom: 0; left: 0; right: 0;
       z-index: 2000;
-      background: #111827;
+      background: #0d1a0e;
       border-radius: 24px 24px 0 0;
       transform: translateY(100%);
       transition: transform .28s cubic-bezier(.32,0,.67,0);
@@ -131,7 +131,7 @@
 
     .drag-handle {
       width: 36px; height: 4px;
-      background: #243050;
+      background: #1e3028;
       border-radius: 2px;
       margin: 14px auto 0;
     }
@@ -148,7 +148,7 @@
       color: #f0f0f8; letter-spacing: -.01em;
     }
     .sheet-title p {
-      font-size: 13px; color: #5a6a8a; margin-top: 3px;
+      font-size: 13px; color: #4a6a4a; margin-top: 3px;
     }
 
     .category-grid {
@@ -159,8 +159,8 @@
     }
 
     .cat-btn {
-      background: #1a2540;
-      border: 1.5px solid #243050;
+      background: #162818;
+      border: 1.5px solid #1e3028;
       border-radius: 18px;
       padding: 20px 12px 16px;
       color: #c8d2e8;
@@ -172,7 +172,7 @@
       -webkit-tap-highlight-color: transparent;
       transition: border-color .15s, background .15s;
     }
-    .cat-btn:active { border-color: #e94560; background: #1e2d4e; }
+    .cat-btn:active { border-color: #2d5a3d; background: #162a18; }
 
     .cat-icon-wrap {
       width: 68px; height: 68px;
@@ -192,18 +192,18 @@
       padding: 12px 24px;
       border-radius: 50px;
       background: transparent;
-      border-color: #243050;
+      border-color: #1e3028;
       gap: 10px;
     }
     .cat-btn.other-btn .cat-icon-wrap {
       width: 36px; height: 36px;
       border-radius: 50%;
       font-size: 18px;
-      background: #243050 !important;
+      background: #1e3028 !important;
       border: none !important;
     }
     .cat-btn.other-btn .cat-label { font-size: 15px; }
-    .cat-btn.other-btn:active { border-color: #e94560; background: #1a2540; }
+    .cat-btn.other-btn:active { border-color: #2d5a3d; background: #162818; }
 
     #step1 .cancel-row { display: flex; justify-content: center; margin-top: 4px; }
     .cancel-text-btn {
@@ -224,7 +224,7 @@
     }
     .back-btn {
       width: 36px; height: 36px; border-radius: 50%;
-      background: #1a2540; border: none; color: #6a7a9a;
+      background: #162818; border: none; color: #5a7a5a;
       font-size: 22px; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       flex-shrink: 0; -webkit-tap-highlight-color: transparent;
@@ -237,12 +237,12 @@
     }
     .cat-hero-text { display: flex; flex-direction: column; gap: 2px; }
     .cat-hero-name { font-size: 20px; font-weight: 700; color: #f0f0f8; letter-spacing: -.01em; }
-    .cat-hero-sub  { font-size: 12px; color: #4a5a78; }
+    .cat-hero-sub  { font-size: 12px; color: #3a5a38; }
 
     .sec-label {
       font-size: 11px; font-weight: 700;
       letter-spacing: .08em; text-transform: uppercase;
-      color: #3a4a68; margin-bottom: 10px;
+      color: #2a3c28; margin-bottom: 10px;
     }
 
     /* Subtype grid */
@@ -251,39 +251,39 @@
       gap: 8px; margin-bottom: 20px;
     }
     .sub-btn {
-      background: #1a2540; border: 1.5px solid #243050;
+      background: #162818; border: 1.5px solid #1e3028;
       border-radius: 12px; padding: 11px 10px;
-      color: #7a8aaa; font-size: 13px; font-weight: 500;
+      color: #6a8a6a; font-size: 13px; font-weight: 500;
       text-align: left; cursor: pointer;
       display: flex; align-items: center; gap: 8px;
       -webkit-tap-highlight-color: transparent;
       transition: border-color .12s, background .12s, color .12s;
     }
     .sub-btn .sub-icon { font-size: 16px; flex-shrink: 0; }
-    .sub-btn.selected { border-color: #e94560; background: #1e1530; color: #f0f0f8; }
+    .sub-btn.selected { border-color: #2d5a3d; background: #1e1530; color: #f0f0f8; }
 
     /* Difficulty */
     .difficulty-row { display: flex; gap: 8px; margin-bottom: 20px; }
     .diff-btn {
       flex: 1; padding: 10px 4px;
-      border-radius: 10px; border: 1.5px solid #243050;
-      background: #1a2540; color: #5a6a8a;
+      border-radius: 10px; border: 1.5px solid #1e3028;
+      background: #162818; color: #4a6a4a;
       font-size: 13px; font-weight: 500; cursor: pointer; text-align: center;
       -webkit-tap-highlight-color: transparent;
       transition: border-color .12s, color .12s, background .12s;
     }
-    .diff-btn.selected { border-color: #e94560; color: #f0f0f8; background: #1e1530; }
+    .diff-btn.selected { border-color: #2d5a3d; color: #f0f0f8; background: #1e1530; }
 
     /* Note */
     #noteInput {
       width: 100%; padding: 12px 14px;
-      border-radius: 12px; border: 1.5px solid #243050;
-      background: #1a2540; color: #d0d8ee;
+      border-radius: 12px; border: 1.5px solid #1e3028;
+      background: #162818; color: #d0d8ee;
       font-size: 14px; resize: none;
       margin-bottom: 16px; font-family: inherit; line-height: 1.5;
     }
     #noteInput::placeholder { color: #2e3c55; }
-    #noteInput:focus { outline: none; border-color: #3a5080; }
+    #noteInput:focus { outline: none; border-color: #2a5038; }
 
     /* Photo section */
     .photo-section {
@@ -294,15 +294,15 @@
     }
     .photo-opt-btn {
       flex: 1; padding: 14px 10px;
-      background: #1a2540; border: 1.5px solid #243050;
-      border-radius: 12px; color: #6a7a9a;
+      background: #162818; border: 1.5px solid #1e3028;
+      border-radius: 12px; color: #5a7a5a;
       font-size: 13px; font-weight: 600;
       display: flex; flex-direction: column; align-items: center; gap: 6px;
       cursor: pointer; -webkit-tap-highlight-color: transparent;
       transition: border-color .12s, background .12s;
     }
     .photo-opt-btn span { font-size: 22px; }
-    .photo-opt-btn:active { border-color: #e94560; background: #1e2d4e; }
+    .photo-opt-btn:active { border-color: #2d5a3d; background: #162a18; }
     .photo-opt-btn.has-photo { border-color: #4caf50; color: #4caf50; }
     .photo-preview {
       margin-top: 10px; border-radius: 10px; overflow: hidden;
@@ -321,7 +321,7 @@
     }
     #confirmOverlay.show { display: flex; }
     .confirm-sheet {
-      background: #111827; border-radius: 24px 24px 0 0;
+      background: #0d1a0e; border-radius: 24px 24px 0 0;
       padding: 28px 20px 44px; width: 100%;
     }
     .confirm-msg {
@@ -331,12 +331,12 @@
     .confirm-btns { display: flex; gap: 10px; }
     .confirm-cancel {
       flex: 1; padding: 14px; border-radius: 12px;
-      border: 1.5px solid #243050; background: transparent;
-      color: #4a5a78; font-size: 15px; cursor: pointer;
+      border: 1.5px solid #1e3028; background: transparent;
+      color: #3a5a38; font-size: 15px; cursor: pointer;
     }
     .confirm-ok {
       flex: 1; padding: 14px; border-radius: 12px;
-      border: none; background: #e94560;
+      border: none; background: #2d5a3d;
       color: #fff; font-size: 15px; font-weight: 700; cursor: pointer;
     }
 
@@ -344,16 +344,16 @@
     .action-row { display: flex; gap: 10px; align-items: center; }
     .cancel-outline-btn {
       padding: 14px 20px; border-radius: 12px;
-      border: 1.5px solid #243050; background: transparent;
-      color: #4a5a78; font-size: 15px; font-weight: 500; cursor: pointer;
+      border: 1.5px solid #1e3028; background: transparent;
+      color: #3a5a38; font-size: 15px; font-weight: 500; cursor: pointer;
       -webkit-tap-highlight-color: transparent;
     }
     #saveBtn {
       flex: 1; padding: 15px; border-radius: 12px; border: none;
-      background: #e94560; color: #fff;
+      background: #2d5a3d; color: #fff;
       font-size: 16px; font-weight: 700; cursor: pointer;
       display: flex; align-items: center; justify-content: center; gap: 8px;
-      box-shadow: 0 4px 16px rgba(233,69,96,.35);
+      box-shadow: 0 4px 16px rgba(45,90,61,.35);
       -webkit-tap-highlight-color: transparent;
     }
     #saveBtn:active { transform: scale(.98); }
@@ -365,7 +365,7 @@
       position: absolute;
       bottom: 0; left: 0; right: 0;
       z-index: 1500;
-      background: #16213e;
+      background: #132018;
       border-radius: 20px 20px 0 0;
       transform: translateY(100%);
       transition: transform .25s ease;
@@ -384,7 +384,7 @@
       padding: 12px 16px 8px; gap: 12px;
     }
     .route-stats { flex: 1; display: flex; gap: 20px; align-items: flex-end; }
-    .route-stat .val  { font-size: 20px; font-weight: 700; color: #4fc3f7; line-height: 1.1; }
+    .route-stat .val  { font-size: 20px; font-weight: 700; color: #7aba7a; line-height: 1.1; }
     .route-stat .lbl  { font-size: 11px; color: #556; text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; }
 
     #clearRouteBtn {
@@ -398,12 +398,12 @@
 
     .route-friction-summary {
       padding: 4px 16px 12px; font-size: 13px; color: #889;
-      border-bottom: 1px solid #1e2d50;
+      border-bottom: 1px solid #183520;
     }
     .route-marker-list { padding: 0 16px 32px; }
     .route-marker-item {
       display: flex; align-items: center; gap: 10px;
-      padding: 10px 0; border-top: 1px solid #1e2d50;
+      padding: 10px 0; border-top: 1px solid #183520;
     }
     .route-marker-icon { font-size: 22px; flex-shrink: 0; }
     .route-marker-info { flex: 1; min-width: 0; }
@@ -419,7 +419,7 @@
     .sev-dot.low    { background: #4caf50; }
     .sev-dot.medium { background: #ff9800; }
     .sev-dot.high   { background: #f44336; }
-    .sev-dot.none   { background: #3a4a60; }
+    .sev-dot.none   { background: #2a3c28; }
     .route-marker-dist {
       font-size: 12px; color: #556; flex-shrink: 0;
       min-width: 36px; text-align: right;
@@ -428,12 +428,12 @@
     /* ── Avoid chips + reroute ── */
     .route-avoid-section {
       padding: 10px 16px 12px;
-      border-bottom: 1px solid #1e2d50;
+      border-bottom: 1px solid #183520;
     }
     .route-avoid-label {
       font-size: 11px; font-weight: 700;
       letter-spacing: .07em; text-transform: uppercase;
-      color: #3a4a68; margin-bottom: 8px;
+      color: #2a3c28; margin-bottom: 8px;
     }
     .route-avoid-row {
       display: flex; align-items: center; gap: 8px;
@@ -441,9 +441,9 @@
     .avoid-chip {
       padding: 6px 13px;
       border-radius: 20px;
-      border: 1.5px solid #243050;
-      background: #1a2540;
-      color: #5a6a8a;
+      border: 1.5px solid #1e3028;
+      background: #162818;
+      color: #4a6a4a;
       font-size: 13px; font-weight: 500;
       cursor: pointer;
       transition: border-color .15s, background .15s, color .15s;
@@ -455,7 +455,7 @@
       margin-left: auto;
       padding: 6px 14px;
       border-radius: 20px; border: none;
-      background: #4fc3f7; color: #111827;
+      background: #7aba7a; color: #0d1a0e;
       font-size: 13px; font-weight: 700;
       cursor: pointer;
       opacity: 0; pointer-events: none;
@@ -477,7 +477,7 @@
       position: absolute;
       top: 20px; left: 50%;
       transform: translateX(-50%);
-      background: #1a2540; border: 1px solid #2d3a55;
+      background: #162818; border: 1px solid #1e3822;
       color: #d0d8ee; padding: 10px 20px;
       border-radius: 20px; font-size: 13px;
       z-index: 3000; opacity: 0; transition: opacity .3s;
@@ -488,13 +488,13 @@
 
     /* ── Leaflet popup ── */
     .leaflet-popup-content-wrapper {
-      background: #1a2540 !important; border: 1px solid #2d3a55 !important;
+      background: #162818 !important; border: 1px solid #1e3822 !important;
       color: #d0d8ee !important; border-radius: 12px !important;
     }
-    .leaflet-popup-tip { background: #1a2540 !important; }
+    .leaflet-popup-tip { background: #162818 !important; }
     .leaflet-popup-content { margin: 12px 14px !important; }
 
-    .leaflet-tile-pane { filter: brightness(.85) saturate(.9); }
+    .leaflet-tile-pane { filter: brightness(.8) saturate(.85) hue-rotate(10deg); }
 
     /* ── Coverage stats pill ── */
     #coverageStats {
@@ -502,7 +502,7 @@
       top: 74px; left: 50%;
       transform: translateX(-50%);
       z-index: 1001;
-      background: #16213e;
+      background: #132018;
       border: 1.5px solid #66bb6a;
       color: #eee;
       padding: 8px 16px;
@@ -521,75 +521,75 @@
       z-index: 1003;
       width: 44px; height: 44px;
       border-radius: 50%;
-      background: #16213e;
-      border: 2px solid #a0a8c8;
-      color: #a0a8c8; font-size: 18px; cursor: pointer;
+      background: #132018;
+      border: 2px solid #8aaa8a;
+      color: #8aaa8a; font-size: 18px; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 2px 12px rgba(0,0,0,.5);
       -webkit-tap-highlight-color: transparent;
     }
-    #menuBtn:active { background: #a0a8c8; color: #16213e; }
+    #menuBtn:active { background: #8aaa8a; color: #132018; }
     #menuPanel {
       position: absolute;
       bottom: 0; left: 0; right: 0;
       z-index: 2100;
-      background: #111827;
+      background: #0d1a0e;
       border-radius: 24px 24px 0 0;
       transform: translateY(100%);
       transition: transform .28s cubic-bezier(.33,1,.68,1);
       pointer-events: none;
     }
     #menuPanel.open { transform: translateY(0); pointer-events: auto; }
-    .menu-handle { width: 40px; height: 4px; border-radius: 2px; background: #3a4a6a; margin: 12px auto 0; }
-    .menu-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px 10px; border-bottom: 1px solid #1e2d50; }
+    .menu-handle { width: 40px; height: 4px; border-radius: 2px; background: #2a3c2a; margin: 12px auto 0; }
+    .menu-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px 10px; border-bottom: 1px solid #183520; }
     .menu-title { font-size: 16px; font-weight: 700; color: #eee; }
-    .menu-close-btn { background: none; border: none; color: #6a7a9a; font-size: 20px; cursor: pointer; padding: 4px 8px; }
+    .menu-close-btn { background: none; border: none; color: #5a7a5a; font-size: 20px; cursor: pointer; padding: 4px 8px; }
     .menu-rows { padding: 8px 0 24px; }
-    .menu-row { display: flex; align-items: center; gap: 14px; padding: 14px 20px; border-bottom: 1px solid #1a2540; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    .menu-row { display: flex; align-items: center; gap: 14px; padding: 14px 20px; border-bottom: 1px solid #162818; cursor: pointer; -webkit-tap-highlight-color: transparent; }
     .menu-row:last-child { border-bottom: none; }
-    .menu-row:active { background: #1a2540; }
-    .menu-row-icon { width: 40px; height: 40px; flex-shrink: 0; border-radius: 12px; border: 1.5px solid #2a3a5a; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    .menu-row:active { background: #162818; }
+    .menu-row-icon { width: 40px; height: 40px; flex-shrink: 0; border-radius: 12px; border: 1.5px solid #1e3822; display: flex; align-items: center; justify-content: center; font-size: 18px; }
     .menu-row-text { flex: 1; }
     .menu-row-label { font-size: 15px; font-weight: 600; color: #dde; }
-    .menu-row-sub { font-size: 12px; color: #6a7a9a; margin-top: 2px; }
-    .menu-row-indicator { width: 10px; height: 10px; border-radius: 50%; background: #2a3a5a; flex-shrink: 0; }
+    .menu-row-sub { font-size: 12px; color: #5a7a5a; margin-top: 2px; }
+    .menu-row-indicator { width: 10px; height: 10px; border-radius: 50%; background: #1e3822; flex-shrink: 0; }
     .menu-row-indicator.on { background: #66bb6a; }
     #menuGridRow { opacity: 0.4; pointer-events: none; }
     #menuGridRow.enabled { opacity: 1; pointer-events: auto; }
 
-    /* ── Target button ── */
+    /* ── Target button — northwest of FAB (radial fan) ── */
     #targetBtn {
       position: absolute;
-      bottom: 112px; right: 20px;
+      bottom: 104px; right: 100px;
       z-index: 1000;
-      width: 52px; height: 52px;
+      width: 48px; height: 48px;
       border-radius: 50%;
-      background: #16213e;
-      border: 2px solid #e94560;
-      color: #e94560; cursor: pointer;
+      background: #162818;
+      border: 2px solid #4a7a5a;
+      color: #7aba7a; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,.4);
+      box-shadow: 0 2px 10px rgba(0,0,0,.45);
       -webkit-tap-highlight-color: transparent;
     }
-    #targetBtn.place-mode { background: #e94560; color: #fff; border-color: #e94560; }
+    #targetBtn.place-mode { background: #2d5a3d; color: #e8e4da; border-color: #2d5a3d; }
     #targetBtn:active { opacity: .8; }
 
-    /* ── North button ── */
+    /* ── North button — directly above FAB (radial fan) ── */
     #northBtn {
       position: absolute;
-      bottom: 244px; right: 20px;
+      bottom: 131px; right: 39px;
       z-index: 1000;
       width: 46px; height: 46px;
       border-radius: 50%;
-      background: #16213e;
-      border: 2px solid #a0a8c8;
-      color: #a0a8c8; cursor: pointer;
+      background: #162818;
+      border: 2px solid #4a7a5a;
+      color: #7aba7a; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,.4);
+      box-shadow: 0 2px 10px rgba(0,0,0,.45);
       -webkit-tap-highlight-color: transparent;
     }
-    #northBtn:active { background: #a0a8c8; color: #16213e; }
-    #northBtn.rotated { border-color: #e94560; color: #e94560; }
+    #northBtn:active { background: #2d5a3d; color: #e8e4da; }
+    #northBtn.rotated { border-color: #7aba7a; color: #7aba7a; }
 
     /* ══════════════════════════════════════
        MARKER PANEL (comments / updates)
@@ -598,7 +598,7 @@
       position: absolute;
       bottom: 0; left: 0; right: 0;
       z-index: 1600;
-      background: #111827;
+      background: #0d1a0e;
       border-radius: 20px 20px 0 0;
       transform: translateY(100%);
       transition: transform .28s cubic-bezier(.33,1,.68,1);
@@ -611,7 +611,7 @@
     .mp-header {
       display: flex; align-items: center;
       padding: 14px 16px 10px; gap: 10px;
-      border-bottom: 1px solid #1e2d50;
+      border-bottom: 1px solid #183520;
     }
     .mp-icon {
       width: 40px; height: 40px; border-radius: 12px;
@@ -620,10 +620,10 @@
     }
     .mp-title { flex: 1; min-width: 0; }
     .mp-type { font-size: 15px; font-weight: 700; color: #f0f0f8; }
-    .mp-sub  { font-size: 12px; color: #556080; margin-top: 2px; }
+    .mp-sub  { font-size: 12px; color: #3a5a3a; margin-top: 2px; }
     .mp-close-btn {
       width: 30px; height: 30px; border-radius: 50%;
-      background: #1a2540; border: none; color: #6a7a9a;
+      background: #162818; border: none; color: #5a7a5a;
       font-size: 16px; cursor: pointer; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
       -webkit-tap-highlight-color: transparent;
@@ -631,8 +631,8 @@
 
     .mp-meta {
       padding: 8px 16px 10px;
-      font-size: 12px; color: #4a5a78;
-      border-bottom: 1px solid #1e2d50;
+      font-size: 12px; color: #3a5a38;
+      border-bottom: 1px solid #183520;
       display: flex; gap: 12px; flex-wrap: wrap;
     }
 
@@ -642,36 +642,36 @@
     .mp-note {
       padding: 10px 16px;
       font-size: 13px; color: #c0c8e0; line-height: 1.5;
-      border-bottom: 1px solid #1e2d50;
+      border-bottom: 1px solid #183520;
     }
 
     .mp-comments-section { padding: 12px 16px 0; }
     .mp-comments-label {
       font-size: 11px; font-weight: 700;
       letter-spacing: .08em; text-transform: uppercase;
-      color: #3a4a68; margin-bottom: 10px;
+      color: #2a3c28; margin-bottom: 10px;
     }
     .mp-comment-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
     .mp-comment {
-      background: #1a2540; border-radius: 10px; padding: 10px 12px;
+      background: #162818; border-radius: 10px; padding: 10px 12px;
     }
     .mp-comment-body { font-size: 13px; color: #c0c8e0; line-height: 1.45; }
-    .mp-comment-date { font-size: 11px; color: #3a4a68; margin-top: 4px; }
+    .mp-comment-date { font-size: 11px; color: #2a3c28; margin-top: 4px; }
 
     .mp-add-row {
       display: flex; gap: 8px; align-items: flex-end; margin-bottom: 12px;
     }
     #mpCommentInput {
       flex: 1; padding: 10px 12px; border-radius: 10px;
-      border: 1.5px solid #243050; background: #1a2540;
+      border: 1.5px solid #1e3028; background: #162818;
       color: #d0d8ee; font-size: 13px; resize: none;
       font-family: inherit; line-height: 1.5; min-height: 42px;
     }
     #mpCommentInput::placeholder { color: #2e3c55; }
-    #mpCommentInput:focus { outline: none; border-color: #3a5080; }
+    #mpCommentInput:focus { outline: none; border-color: #2a5038; }
     #mpCommentBtn {
       padding: 10px 16px; border-radius: 10px;
-      border: none; background: #e94560; color: #fff;
+      border: none; background: #2d5a3d; color: #fff;
       font-size: 13px; font-weight: 700; cursor: pointer; flex-shrink: 0;
       -webkit-tap-highlight-color: transparent;
     }
@@ -680,17 +680,17 @@
 
     .mp-actions {
       padding: 8px 16px 28px;
-      border-top: 1px solid #1e2d50;
+      border-top: 1px solid #183520;
     }
     .mp-delete-btn {
       padding: 10px 20px; border-radius: 10px;
-      border: 1px solid #3a4a60; background: transparent;
-      color: #e94560; font-size: 13px; cursor: pointer;
+      border: 1px solid #2a3c28; background: transparent;
+      color: #2d5a3d; font-size: 13px; cursor: pointer;
       -webkit-tap-highlight-color: transparent;
     }
     .mp-edit-btn {
       padding: 10px 20px; border-radius: 10px;
-      border: 1.5px solid #243050; background: transparent;
+      border: 1.5px solid #1e3028; background: transparent;
       color: #c8d2e8; font-size: 13px; cursor: pointer;
       -webkit-tap-highlight-color: transparent;
     }
@@ -700,36 +700,36 @@
     .mp-edit-label {
       font-size: 11px; font-weight: 700;
       letter-spacing: .08em; text-transform: uppercase;
-      color: #3a4a68; margin-bottom: 8px; display: block;
+      color: #2a3c28; margin-bottom: 8px; display: block;
     }
     .mp-edit-select {
       width: 100%; padding: 10px 12px; border-radius: 10px;
-      border: 1.5px solid #243050; background: #1a2540;
+      border: 1.5px solid #1e3028; background: #162818;
       color: #d0d8ee; font-size: 14px; margin-bottom: 14px;
       font-family: inherit; appearance: none;
     }
-    .mp-edit-select:focus { outline: none; border-color: #3a5080; }
+    .mp-edit-select:focus { outline: none; border-color: #2a5038; }
     .mp-edit-diff-row { display: flex; gap: 8px; margin-bottom: 14px; }
     .mp-edit-diff-btn {
       flex: 1; padding: 9px 4px;
-      border-radius: 10px; border: 1.5px solid #243050;
-      background: #1a2540; color: #5a6a8a;
+      border-radius: 10px; border: 1.5px solid #1e3028;
+      background: #162818; color: #4a6a4a;
       font-size: 13px; font-weight: 500; cursor: pointer;
       -webkit-tap-highlight-color: transparent;
       transition: border-color .12s, color .12s, background .12s;
     }
-    .mp-edit-diff-btn.selected { border-color: #e94560; color: #f0f0f8; background: #1e1530; }
+    .mp-edit-diff-btn.selected { border-color: #2d5a3d; color: #f0f0f8; background: #1e1530; }
     .mp-edit-note {
       width: 100%; padding: 10px 12px; border-radius: 10px;
-      border: 1.5px solid #243050; background: #1a2540;
+      border: 1.5px solid #1e3028; background: #162818;
       color: #d0d8ee; font-size: 13px; resize: none;
       font-family: inherit; line-height: 1.5; margin-bottom: 14px;
     }
     .mp-edit-note::placeholder { color: #2e3c55; }
-    .mp-edit-note:focus { outline: none; border-color: #3a5080; }
+    .mp-edit-note:focus { outline: none; border-color: #2a5038; }
     .mp-edit-save-btn {
       width: 100%; padding: 13px; border-radius: 12px;
-      border: none; background: #e94560; color: #fff;
+      border: none; background: #2d5a3d; color: #fff;
       font-size: 15px; font-weight: 700; cursor: pointer;
       margin-bottom: 24px;
       -webkit-tap-highlight-color: transparent;
@@ -744,19 +744,19 @@
     }
     #helpOverlay.open { display: flex; }
     #helpSheet {
-      width: 100%; max-height: 88dvh; background: #111827;
+      width: 100%; max-height: 88dvh; background: #0d1a0e;
       border-radius: 24px 24px 0 0; overflow-y: auto; padding: 0 0 32px;
     }
-    .help-handle { width: 40px; height: 4px; border-radius: 2px; background: #3a4a6a; margin: 12px auto 0; }
+    .help-handle { width: 40px; height: 4px; border-radius: 2px; background: #2a3c2a; margin: 12px auto 0; }
     .help-title { font-size: 18px; font-weight: 700; color: #eee; padding: 18px 20px 8px; }
     .help-section { padding: 4px 20px; }
-    .help-section-title { font-size: 13px; font-weight: 700; color: #e94560; text-transform: uppercase; letter-spacing: .06em; margin: 16px 0 8px; }
+    .help-section-title { font-size: 13px; font-weight: 700; color: #2d5a3d; text-transform: uppercase; letter-spacing: .06em; margin: 16px 0 8px; }
     .help-row { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; }
-    .help-icon { width: 36px; height: 36px; flex-shrink: 0; border-radius: 10px; background: #16213e; border: 1.5px solid #2a3a5a; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    .help-icon { width: 36px; height: 36px; flex-shrink: 0; border-radius: 10px; background: #132018; border: 1.5px solid #1e3822; display: flex; align-items: center; justify-content: center; font-size: 18px; }
     .help-text { flex: 1; }
     .help-text strong { display: block; font-size: 14px; color: #dde; margin-bottom: 2px; }
-    .help-text span { font-size: 13px; color: #7a8aaa; line-height: 1.4; }
-    .help-close-btn { display: block; width: calc(100% - 40px); margin: 20px 20px 0; padding: 14px; border-radius: 14px; border: none; background: #e94560; color: #fff; font-size: 15px; font-weight: 700; cursor: pointer; }
+    .help-text span { font-size: 13px; color: #6a8a6a; line-height: 1.4; }
+    .help-close-btn { display: block; width: calc(100% - 40px); margin: 20px 20px 0; padding: 14px; border-radius: 14px; border: none; background: #2d5a3d; color: #fff; font-size: 15px; font-weight: 700; cursor: pointer; }
 
     /* ── Search bar ── */
     #searchBar {
@@ -769,26 +769,26 @@
       flex: 1;
       padding: 11px 16px;
       border-radius: 24px;
-      border: 1.5px solid #2a3a5a;
-      background: #16213e;
+      border: 1.5px solid #1e3822;
+      background: #132018;
       color: #eee; font-size: 15px; font-family: inherit;
       outline: none;
       box-shadow: 0 2px 12px rgba(0,0,0,.5);
     }
-    #searchInput::placeholder { color: #4a5a7a; }
-    #searchInput:focus { border-color: #e94560; }
+    #searchInput::placeholder { color: #3a5a3a; }
+    #searchInput:focus { border-color: #2d5a3d; }
     #searchClearBtn {
       display: none;
       position: absolute; right: 58px; top: 50%; transform: translateY(-50%);
-      background: none; border: none; color: #6a7a9a; font-size: 18px; cursor: pointer;
+      background: none; border: none; color: #5a7a5a; font-size: 18px; cursor: pointer;
       padding: 4px 8px;
     }
     #searchResults {
       position: absolute;
       top: 68px; left: 16px; right: 16px;
       z-index: 1002;
-      background: #16213e;
-      border: 1.5px solid #2a3a5a;
+      background: #132018;
+      border: 1.5px solid #1e3822;
       border-radius: 16px;
       overflow: hidden;
       box-shadow: 0 4px 20px rgba(0,0,0,.5);
@@ -796,20 +796,20 @@
     }
     .search-result-item {
       padding: 12px 16px;
-      border-bottom: 1px solid #1e2e4a;
+      border-bottom: 1px solid #182e1e;
       cursor: pointer; color: #ccc; font-size: 14px;
       -webkit-tap-highlight-color: transparent;
     }
     .search-result-item:last-child { border-bottom: none; }
-    .search-result-item:active { background: #1e2e4a; }
+    .search-result-item:active { background: #182e1e; }
     .search-result-name { font-weight: 600; color: #eee; margin-bottom: 2px; }
-    .search-result-detail { font-size: 12px; color: #6a7a9a; }
+    .search-result-detail { font-size: 12px; color: #5a7a5a; }
     .search-result-tag {
       display: inline-block;
       padding: 1px 6px;
       border-radius: 8px;
-      background: #1e2d50;
-      color: #7a9aba;
+      background: #183520;
+      color: #5a8a6a;
       font-size: 11px;
       font-weight: 600;
       margin-left: 4px;
@@ -826,7 +826,7 @@
 <!-- ── Search bar ── -->
 <div id="searchBar">
   <div style="position:relative;flex:1;display:flex;align-items:center;">
-    <span style="position:absolute;left:14px;color:#4a5a7a;font-size:16px;pointer-events:none">🔍</span>
+    <svg style="position:absolute;left:14px;pointer-events:none;flex-shrink:0" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#4a7a5a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
     <input id="searchInput" type="text" placeholder="Search for a place…" autocomplete="off" style="padding-left:40px!important" />
     <button id="searchClearBtn" title="Clear">✕</button>
   </div>
@@ -837,8 +837,8 @@
 <button id="fab" title="Drop marker at my location">＋</button>
 <button id="routeBtn" title="Plan a route"><svg width="28" height="28" viewBox="0 0 40 40" fill="none"><circle cx="8" cy="33" r="5" stroke="currentColor" stroke-width="3"/><path d="M13 33 H30 Q36 33 36 27 Q36 21 30 21 H12 Q6 21 6 15 Q6 9 12 9 H28" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/><polyline points="23,4 28,9 23,14" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 <button id="menuBtn" title="Menu">☰</button>
-<button id="targetBtn" title="Place marker on map"><svg width="20" height="26" viewBox="0 0 24 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 1C7.03 1 3 5.03 3 10c0 7.25 9 19 9 19s9-11.75 9-19c0-4.97-4.03-9-9-9z" fill="currentColor"/><circle cx="12" cy="10" r="3.5" fill="#16213e"/></svg></button>
-<button id="northBtn" title="Map orientation"><span class="north-arrow" style="display:flex;flex-direction:column;align-items:center;line-height:1;gap:1px;transition:transform 0.3s ease"><span style="color:#e94560;font-size:11px">▲</span><span style="font-size:10px;font-weight:700">N</span></span></button>
+<button id="targetBtn" title="Place marker on map"><svg width="20" height="26" viewBox="0 0 24 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 1C7.03 1 3 5.03 3 10c0 7.25 9 19 9 19s9-11.75 9-19c0-4.97-4.03-9-9-9z" fill="currentColor"/><circle cx="12" cy="10" r="3.5" fill="#132018"/></svg></button>
+<button id="northBtn" title="Map orientation"><span class="north-arrow" style="display:flex;flex-direction:column;align-items:center;line-height:1;gap:1px;transition:transform 0.3s ease"><span style="color:#7aba7a;font-size:11px">▲</span><span style="font-size:10px;font-weight:700;color:#c8d4c0">N</span></span></button>
 <input type="file" id="gpxFileInput" accept=".gpx,.xml" style="display:none" />
 <div id="routeBanner"></div>
 <div id="coverageStats"></div>
@@ -963,21 +963,21 @@
       <div class="menu-row-indicator" id="menuGridIndicator"></div>
     </div>
     <div class="menu-row" onclick="document.getElementById('gpxFileInput').click()">
-      <div class="menu-row-icon" style="background:#1a2030;border-color:#4fc3f755">📂</div>
+      <div class="menu-row-icon" style="background:#132013;border-color:#7aba7a55">📂</div>
       <div class="menu-row-text">
         <div class="menu-row-label">Import GPX walk</div>
         <div class="menu-row-sub">Upload a recorded walk</div>
       </div>
     </div>
     <div class="menu-row" onclick="saveAreaOffline()">
-      <div class="menu-row-icon" style="background:#1a2030;border-color:#4fc3f755">📥</div>
+      <div class="menu-row-icon" style="background:#132013;border-color:#7aba7a55">📥</div>
       <div class="menu-row-text">
         <div class="menu-row-label">Save area offline</div>
         <div class="menu-row-sub">Cache map tiles for offline use</div>
       </div>
     </div>
     <div class="menu-row" onclick="closeMenu();openHelp()">
-      <div class="menu-row-icon" style="background:#1a1a2e;border-color:#a0a8c855">❓</div>
+      <div class="menu-row-icon" style="background:#0e1810;border-color:#8aaa8a55">❓</div>
       <div class="menu-row-text">
         <div class="menu-row-label">How to use</div>
         <div class="menu-row-sub">Guide to all buttons and features</div>
@@ -1253,7 +1253,7 @@ const clusterGroup = L.markerClusterGroup({
     const size = n < 10 ? 34 : n < 50 ? 40 : 46;
     return L.divIcon({
       html: `<div style="
-        background:#e94560cc;
+        background:#2d5a3dcc;
         border:2px solid rgba(255,255,255,.35);
         border-radius:50%;
         width:${size}px;height:${size}px;
@@ -1432,7 +1432,7 @@ function enterPlaceMarkerMode() {
   document.getElementById("targetBtn").classList.add("place-mode");
   showBanner(
     "Tap the map to place your marker " +
-    "<button onclick=\"exitPlaceMarkerMode()\" style=\"margin-left:6px;padding:3px 10px;border-radius:10px;border:none;background:#e94560;color:#fff;font-size:12px;font-weight:700;cursor:pointer;\">Cancel</button>",
+    "<button onclick=\"exitPlaceMarkerMode()\" style=\"margin-left:6px;padding:3px 10px;border-radius:10px;border:none;background:#2d5a3d;color:#fff;font-size:12px;font-weight:700;cursor:pointer;\">Cancel</button>",
     false
   );
   document.getElementById("routeBanner").style.pointerEvents = "auto";
@@ -1536,7 +1536,7 @@ locateBtn.addEventListener("click", () => {
       const { latitude: lat, longitude: lng } = pos.coords;
       if (locationMarker) locationMarker.setLatLng([lat, lng]);
       else locationMarker = L.circleMarker([lat, lng], {
-        radius: 8, fillColor: "#e94560", color: "#fff", weight: 2, fillOpacity: 1,
+        radius: 8, fillColor: "#2d5a3d", color: "#fff", weight: 2, fillOpacity: 1,
       }).addTo(map);
 
       if (routePolyline) {
@@ -1605,7 +1605,7 @@ function selectSearchResult(i) {
   window._searchPin = L.marker([lat, lng], {
     icon: L.divIcon({
       className: "",
-      html: `<div style="background:#e94560;border:2px solid #fff;border-radius:50% 50% 50% 0;width:20px;height:20px;transform:rotate(-45deg);box-shadow:0 2px 6px rgba(0,0,0,.4)"></div>`,
+      html: `<div style="background:#2d5a3d;border:2px solid #fff;border-radius:50% 50% 50% 0;width:20px;height:20px;transform:rotate(-45deg);box-shadow:0 2px 6px rgba(0,0,0,.4)"></div>`,
       iconSize: [20, 20], iconAnchor: [10, 20],
     })
   }).addTo(map);
@@ -1627,7 +1627,7 @@ function showSearchActions(lat, lng, name) {
   bar.id = "searchActionBar";
   bar.style.cssText = `
     position:absolute; bottom:110px; left:50%; transform:translateX(-50%);
-    z-index:1500; background:#16213e; border:1.5px solid #2a3a5a;
+    z-index:1500; background:#132018; border:1.5px solid #1e3822;
     border-radius:20px; padding:10px 16px; display:flex; gap:12px;
     align-items:center; box-shadow:0 4px 20px rgba(0,0,0,.5);
     white-space:nowrap; font-size:14px; color:#eee;
@@ -1635,8 +1635,8 @@ function showSearchActions(lat, lng, name) {
   `;
   bar.innerHTML = `
     <span style="max-width:140px;overflow:hidden;text-overflow:ellipsis;color:#aab">${name}</span>
-    <button onclick="navigateToSearchPin(${lat},${lng})" style="padding:7px 14px;border-radius:12px;border:none;background:#4fc3f7;color:#16213e;font-weight:700;font-size:13px;cursor:pointer;">↗ Route here</button>
-    <button onclick="document.getElementById('searchActionBar').remove();if(window._searchPin){window._searchPin.remove();window._searchPin=null;}" style="padding:7px 10px;border-radius:12px;border:none;background:#2a3a5a;color:#aaa;font-size:13px;cursor:pointer;">✕</button>
+    <button onclick="navigateToSearchPin(${lat},${lng})" style="padding:7px 14px;border-radius:12px;border:none;background:#7aba7a;color:#132018;font-weight:700;font-size:13px;cursor:pointer;">↗ Route here</button>
+    <button onclick="document.getElementById('searchActionBar').remove();if(window._searchPin){window._searchPin.remove();window._searchPin=null;}" style="padding:7px 10px;border-radius:12px;border:none;background:#1e3822;color:#aaa;font-size:13px;cursor:pointer;">✕</button>
   `;
   document.body.appendChild(bar);
 }
@@ -1808,7 +1808,7 @@ function openMarkerPanel(m) {
     <div class="mp-comments-section">
       <div class="mp-comments-label">Updates &amp; comments</div>
       <div class="mp-comment-list" id="mpCommentList">
-        <div style="color:#4a5a78;font-size:13px">Loading…</div>
+        <div style="color:#3a5a38;font-size:13px">Loading…</div>
       </div>
       <div class="mp-add-row">
         <textarea id="mpCommentInput" rows="1" placeholder="E.g. gate removed, path less muddy…"></textarea>
@@ -1838,7 +1838,7 @@ async function loadComments(markerId) {
     const listEl = document.getElementById("mpCommentList");
     if (!listEl) return;
     if (comments.length === 0) {
-      listEl.innerHTML = `<div style="color:#3a4a68;font-size:13px">No updates yet — be the first.</div>`;
+      listEl.innerHTML = `<div style="color:#2a3c28;font-size:13px">No updates yet — be the first.</div>`;
       return;
     }
     listEl.innerHTML = comments.map(c => `
@@ -2060,7 +2060,7 @@ function clearRoute() {
 function showBanner(msg, showDoneBtn = false) {
   const el = document.getElementById("routeBanner");
   el.innerHTML = showDoneBtn
-    ? `${msg} <button onclick="finishRoute()" style="margin-left:10px;padding:3px 10px;border-radius:10px;border:none;background:#4fc3f7;color:#16213e;font-size:12px;font-weight:700;cursor:pointer;">Done</button>`
+    ? `${msg} <button onclick="finishRoute()" style="margin-left:10px;padding:3px 10px;border-radius:10px;border:none;background:#7aba7a;color:#132018;font-size:12px;font-weight:700;cursor:pointer;">Done</button>`
     : msg;
   el.style.pointerEvents = showDoneBtn ? "auto" : "none";
   el.classList.add("show");
@@ -2072,7 +2072,7 @@ function hideBanner() {
 async function handleRouteClick(lat, lng) {
   if (!routeLayer) routeLayer = L.layerGroup().addTo(map);
   const n = routeWaypoints.length;
-  const color = n === 0 ? "#4caf50" : "#4fc3f7";
+  const color = n === 0 ? "#4caf50" : "#7aba7a";
   const label = n === 0 ? "Start" : `Point ${n + 1}`;
   L.circleMarker([lat, lng], { radius: 9, fillColor: color, color: "#fff", weight: 2.5, fillOpacity: 1 })
     .bindPopup(label).addTo(routeLayer);
@@ -2152,7 +2152,7 @@ function drawRouteResult(data, avoid = []) {
   // Remove previous polyline when rerouting
   if (routePolyline) { routeLayer.removeLayer(routePolyline); routePolyline = null; }
 
-  const routeColor = avoid.length > 0 ? "#66bb6a" : "#4fc3f7";
+  const routeColor = avoid.length > 0 ? "#66bb6a" : "#7aba7a";
   const toastMsg   = data.avoidance_applied  ? "Rerouted ✓ avoiding obstacles"
                    : avoid.length > 0        ? "Route found (best available)"
                    :                           "Route found ✓";
