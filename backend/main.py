@@ -3,7 +3,7 @@ import asyncio
 import asyncpg
 from contextlib import asynccontextmanager
 from pathlib import Path
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -222,3 +222,16 @@ async def serve_index():
     if index.exists():
         return FileResponse(str(index))
     return {"detail": "Frontend not found"}
+
+
+# SPA fallback: serve index.html for any non-API path so auth redirects
+# (e.g. magic-link landings on /auth/... or unknown routes) load the app
+# instead of returning a 404. Registered last so it only catches leftovers.
+@app.get("/{full_path:path}")
+async def spa_fallback(full_path: str):
+    if full_path.startswith("api/") or full_path.startswith("static/"):
+        raise HTTPException(status_code=404, detail="Not found")
+    index = FRONTEND_DIR / "index.html"
+    if index.exists():
+        return FileResponse(str(index))
+    raise HTTPException(status_code=404, detail="Not found")

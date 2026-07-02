@@ -1492,6 +1492,26 @@ async function initAuth() {
   });
   document.getElementById("authMagicBtn").addEventListener("click", signInWithMagicLink);
 
+  // A magic link can land back here in a few shapes. `detectSessionInUrl` handles
+  // the ?code= (PKCE) and #access_token= (implicit) forms automatically. The
+  // token_hash form needs an explicit verify, so handle that here too.
+  const q = new URLSearchParams(location.search);
+  const h = new URLSearchParams(location.hash.replace(/^#/, ""));
+  const authErr   = q.get("error_description") || h.get("error_description");
+  const tokenHash = q.get("token_hash");
+  const otpType   = q.get("type");
+  if (tokenHash && otpType) {
+    const { error } = await supabaseClient.auth.verifyOtp({ token_hash: tokenHash, type: otpType });
+    history.replaceState(null, "", location.pathname);
+    if (error) {
+      authBooted = true;
+      showAuthOverlay("That sign-in link didn’t work — please request a fresh one.");
+      return;
+    }
+  } else if (authErr) {
+    showAuthOverlay(decodeURIComponent(authErr));
+  }
+
   const { data: { session } } = await supabaseClient.auth.getSession();
   authBooted = true;
   if (session) await handleSignedIn(session, true);
