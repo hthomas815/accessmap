@@ -309,8 +309,8 @@
       display: none;
     }
     .photo-preview img {
-      width: 100%; max-height: 140px; object-fit: cover; display: block;
-      border-radius: 10px;
+      width: 100%; max-height: 40vh; object-fit: contain; display: block;
+      border-radius: 10px; background: #00000022;
     }
 
     /* Custom confirm dialog */
@@ -486,6 +486,28 @@
     }
     #toast.show { opacity: 1; }
 
+    /* ── Connecting banner ── */
+    #connBanner {
+      position: absolute;
+      top: 20px; left: 50%;
+      transform: translateX(-50%);
+      display: none; align-items: center; gap: 8px;
+      background: #1c1008; border: 1px solid #2e1a0a;
+      color: #d0d8ee; padding: 10px 18px;
+      border-radius: 20px; font-size: 13px;
+      z-index: 3000; white-space: nowrap; pointer-events: none;
+      box-shadow: 0 4px 20px rgba(0,0,0,.4);
+    }
+    #connBanner.show { display: flex; }
+    #connBanner .spinner {
+      width: 14px; height: 14px;
+      border: 2px solid rgba(208,216,238,.3);
+      border-top-color: #d0d8ee;
+      border-radius: 50%;
+      animation: connSpin .8s linear infinite;
+    }
+    @keyframes connSpin { to { transform: rotate(360deg); } }
+
     /* ── Leaflet popup ── */
     .leaflet-popup-content-wrapper {
       background: #1c1008 !important; border: 1px solid #2e1a0a !important;
@@ -636,8 +658,32 @@
       display: flex; gap: 12px; flex-wrap: wrap;
     }
 
-    .mp-photo { margin: 10px 16px 0; border-radius: 10px; overflow: hidden; }
-    .mp-photo img { width: 100%; max-height: 140px; object-fit: cover; display: block; }
+    .mp-photo { margin: 10px 16px 0; border-radius: 10px; overflow: hidden; background: #00000022; }
+    .mp-photo img { width: 100%; max-height: 50vh; object-fit: contain; display: block; cursor: zoom-in; }
+
+    /* ── Full-screen photo lightbox ── */
+    #photoLightbox {
+      display: none; position: fixed; inset: 0; z-index: 7000;
+      background: rgba(0,0,0,.92);
+      align-items: center; justify-content: center;
+      touch-action: none;
+    }
+    #photoLightbox.open { display: flex; }
+    #photoLightbox img {
+      max-width: 100%; max-height: 100%; object-fit: contain;
+      user-select: none; -webkit-user-drag: none;
+    }
+    #photoLightboxHint {
+      position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
+      color: rgba(255,255,255,.75); font-size: 13px; pointer-events: none;
+    }
+    #photoLightboxClose {
+      position: absolute; top: 12px; right: 16px;
+      width: 40px; height: 40px; border-radius: 50%;
+      background: rgba(255,255,255,.15); border: none; color: #fff;
+      font-size: 20px; cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
 
     .mp-note {
       padding: 10px 16px;
@@ -817,6 +863,92 @@
       vertical-align: middle;
     }
 
+    /* ══════════════════════════════════════
+       LIGHT-ORANGE POPUP THEME
+       All bottom sheets / dialogs / popups use a warm light-orange
+       background with dark text for readability.
+    ══════════════════════════════════════ */
+    #sheet, #menuPanel, #routePanel, #markerPanel, #helpSheet, .confirm-sheet,
+    #searchResults, #stravaPanel {
+      background: #ffe8d3 !important;
+      color: #3f2812 !important;
+    }
+    #stravaPanel {
+      position: absolute; bottom: 0; left: 0; right: 0; z-index: 1650;
+      border-radius: 20px 20px 0 0;
+      transform: translateY(100%);
+      transition: transform .28s cubic-bezier(.33,1,.68,1);
+      max-height: 80dvh; overflow-y: auto; pointer-events: none;
+    }
+    #stravaPanel.open { transform: translateY(0); pointer-events: auto; }
+    .strava-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 16px; border-top: 1px solid #f0cfa8;
+    }
+    .strava-row-info { flex: 1; min-width: 0; }
+    .strava-row-name { font-size: 14px; font-weight: 600; color: #3f2812;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .strava-row-meta { font-size: 12px; color: #9a6a38; margin-top: 2px; }
+    .strava-btn {
+      padding: 8px 14px; border-radius: 10px; border: none;
+      font-size: 13px; font-weight: 700; cursor: pointer; flex-shrink: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .strava-btn.import  { background: #fc4c02; color: #fff; }
+    .strava-btn.dismiss { background: #fff4e6; color: #9a6a38; border: 1.5px solid #e8bd8e; }
+    /* Headings & primary text */
+    .sheet-title h2, .cat-hero-name, #selectedCatLabel, .menu-title, .mp-type,
+    .help-title, .confirm-msg, .route-stat .val, .mp-comment-body, .mp-note,
+    .search-result-name {
+      color: #3f2812 !important;
+    }
+    /* Secondary / muted text */
+    .sheet-title p, .cat-hero-sub, .menu-row-sub, .mp-sub, .mp-meta,
+    .help-text span, .route-friction-summary, .mp-comment-date, .route-stat .lbl,
+    .search-result-detail, .cancel-text-btn, .cancel-outline-btn, .confirm-cancel {
+      color: #9a6a38 !important;
+    }
+    /* Section labels */
+    .sec-label, .mp-edit-label, .mp-comments-label, .route-avoid-label,
+    .help-section-title, .menu-row-label, .help-text strong, .rmi-type, .cat-label {
+      color: #6e4420 !important;
+    }
+    /* Cards, buttons, inputs, icon wraps */
+    .cat-btn, .sub-btn, .diff-btn, #noteInput, .photo-opt-btn, .mp-edit-select,
+    .mp-edit-note, .mp-edit-diff-btn, #mpCommentInput, .mp-comment, .menu-row-icon,
+    .avoid-chip, .mp-edit-btn, .cat-icon-wrap, .mp-close-btn, .back-btn,
+    #clearRouteBtn, .menu-close-btn {
+      background: #fff4e6 !important;
+      border-color: #e8bd8e !important;
+      color: #4a2e15 !important;
+    }
+    /* Divider borders */
+    .menu-row, .mp-header, .mp-meta, .mp-note, .mp-comments-section,
+    .route-panel-header, .route-friction-summary, .route-avoid-section,
+    .route-marker-item, .menu-header, .search-result-item {
+      border-color: #f0cfa8 !important;
+    }
+    /* Selected / active states */
+    .sub-btn.selected, .diff-btn.selected, .mp-edit-diff-btn.selected {
+      background: #ffd9b0 !important; border-color: #b5521d !important; color: #3f2812 !important;
+    }
+    /* Placeholders */
+    #noteInput::placeholder, #mpCommentInput::placeholder,
+    .mp-edit-note::placeholder { color: #bb8a5c !important; }
+    /* Drag handles */
+    .drag-handle, .menu-handle, .help-handle, .route-panel-handle {
+      background: #dcac78 !important;
+    }
+    /* Search results rows */
+    .search-result-item { color: #4a2e15 !important; }
+    .search-result-item:active { background: #ffdcba !important; }
+    /* Leaflet popups */
+    .leaflet-popup-content-wrapper, .leaflet-popup-tip {
+      background: #ffe8d3 !important;
+      border-color: #e8bd8e !important;
+      color: #3f2812 !important;
+    }
+
   </style>
 </head>
 <body>
@@ -872,8 +1004,15 @@
       </div>
     </div>
 
-    <div class="sec-label">Type</div>
+    <div id="selectedTagsWrap" style="display:none;margin-bottom:16px;">
+      <div class="sec-label">Selected tags</div>
+      <div id="selectedTagsRow" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+    </div>
+
+    <div class="sec-label">Type <span style="font-weight:500;text-transform:none;letter-spacing:0;color:#7a5a38;">· tap all that apply</span></div>
     <div id="subtypeGrid" class="subtype-grid"></div>
+
+    <button type="button" id="addAnotherBtn" style="width:100%;padding:12px;margin-bottom:20px;border-radius:12px;border:1.5px dashed #8a5020;background:transparent;color:#c08a4a;font-size:14px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;">＋ Add another category</button>
 
     <div class="sec-label">Difficulty</div>
     <div class="difficulty-row">
@@ -937,6 +1076,7 @@
 </div>
 
 <div id="toast"></div>
+<div id="connBanner"><span class="spinner"></span><span id="connText">Connecting…</span></div>
 
 <!-- ── Menu panel ── -->
 <div id="menuPanel">
@@ -968,6 +1108,14 @@
         <div class="menu-row-label">Import GPX walk</div>
         <div class="menu-row-sub">Upload a recorded walk</div>
       </div>
+    </div>
+    <div class="menu-row" onclick="openStrava()">
+      <div class="menu-row-icon" style="background:#2a1408;border-color:#fc4c0255">🔗</div>
+      <div class="menu-row-text">
+        <div class="menu-row-label">Strava sync</div>
+        <div class="menu-row-sub" id="menuStravaSub">Auto-import walks from Strava</div>
+      </div>
+      <div class="menu-row-indicator" id="menuStravaIndicator"></div>
     </div>
     <div class="menu-row" onclick="saveAreaOffline()">
       <div class="menu-row-icon" style="background:#160e08;border-color:#f2872e55">📥</div>
@@ -1009,7 +1157,7 @@
       <div class="help-row"><div class="help-icon">🚧</div><div class="help-text"><strong>Avoid obstacles</strong><span>After a route is drawn, use the avoid panel to route around hard or tricky markers.</span></div></div>
 
       <div class="help-section-title">Coverage (☰ menu)</div>
-      <div class="help-row"><div class="help-icon">◉</div><div class="help-text"><strong>Explored paths</strong><span>Shows all walks you've imported as a blue overlay, plus total distance explored.</span></div></div>
+      <div class="help-row"><div class="help-icon">◉</div><div class="help-text"><strong>Explored paths</strong><span>Shows all walks you've imported as a purple coverage band, plus total distance explored.</span></div></div>
       <div class="help-row"><div class="help-icon">📂</div><div class="help-text"><strong>Import GPX</strong><span>Import a recorded walk. Only new ground is added — already-covered sections are skipped.</span></div></div>
       <div class="help-row"><div class="help-icon">📥</div><div class="help-text"><strong>Save offline</strong><span>Caches the current map view for use without internet. Turn on coverage layer first.</span></div></div>
 
@@ -1024,6 +1172,18 @@
 <!-- ── Marker detail / comments panel ── -->
 <div id="markerPanel">
   <div id="markerPanelContent"></div>
+</div>
+
+<!-- ── Strava sync panel ── -->
+<div id="stravaPanel">
+  <div id="stravaPanelContent"></div>
+</div>
+
+<!-- ── Full-screen photo lightbox ── -->
+<div id="photoLightbox">
+  <div id="photoLightboxHint">Swipe down or tap to close</div>
+  <button id="photoLightboxClose" onclick="closePhotoLightbox()">✕</button>
+  <img id="photoLightboxImg" alt="Photo full view" />
 </div>
 
 <!-- ── Custom confirm dialog ── -->
@@ -1209,11 +1369,12 @@ if (map.rotateControl) map.rotateControl.remove();
 // ── State ─────────────────────────────────────────────────────────────────────
 
 let selectedCategory   = null;
-let selectedSubtype    = null;
+let selectedTags       = [];   // [{ type, key, label }] — multi-select across categories
 let selectedDifficulty = null;
 let pendingLat  = null;
 let pendingLng  = null;
 let locationMarker = null;
+let locationHalo   = null;
 let currentPhoto   = null;
 
 // Persist/restore form state across iOS page suspensions (camera/file picker)
@@ -1222,11 +1383,11 @@ function saveFormState() {
   sessionStorage.setItem("am_cat",  selectedCategory.id);
   sessionStorage.setItem("am_lat",  pendingLat);
   sessionStorage.setItem("am_lng",  pendingLng);
-  if (selectedSubtype)    sessionStorage.setItem("am_sub",  selectedSubtype);
+  sessionStorage.setItem("am_tags", JSON.stringify(selectedTags));
   if (selectedDifficulty) sessionStorage.setItem("am_diff", selectedDifficulty);
 }
 function clearFormState() {
-  ["am_cat","am_lat","am_lng","am_sub","am_diff"].forEach(k => sessionStorage.removeItem(k));
+  ["am_cat","am_lat","am_lng","am_tags","am_diff"].forEach(k => sessionStorage.removeItem(k));
 }
 function restoreFormState() {
   const catId = sessionStorage.getItem("am_cat");
@@ -1236,15 +1397,9 @@ function restoreFormState() {
   const cat = CATEGORIES.find(c => c.id === catId);
   if (!cat) return;
   pendingLat = lat; pendingLng = lng;
-  selectedSubtype    = sessionStorage.getItem("am_sub")  || null;
+  try { selectedTags = JSON.parse(sessionStorage.getItem("am_tags") || "[]"); } catch { selectedTags = []; }
   selectedDifficulty = sessionStorage.getItem("am_diff") || null;
   goToStep2(cat);
-  // Re-highlight previously selected subtype/difficulty
-  if (selectedSubtype) {
-    document.querySelectorAll(".sub-btn").forEach(b => {
-      if (b.textContent.trim().startsWith(selectedSubtype)) b.classList.add("selected");
-    });
-  }
   if (selectedDifficulty) {
     document.querySelectorAll(".diff-btn").forEach(b => {
       if (b.dataset.val === selectedDifficulty) b.classList.add("selected");
@@ -1308,10 +1463,7 @@ CATEGORIES.forEach(cat => {
 // ── Step navigation ───────────────────────────────────────────────────────────
 
 function goToStep2(cat) {
-  selectedCategory   = cat;
-  selectedSubtype    = null;
-  selectedDifficulty = null;
-  currentPhoto       = null;
+  selectedCategory = cat;
 
   // Hero header
   const hero = document.getElementById("heroIcon");
@@ -1319,34 +1471,54 @@ function goToStep2(cat) {
   hero.style.cssText = `background:${cat.iconBg};border:1.5px solid ${cat.iconBorder};width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;padding:8px;`;
   document.getElementById("selectedCatLabel").textContent = cat.label;
 
-  // Subtype buttons
+  // Subtype buttons (multi-select toggles)
   const grid = document.getElementById("subtypeGrid");
   grid.innerHTML = "";
   (SUBTYPES[cat.id] || []).forEach(st => {
     const btn = document.createElement("button");
     btn.className = "sub-btn";
+    if (selectedTags.some(t => t.key === st.key)) btn.classList.add("selected");
     const svgIcon = SUBTYPE_ICONS[st.key];
     btn.innerHTML = svgIcon
       ? `<div style="width:30px;height:30px;flex-shrink:0;overflow:hidden;">${svgIcon}</div>${st.label}`
       : `<span class="sub-icon">·</span>${st.label}`;
     btn.addEventListener("click", () => {
-      document.querySelectorAll(".sub-btn").forEach(b => b.classList.remove("selected"));
-      btn.classList.add("selected");
-      selectedSubtype = st.label;
+      const i = selectedTags.findIndex(t => t.key === st.key);
+      if (i >= 0) { selectedTags.splice(i, 1); btn.classList.remove("selected"); }
+      else { selectedTags.push({ type: cat.id, key: st.key, label: st.label }); btn.classList.add("selected"); }
+      renderSelectedTags();
     });
     grid.appendChild(btn);
   });
 
-  document.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("selected"));
-  document.getElementById("noteInput").value = "";
-  document.getElementById("photoPreview").style.display = "none";
-  document.getElementById("photoCameraBtn").classList.remove("has-photo");
-  document.getElementById("photoLibraryBtn").classList.remove("has-photo");
-  document.getElementById("photoCamera").value  = "";
-  document.getElementById("photoLibrary").value = "";
-
+  renderSelectedTags();
   document.getElementById("step1").style.display = "none";
   document.getElementById("step2").classList.add("active");
+}
+
+// Render the running list of selected tags as removable chips
+function renderSelectedTags() {
+  const wrap = document.getElementById("selectedTagsWrap");
+  const row  = document.getElementById("selectedTagsRow");
+  if (!selectedTags.length) { wrap.style.display = "none"; row.innerHTML = ""; return; }
+  wrap.style.display = "block";
+  row.innerHTML = selectedTags.map((t, i) => `
+    <span style="display:inline-flex;align-items:center;gap:6px;padding:6px 10px 6px 12px;border-radius:16px;background:#1e1530;border:1.5px solid #8a3e18;color:#f0f0f8;font-size:13px;font-weight:500;">
+      ${t.label}
+      <button type="button" onclick="removeTag(${i})" style="border:none;background:none;color:#c08a4a;font-size:16px;line-height:1;cursor:pointer;padding:0 2px;-webkit-tap-highlight-color:transparent;">×</button>
+    </span>`).join("");
+}
+
+function removeTag(i) {
+  const removed = selectedTags[i];
+  selectedTags.splice(i, 1);
+  // Un-highlight its button if it belongs to the category currently shown
+  if (removed) {
+    document.querySelectorAll("#subtypeGrid .sub-btn").forEach(b => {
+      if (b.textContent.trim() === removed.label) b.classList.remove("selected");
+    });
+  }
+  renderSelectedTags();
 }
 
 function goToStep1() {
@@ -1356,7 +1528,18 @@ function goToStep1() {
 
 function openSheet(lat, lng) {
   pendingLat = lat; pendingLng = lng;
-  selectedCategory = selectedSubtype = selectedDifficulty = currentPhoto = null;
+  selectedCategory = null;
+  selectedTags = [];
+  selectedDifficulty = null;
+  currentPhoto = null;
+  // Reset step-2 fields for a fresh marker
+  document.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("selected"));
+  document.getElementById("noteInput").value = "";
+  document.getElementById("photoPreview").style.display = "none";
+  document.getElementById("photoCameraBtn").classList.remove("has-photo");
+  document.getElementById("photoLibraryBtn").classList.remove("has-photo");
+  document.getElementById("photoCamera").value  = "";
+  document.getElementById("photoLibrary").value = "";
   goToStep1();
   document.getElementById("sheet").classList.add("open");
 }
@@ -1370,6 +1553,7 @@ function closeSheet() {
 document.getElementById("cancelBtn1").addEventListener("click", closeSheet);
 document.getElementById("cancelBtn2").addEventListener("click", closeSheet);
 document.getElementById("backBtn").addEventListener("click", goToStep1);
+document.getElementById("addAnotherBtn").addEventListener("click", goToStep1);
 
 // ── Difficulty ────────────────────────────────────────────────────────────────
 
@@ -1504,11 +1688,14 @@ document.getElementById("saveBtn").addEventListener("click", async () => {
 
   const btn  = document.getElementById("saveBtn");
   const note = document.getElementById("noteInput").value.trim();
+  // Primary type = first selected tag's category, else the current category
+  const primaryType = selectedTags[0]?.type || selectedCategory.id;
   const fd   = new FormData();
   fd.append("lat",  pendingLat);
   fd.append("lng",  pendingLng);
-  fd.append("type", selectedCategory.id);
-  if (selectedSubtype)    fd.append("subtype",  selectedSubtype);
+  fd.append("type", primaryType);
+  fd.append("subtypes", JSON.stringify(selectedTags));
+  if (selectedTags[0])    fd.append("subtype",  selectedTags[0].label);
   if (selectedDifficulty) fd.append("severity", selectedDifficulty);
   if (note)               fd.append("note",     note);
   if (currentPhoto)       fd.append("photo",    currentPhoto);
@@ -1543,10 +1730,19 @@ locateBtn.addEventListener("click", () => {
     pos => {
       locateBtn.classList.remove("locating");
       const { latitude: lat, longitude: lng } = pos.coords;
-      if (locationMarker) locationMarker.setLatLng([lat, lng]);
-      else locationMarker = L.circleMarker([lat, lng], {
-        radius: 8, fillColor: "#8a3e18", color: "#fff", weight: 2, fillOpacity: 1,
-      }).addTo(map);
+      if (locationMarker) {
+        locationMarker.setLatLng([lat, lng]);
+        locationHalo.setLatLng([lat, lng]);
+      } else {
+        // Standard blue GPS dot with a soft accuracy halo
+        locationHalo = L.circleMarker([lat, lng], {
+          radius: 16, fillColor: "#1a73e8", color: "#1a73e8",
+          weight: 0, fillOpacity: 0.15, interactive: false,
+        }).addTo(map);
+        locationMarker = L.circleMarker([lat, lng], {
+          radius: 8, fillColor: "#1a73e8", color: "#fff", weight: 3, fillOpacity: 1,
+        }).addTo(map);
+      }
 
       if (routePolyline) {
         const bounds = routePolyline.getBounds().extend([lat, lng]);
@@ -1721,6 +1917,178 @@ document.getElementById("menuPanel").addEventListener("click", e => {
   if (e.target === document.getElementById("menuPanel")) closeMenu();
 });
 
+// ── Strava sync ───────────────────────────────────────────────────────────────
+let stravaState = { configured: false, connected: false };
+
+async function refreshStravaStatus() {
+  try {
+    const res = await fetch(`${API}/strava/status`);
+    if (!res.ok) return;
+    stravaState = await res.json();
+    const sub = document.getElementById("menuStravaSub");
+    const ind = document.getElementById("menuStravaIndicator");
+    if (!stravaState.configured) {
+      sub.textContent = "Not set up on the server yet";
+      ind.classList.remove("on");
+    } else if (stravaState.connected) {
+      const n = stravaState.pending_count || 0;
+      sub.textContent = n > 0 ? `${n} new walk${n === 1 ? "" : "s"} to review` : "Connected — no new walks";
+      ind.classList.add("on");
+    } else {
+      sub.textContent = "Tap to connect your Strava";
+      ind.classList.remove("on");
+    }
+  } catch (_) {}
+}
+
+function closeStrava() { document.getElementById("stravaPanel").classList.remove("open"); }
+
+async function openStrava() {
+  closeMenu();
+  await refreshStravaStatus();
+  const el = document.getElementById("stravaPanelContent");
+
+  if (!stravaState.configured) {
+    el.innerHTML = `
+      <div class="drag-handle"></div>
+      <div class="mp-header"><div class="mp-title"><div class="mp-type">Strava sync</div></div>
+        <button class="mp-close-btn" onclick="closeStrava()">✕</button></div>
+      <div style="padding:18px 16px;color:#6e4420;font-size:14px;line-height:1.5;">
+        Strava isn't set up on the server yet. The app owner needs to register a Strava
+        API application and add the client credentials. Once that's done, you'll be able
+        to connect your account here and import walks automatically.
+      </div>`;
+    document.getElementById("stravaPanel").classList.add("open");
+    return;
+  }
+
+  if (!stravaState.connected) {
+    el.innerHTML = `
+      <div class="drag-handle"></div>
+      <div class="mp-header"><div class="mp-title"><div class="mp-type">Strava sync</div></div>
+        <button class="mp-close-btn" onclick="closeStrava()">✕</button></div>
+      <div style="padding:18px 16px;color:#6e4420;font-size:14px;line-height:1.5;">
+        Connect your Strava account to pull in your walks. Only walking-type activities
+        are offered, and nothing is added to your map until you approve each one.
+      </div>
+      <div style="padding:0 16px 28px;">
+        <button class="strava-btn import" style="width:100%;padding:14px;" onclick="stravaConnect()">Connect with Strava</button>
+      </div>`;
+    document.getElementById("stravaPanel").classList.add("open");
+    return;
+  }
+
+  // Connected — show the review queue
+  el.innerHTML = `
+    <div class="drag-handle"></div>
+    <div class="mp-header">
+      <div class="mp-title"><div class="mp-type">Strava — ${stravaState.athlete?.name || "connected"}</div>
+        <div class="mp-sub">Approve walks to add them to your coverage</div></div>
+      <button class="mp-close-btn" onclick="closeStrava()">✕</button>
+    </div>
+    <div style="padding:12px 16px;display:flex;gap:8px;">
+      <button class="strava-btn import" id="stravaSyncBtn" onclick="stravaSync()">↻ Check for new walks</button>
+      <button class="strava-btn dismiss" onclick="stravaDisconnect()">Disconnect</button>
+    </div>
+    <div id="stravaList"><div style="padding:16px;color:#9a6a38;font-size:13px;">Loading…</div></div>`;
+  document.getElementById("stravaPanel").classList.add("open");
+  loadStravaActivities();
+}
+
+async function stravaConnect() {
+  try {
+    const res = await fetch(`${API}/strava/connect`);
+    const { url } = await res.json();
+    if (url) window.location.href = url;
+  } catch (err) { showToast("Couldn't start Strava connect"); }
+}
+
+async function stravaDisconnect() {
+  await fetch(`${API}/strava/disconnect`, { method: "POST" });
+  showToast("Strava disconnected");
+  refreshStravaStatus();
+  openStrava();
+}
+
+async function stravaSync() {
+  const btn = document.getElementById("stravaSyncBtn");
+  if (btn) { btn.disabled = true; btn.textContent = "Checking…"; }
+  try {
+    const res = await fetch(`${API}/strava/sync`, { method: "POST" });
+    if (!res.ok) throw new Error(await res.text());
+    const data = await res.json();
+    showToast(data.new > 0 ? `${data.new} new walk${data.new === 1 ? "" : "s"} found` : "No new walks");
+    await loadStravaActivities();
+    refreshStravaStatus();
+  } catch (err) {
+    showToast("Sync failed: " + err.message);
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = "↻ Check for new walks"; }
+  }
+}
+
+async function loadStravaActivities() {
+  const list = document.getElementById("stravaList");
+  if (!list) return;
+  try {
+    const res = await fetch(`${API}/strava/activities?status=pending`);
+    const acts = await res.json();
+    if (!acts.length) {
+      list.innerHTML = `<div style="padding:16px;color:#9a6a38;font-size:13px;">No walks waiting. Tap "Check for new walks" to look for more.</div>`;
+      return;
+    }
+    list.innerHTML = acts.map(a => {
+      const d = a.start_date ? new Date(a.start_date).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) : "";
+      return `<div class="strava-row" id="strava-act-${a.id}">
+        <div class="strava-row-info">
+          <div class="strava-row-name">${a.name || "Walk"}</div>
+          <div class="strava-row-meta">${a.sport_type || ""} · ${a.distance_km} km${d ? " · " + d : ""}</div>
+        </div>
+        <button class="strava-btn dismiss" onclick="stravaDismiss(${a.id})">Skip</button>
+        <button class="strava-btn import" onclick="stravaImport(${a.id}, this)">Add</button>
+      </div>`;
+    }).join("");
+  } catch (err) {
+    list.innerHTML = `<div style="padding:16px;color:#9a6a38;font-size:13px;">Couldn't load activities.</div>`;
+  }
+}
+
+async function stravaImport(id, btn) {
+  if (btn) { btn.disabled = true; btn.textContent = "Adding…"; }
+  try {
+    const res = await fetch(`${API}/strava/activities/${id}/import`, { method: "POST" });
+    if (!res.ok) throw new Error(await res.text());
+    const data = await res.json();
+    showToast(data.message || "Walk added ✓", 3500);
+    document.getElementById(`strava-act-${id}`)?.remove();
+    if (coverageVisible) { coverageLayer.clearLayers(); loadTracks(); loadDistanceStats(); }
+    refreshStravaStatus();
+  } catch (err) {
+    showToast("Import failed: " + err.message);
+    if (btn) { btn.disabled = false; btn.textContent = "Add"; }
+  }
+}
+
+async function stravaDismiss(id) {
+  await fetch(`${API}/strava/activities/${id}/dismiss`, { method: "POST" });
+  document.getElementById(`strava-act-${id}`)?.remove();
+  refreshStravaStatus();
+}
+
+document.getElementById("stravaPanel").addEventListener("click", e => {
+  if (e.target === document.getElementById("stravaPanel")) closeStrava();
+});
+
+// Handle the OAuth redirect back from Strava (?strava=connected|error)
+(function handleStravaRedirect() {
+  const p = new URLSearchParams(location.search).get("strava");
+  if (!p) return;
+  if (p === "connected") { showToast("Strava connected ✓", 3500); setTimeout(openStrava, 400); }
+  else if (p === "error") showToast("Strava connection failed");
+  history.replaceState(null, "", location.pathname);
+})();
+refreshStravaStatus();
+
 document.getElementById("targetBtn").addEventListener("click", () => {
   if (placeMarkerMode) { exitPlaceMarkerMode(); return; }
   enterPlaceMarkerMode();
@@ -1746,25 +2114,51 @@ function getCat(id) {
   return CATEGORIES.find(c => c.id === id) || { icon: "❓", label: id, iconBg: "#4a5080" };
 }
 
-function makeIcon(type) {
-  const cat   = getCat(type);
-  const color = TYPE_COLORS[type] || "#4a5080";
-  const svg   = ICONS[cat.id] || ICONS.other;
+// ── Difficulty-based map symbols ──────────────────────────────────────────────
+// The symbol on the map now reflects DIFFICULTY, not marker type:
+//   red cross = hard, amber warning = tricky, green tick = easy.
+// Passage / hedge gaps are their own category: a pink/purple shortcut symbol.
+const GLYPH = {
+  cross:    `<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>`,
+  tick:     `<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 6.5"/></svg>`,
+  warning:  `<svg width="21" height="21" viewBox="0 0 24 24" fill="none"><path d="M12 4 L21.5 20 H2.5 Z" stroke="#fff" stroke-width="2.3" stroke-linejoin="round"/><rect x="11" y="9.5" width="2" height="5.5" rx="1" fill="#fff"/><circle cx="12" cy="17.6" r="1.3" fill="#fff"/></svg>`,
+  shortcut: `<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h9"/><path d="M9 7.5l5 4.5-5 4.5"/><path d="M18 5.5v13" stroke-dasharray="2.2 3"/></svg>`,
+  dot:      `<svg width="12" height="12" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6" fill="#fff"/></svg>`,
+};
+
+function markerVisual(m) {
+  if (m && m.type === "passage")
+    return { bg: "#c14fd0", border: "#f3c4ff", glyph: GLYPH.shortcut };
+  switch (m && m.severity) {
+    case "high":   return { bg: "#e53935", border: "#ffc2c0", glyph: GLYPH.cross };
+    case "medium": return { bg: "#fb8c00", border: "#ffddab", glyph: GLYPH.warning };
+    case "low":    return { bg: "#43a047", border: "#b3ddb5", glyph: GLYPH.tick };
+    default:       return { bg: "#6b7280", border: "#d6dbe3", glyph: GLYPH.dot };
+  }
+}
+
+function _iconDiv(m, extraClass, borderOverride) {
+  const v = markerVisual(m);
+  const border = borderOverride || v.border;
+  return `<div class="${extraClass}" style="background:${v.bg};border:2.5px solid ${border};border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 9px rgba(0,0,0,.5);">${v.glyph}</div>`;
+}
+
+// Accepts a marker object (preferred) or a bare type string (legacy).
+function _asMarker(m) { return (typeof m === "string") ? { type: m } : (m || {}); }
+
+function makeIcon(m) {
   return L.divIcon({
     className: "",
-    html: `<div style="background:${color}cc;border:2px solid rgba(255,255,255,.3);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(0,0,0,.5);overflow:hidden;padding:5px;">${svg}</div>`,
-    iconSize: [36, 36], iconAnchor: [18, 18],
+    html: _iconDiv(_asMarker(m), "", null),
+    iconSize: [34, 34], iconAnchor: [17, 17],
   });
 }
 
-function makeHighlightedIcon(type) {
-  const cat   = getCat(type);
-  const color = TYPE_COLORS[type] || "#4a5080";
-  const svg   = ICONS[cat.id] || ICONS.other;
+function makeHighlightedIcon(m) {
   return L.divIcon({
     className: "",
-    html: `<div class="marker-highlighted" style="background:${color}cc;border:2px solid #ffc800;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(0,0,0,.5);overflow:hidden;padding:5px;">${svg}</div>`,
-    iconSize: [36, 36], iconAnchor: [18, 18],
+    html: _iconDiv(_asMarker(m), "marker-highlighted", "#ffc800"),
+    iconSize: [34, 34], iconAnchor: [17, 17],
   });
 }
 
@@ -1780,7 +2174,7 @@ const diffLabel = { low: "🟢 Easy", medium: "🟡 Tricky", high: "🔴 Hard" }
 function addMarkerToMap(m) {
   if (mapMarkers[m.id]) return; // skip duplicates
 
-  const marker = L.marker([m.lat, m.lng], { icon: makeIcon(m.type) })
+  const marker = L.marker([m.lat, m.lng], { icon: makeIcon(m) })
     .on("click", () => openMarkerPanel(m));
   clusterGroup.addLayer(marker);
 
@@ -1790,6 +2184,25 @@ function addMarkerToMap(m) {
 // ── Marker panel ──────────────────────────────────────────────────────────────
 
 let currentMarkerPanelId = null;
+
+// Normalise a marker's tags: prefer the multi-tag `subtypes` array, fall back to legacy `subtype`.
+function mpTags(m) {
+  if (Array.isArray(m.subtypes) && m.subtypes.length) return m.subtypes;
+  if (m.subtype) return [{ label: m.subtype, type: m.type }];
+  return [];
+}
+function mpTagLine(m) {
+  const tags = mpTags(m);
+  if (!tags.length) return "";
+  return `<div class="mp-sub">${tags[0].label}${tags.length > 1 ? ` · +${tags.length - 1} more` : ""}</div>`;
+}
+function mpTagChips(m) {
+  const tags = mpTags(m);
+  if (tags.length < 2) return "";
+  return `<div style="display:flex;flex-wrap:wrap;gap:6px;padding:10px 16px 0;">` +
+    tags.map(t => `<span style="padding:4px 10px;border-radius:14px;background:#1e1530;border:1px solid #8a3e18;color:#e8dcff;font-size:12px;font-weight:500;">${t.label}</span>`).join("") +
+    `</div>`;
+}
 
 function openMarkerPanel(m) {
   currentMarkerPanelId = m.id;
@@ -1804,15 +2217,16 @@ function openMarkerPanel(m) {
       <div class="mp-icon" style="background:${color}cc">${svg}</div>
       <div class="mp-title">
         <div class="mp-type">${cat.label}</div>
-        ${m.subtype ? `<div class="mp-sub">${m.subtype}</div>` : ""}
+        ${mpTagLine(m)}
       </div>
       <button class="mp-close-btn" onclick="closeMarkerPanel()">✕</button>
     </div>
+    ${mpTagChips(m)}
     <div class="mp-meta">
       ${m.severity ? `<span>${sevLabel[m.severity] || m.severity}</span>` : ""}
       <span>Updated: ${fmt(m.updated_at)}</span>
     </div>
-    ${m.photo_url ? `<div class="mp-photo"><img src="${m.photo_url}" alt="Photo"></div>` : ""}
+    ${m.photo_url ? `<div class="mp-photo"><img src="${m.photo_url}" alt="Photo" onclick="openPhotoLightbox(this.src)"></div>` : ""}
     ${m.note ? `<div class="mp-note">${m.note}</div>` : ""}
     <div class="mp-comments-section">
       <div class="mp-comments-label">Updates &amp; comments</div>
@@ -1838,6 +2252,40 @@ function closeMarkerPanel() {
   document.getElementById("markerPanel").classList.remove("open");
   currentMarkerPanelId = null;
 }
+
+// ── Full-screen photo lightbox (tap or swipe down to close) ───────────────────
+function openPhotoLightbox(src) {
+  const box = document.getElementById("photoLightbox");
+  document.getElementById("photoLightboxImg").src = src;
+  box.classList.add("open");
+}
+function closePhotoLightbox() {
+  const box = document.getElementById("photoLightbox");
+  box.classList.remove("open");
+  const img = document.getElementById("photoLightboxImg");
+  img.style.transform = ""; img.style.opacity = "";
+}
+(function initLightboxGestures() {
+  const box = document.getElementById("photoLightbox");
+  const img = document.getElementById("photoLightboxImg");
+  let startY = null, dy = 0;
+  box.addEventListener("touchstart", e => {
+    if (e.touches.length !== 1) return;
+    startY = e.touches[0].clientY; dy = 0;
+  }, { passive: true });
+  box.addEventListener("touchmove", e => {
+    if (startY == null) return;
+    dy = e.touches[0].clientY - startY;
+    if (dy > 0) { img.style.transform = `translateY(${dy}px)`; img.style.opacity = `${1 - dy / 400}`; }
+  }, { passive: true });
+  box.addEventListener("touchend", () => {
+    if (dy > 110) closePhotoLightbox();
+    else { img.style.transform = ""; img.style.opacity = ""; }
+    startY = null; dy = 0;
+  });
+  // Tap anywhere (not a drag) closes too
+  box.addEventListener("click", e => { if (Math.abs(dy) < 6) closePhotoLightbox(); });
+})();
 
 async function loadComments(markerId) {
   try {
@@ -1892,17 +2340,16 @@ async function deleteMarkerFromPanel(id) {
 
 // ── Edit marker form ──────────────────────────────────────────────────────────
 
+let editTags = [];  // working copy of tags while editing
+
 function openEditForm() {
   const m = mapMarkers[currentMarkerPanelId]?.data;
   if (!m) return;
 
-  // Build type options
-  const typeOptions = CATEGORIES.map(c =>
-    `<option value="${c.id}" ${c.id === m.type ? "selected" : ""}>${c.label}</option>`
-  ).join("");
+  editTags = mpTags(m).map(t => ({ type: t.type || m.type, key: t.key || null, label: t.label }));
 
-  // Build subtype options for current type
-  const subtypeOptions = buildSubtypeOptions(m.type, m.subtype);
+  // Category options for the "add tag" picker
+  const typeOptions = CATEGORIES.map(c => `<option value="${c.id}">${c.label}</option>`).join("");
 
   const content = document.getElementById("markerPanelContent");
   content.innerHTML = `
@@ -1913,11 +2360,13 @@ function openEditForm() {
       <button class="mp-close-btn" onclick="closeMarkerPanel()">✕</button>
     </div>
     <div class="mp-edit-form">
-      <label class="mp-edit-label">Type</label>
-      <select class="mp-edit-select" id="editType" onchange="onEditTypeChange()">${typeOptions}</select>
-
-      <label class="mp-edit-label">Subtype</label>
-      <select class="mp-edit-select" id="editSubtype">${subtypeOptions}</select>
+      <label class="mp-edit-label">Tags <span style="font-weight:500;text-transform:none;letter-spacing:0;color:#7a5a38;">· add all that apply</span></label>
+      <div id="editTagsRow" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;"></div>
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <select class="mp-edit-select" id="editType" style="margin-bottom:0;flex:1;" onchange="onEditTypeChange()">${typeOptions}</select>
+        <select class="mp-edit-select" id="editSubtype" style="margin-bottom:0;flex:1;"></select>
+        <button type="button" onclick="addEditTag()" style="flex-shrink:0;padding:0 16px;border-radius:10px;border:none;background:#8a3e18;color:#fff;font-size:14px;font-weight:700;cursor:pointer;">＋</button>
+      </div>
 
       <label class="mp-edit-label">Difficulty</label>
       <div class="mp-edit-diff-row">
@@ -1932,19 +2381,48 @@ function openEditForm() {
       <button class="mp-edit-save-btn" id="editSaveBtn" onclick="saveMarkerEdit(${m.id})">Save changes</button>
     </div>
   `;
+  onEditTypeChange();
+  renderEditTags();
 }
 
-function buildSubtypeOptions(typeId, currentSubtype) {
+function renderEditTags() {
+  const row = document.getElementById("editTagsRow");
+  if (!row) return;
+  if (!editTags.length) {
+    row.innerHTML = `<span style="color:#7a5a38;font-size:13px;">No tags yet — add one below.</span>`;
+    return;
+  }
+  row.innerHTML = editTags.map((t, i) => `
+    <span style="display:inline-flex;align-items:center;gap:6px;padding:6px 8px 6px 12px;border-radius:16px;background:#1e1530;border:1.5px solid #8a3e18;color:#f0f0f8;font-size:13px;">
+      ${t.label}
+      <button type="button" onclick="removeEditTag(${i})" style="border:none;background:none;color:#c08a4a;font-size:16px;line-height:1;cursor:pointer;padding:0 2px;">×</button>
+    </span>`).join("");
+}
+
+function addEditTag() {
+  const typeId = document.getElementById("editType").value;
+  const sel    = document.getElementById("editSubtype");
+  const key    = sel.value;
+  const label  = sel.options[sel.selectedIndex]?.textContent || "";
+  if (!key) return;
+  if (editTags.some(t => t.key === key)) return; // no duplicates
+  editTags.push({ type: typeId, key, label });
+  renderEditTags();
+}
+
+function removeEditTag(i) {
+  editTags.splice(i, 1);
+  renderEditTags();
+}
+
+function buildSubtypeOptions(typeId) {
   const subs = SUBTYPES[typeId] || [];
-  const blank = `<option value="">— none —</option>`;
-  return blank + subs.map(s =>
-    `<option value="${s.label}" ${s.label === currentSubtype ? "selected" : ""}>${s.label}</option>`
-  ).join("");
+  return subs.map(s => `<option value="${s.key}">${s.label}</option>`).join("");
 }
 
 function onEditTypeChange() {
   const typeId = document.getElementById("editType").value;
-  document.getElementById("editSubtype").innerHTML = buildSubtypeOptions(typeId, null);
+  document.getElementById("editSubtype").innerHTML = buildSubtypeOptions(typeId);
 }
 
 function selectEditDiff(btn) {
@@ -1953,15 +2431,15 @@ function selectEditDiff(btn) {
 }
 
 async function saveMarkerEdit(id) {
-  const typeEl     = document.getElementById("editType");
-  const subtypeEl  = document.getElementById("editSubtype");
   const noteEl     = document.getElementById("editNote");
   const sevEl      = document.querySelector(".mp-edit-diff-btn.selected");
   const saveBtn    = document.getElementById("editSaveBtn");
 
+  const primaryType = editTags[0]?.type || mapMarkers[id]?.data?.type || "other";
   const payload = {
-    type:     typeEl.value,
-    subtype:  subtypeEl.value || null,
+    type:     primaryType,
+    subtypes: editTags,
+    subtype:  editTags[0]?.label || null,
     severity: sevEl ? sevEl.dataset.val : null,
     note:     noteEl.value.trim() || null,
   };
@@ -1982,7 +2460,7 @@ async function saveMarkerEdit(id) {
     if (mapMarkers[id]) {
       mapMarkers[id].data = updated;
       // Refresh icon on map in case type changed
-      mapMarkers[id].marker.setIcon(makeIcon(updated.type));
+      mapMarkers[id].marker.setIcon(makeIcon(updated));
     }
 
     showToast("Marker updated ✓");
@@ -2000,13 +2478,54 @@ async function loadMarkers() {
     const res = await fetch(
       `${API}/markers?min_lat=${b.getSouth()}&min_lng=${b.getWest()}&max_lat=${b.getNorth()}&max_lng=${b.getEast()}`
     );
-    if (!res.ok) return;
+    if (!res.ok) return false;
     (await res.json()).forEach(addMarkerToMap);
-  } catch (_) {}
+    return true;
+  } catch (_) { return false; }
 }
 
 map.on("moveend", loadMarkers);
-loadMarkers();
+
+// ── Cold-start handling ───────────────────────────────────────────────────────
+// The backend (Render free tier) spins down when idle and can take ~30s to wake,
+// during which requests fail. Show a banner and poll /health with backoff until
+// the server responds, then load markers. Without this the map just sits empty.
+const connBanner = document.getElementById("connBanner");
+const connText   = document.getElementById("connText");
+function showConnecting(msg) { connText.textContent = msg; connBanner.classList.add("show"); }
+function hideConnecting()    { connBanner.classList.remove("show"); }
+
+async function pingHealth(timeout = 4000) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), timeout);
+  try {
+    const res = await fetch("/health", { cache: "no-store", signal: ctrl.signal });
+    return res.ok;
+  } catch { return false; }
+  finally { clearTimeout(t); }
+}
+
+async function bootstrapMarkers() {
+  // Fast path: if the server is already awake, load immediately with no banner.
+  if (await loadMarkers()) return;
+
+  // Otherwise the backend is likely cold-starting — wait for it.
+  showConnecting("Waking up server…");
+  const delays = [1000, 2000, 3000, 4000, 5000, 5000, 5000, 5000, 5000, 8000, 8000, 8000];
+  for (const d of delays) {
+    await new Promise(r => setTimeout(r, d));
+    if (await pingHealth()) {
+      showConnecting("Loading markers…");
+      const ok = await loadMarkers();
+      hideConnecting();
+      if (!ok) showToast("Couldn't load markers — pan the map to retry", 4000);
+      return;
+    }
+  }
+  hideConnecting();
+  showToast("Server still waking up — pan the map to retry", 5000);
+}
+bootstrapMarkers();
 
 // ── Route mode ────────────────────────────────────────────────────────────────
 
@@ -2074,7 +2593,7 @@ function clearRoute() {
   forceGapIds.clear();
   avoidSeverities.clear();
   syncAvoidChips();
-  Object.values(mapMarkers).forEach(({ marker, data }) => marker.setIcon(makeIcon(data.type)));
+  Object.values(mapMarkers).forEach(({ marker, data }) => marker.setIcon(makeIcon(data)));
   document.getElementById("routePanel").classList.remove("open");
 }
 
@@ -2198,7 +2717,7 @@ function drawRoute(legs, avoid = []) {
   const highlightIds = new Set(allNearby.map(m => m.id));
   allGaps.forEach(g => highlightIds.add(g.id));
   Object.entries(mapMarkers).forEach(([id, { marker, data: mData }]) => {
-    marker.setIcon(highlightIds.has(parseInt(id)) ? makeHighlightedIcon(mData.type) : makeIcon(mData.type));
+    marker.setIcon(highlightIds.has(parseInt(id)) ? makeHighlightedIcon(mData) : makeIcon(mData));
   });
 
   const merged = {
@@ -2292,7 +2811,7 @@ function renderRoutePanel(data, avoid = []) {
     item.innerHTML = `
       <span class="route-marker-icon" style="font-size:13px;font-weight:600;color:#c8d2e8">${cat.label.split(" ")[0]}</span>
       <div class="route-marker-info">
-        <div class="rmi-type">${cat.label}${m.subtype ? ` <span style="font-weight:400;color:#889">· ${m.subtype}</span>` : ""}</div>
+        <div class="rmi-type">${cat.label}${(() => { const t = mpTags(m); return t.length ? ` <span style="font-weight:400;color:#889">· ${t.map(x => x.label).join(", ")}</span>` : ""; })()}</div>
         ${m.note ? `<div class="rmi-sub">${m.note}</div>` : ""}
       </div>
       <div class="sev-dot ${m.severity || "none"}"></div>
@@ -2426,9 +2945,11 @@ async function loadTracks() {
       if (geo.type !== "LineString") return;
       const lls = geo.coordinates.map(([lng, lat]) => [lat, lng]);
       geo.coordinates.forEach(([lng, lat]) => allTrackPoints.push({ lat, lng }));
-      // Wide semi-transparent glow = coverage buffer feel
-      L.polyline(lls, { color: "#66bb6a", weight: 22, opacity: 0.10 }).addTo(coverageLayer);
-      L.polyline(lls, { color: "#66bb6a", weight: 4,  opacity: 0.50 }).addTo(coverageLayer);
+      // Wider purple/mauve coverage boundary only (soft band, no thin centre line)
+      L.polyline(lls, { color: "#9b6dd6", weight: 30, opacity: 0.14,
+        lineCap: "round", lineJoin: "round", interactive: false }).addTo(coverageLayer);
+      L.polyline(lls, { color: "#b98fe6", weight: 18, opacity: 0.32,
+        lineCap: "round", lineJoin: "round", interactive: false }).addTo(coverageLayer);
     });
     if (gridVisible) drawGrid();
   } catch (_) {}
@@ -2436,57 +2957,101 @@ async function loadTracks() {
 
 // ── Coverage grid ─────────────────────────────────────────────────────────────
 
-function getGridStep() {
-  const z = map.getZoom();
-  if (z >= 16) return 0.001;   // ~100 m
-  if (z >= 14) return 0.002;   // ~200 m
-  if (z >= 12) return 0.005;   // ~500 m
-  return 0.01;                   // ~1 km
+// Cells are anchored to a FIXED global origin, so every cell has a stable label
+// (e.g. "AF-142") you can always return to — the grid no longer shifts with zoom.
+// Each cell is subdivided so we can estimate a per-cell % explored.
+const GRID_ORIGIN_LAT = 49.0;    // SW anchor (south-west of the British Isles)
+const GRID_ORIGIN_LNG = -11.0;
+const CELL_LAT = 0.01;           // ~1.11 km tall
+const CELL_LNG = 0.016;          // ~1.1 km wide at UK latitudes
+const CELL_SUB = 5;              // 5×5 sub-cells → ~220 m coverage resolution
+const SUB_LAT  = CELL_LAT / CELL_SUB;
+const SUB_LNG  = CELL_LNG / CELL_SUB;
+
+function colLabel(n) {           // 0→A, 25→Z, 26→AA … (bijective base-26)
+  let s = ""; n = Math.max(0, n);
+  while (true) { s = String.fromCharCode(65 + (n % 26)) + s; n = Math.floor(n / 26) - 1; if (n < 0) break; }
+  return s;
+}
+function cellIndices(lat, lng) {
+  return {
+    row: Math.floor((lat - GRID_ORIGIN_LAT) / CELL_LAT),
+    col: Math.floor((lng - GRID_ORIGIN_LNG) / CELL_LNG),
+  };
+}
+function cellLabel(row, col) { return `${colLabel(col)}-${row}`; }
+
+function cellCoverage(row, col, coveredSub) {
+  let hit = 0;
+  for (let sr = 0; sr < CELL_SUB; sr++)
+    for (let sc = 0; sc < CELL_SUB; sc++)
+      if (coveredSub.has(`${row * CELL_SUB + sr},${col * CELL_SUB + sc}`)) hit++;
+  return hit / (CELL_SUB * CELL_SUB);
 }
 
 function drawGrid() {
+  if (!gridVisible) return;      // never draw while hidden
   gridLayer.clearLayers();
-  const step   = getGridStep();
-  const bounds = map.getBounds();
+  const b = map.getBounds();
 
-  const minLat = Math.floor(bounds.getSouth() / step) * step;
-  const maxLat = Math.ceil(bounds.getNorth()  / step) * step;
-  const minLng = Math.floor(bounds.getWest()  / step) * step;
-  const maxLng = Math.ceil(bounds.getEast()   / step) * step;
-
-  // Build set of covered cell keys from track points
-  const covered = new Set();
+  // Covered sub-cell keys from all loaded track points
+  const coveredSub = new Set();
   allTrackPoints.forEach(({ lat, lng }) => {
-    covered.add(`${Math.floor(lat / step)},${Math.floor(lng / step)}`);
+    coveredSub.add(`${Math.floor((lat - GRID_ORIGIN_LAT) / SUB_LAT)},${Math.floor((lng - GRID_ORIGIN_LNG) / SUB_LNG)}`);
   });
 
-  let total = 0, coveredCount = 0;
-  const precision = 7;
-  for (let rlat = minLat; rlat < maxLat - step * 0.01; rlat = parseFloat((rlat + step).toFixed(precision))) {
-    for (let rlng = minLng; rlng < maxLng - step * 0.01; rlng = parseFloat((rlng + step).toFixed(precision))) {
-      const key   = `${Math.floor(rlat / step)},${Math.floor(rlng / step)}`;
-      const isCov = covered.has(key);
-      total++;
-      if (isCov) coveredCount++;
-      L.rectangle(
-        [[rlat, rlng], [parseFloat((rlat + step).toFixed(precision)), parseFloat((rlng + step).toFixed(precision))]],
-        {
-          fillColor:   isCov ? "#66bb6a" : "#ffffff",
-          fillOpacity: isCov ? 0.22 : 0.04,
-          color:       "#66bb6a",
-          weight:      0.8,
-          opacity:     0.35,
-          interactive: false,
+  const rowMin = Math.floor((b.getSouth() - GRID_ORIGIN_LAT) / CELL_LAT);
+  const rowMax = Math.floor((b.getNorth() - GRID_ORIGIN_LAT) / CELL_LAT);
+  const colMin = Math.floor((b.getWest()  - GRID_ORIGIN_LNG) / CELL_LNG);
+  const colMax = Math.floor((b.getEast()  - GRID_ORIGIN_LNG) / CELL_LNG);
+
+  const cellCount  = (rowMax - rowMin + 1) * (colMax - colMin + 1);
+  const tooMany    = cellCount > 1200;         // zoomed too far out to draw cells
+  const showLabels = map.getZoom() >= 14 && cellCount <= 300;
+
+  if (!tooMany) {
+    for (let row = rowMin; row <= rowMax; row++) {
+      for (let col = colMin; col <= colMax; col++) {
+        const pct   = cellCoverage(row, col, coveredSub);
+        const sLat  = GRID_ORIGIN_LAT + row * CELL_LAT;
+        const sLng  = GRID_ORIGIN_LNG + col * CELL_LNG;
+        const label = cellLabel(row, col);
+        const rect  = L.rectangle(
+          [[sLat, sLng], [sLat + CELL_LAT, sLng + CELL_LNG]],
+          {
+            fillColor:   pct > 0 ? "#43a047" : "#9b6dd6",
+            fillOpacity: pct > 0 ? 0.10 + pct * 0.45 : 0.03,
+            color:       "#9b6dd6",
+            weight:      0.8,
+            opacity:     0.4,
+            interactive: true,
+          }
+        );
+        rect.on("click", () => showToast(`Cell ${label} — ${Math.round(pct * 100)}% explored`, 2600));
+        rect.addTo(gridLayer);
+        if (showLabels) {
+          L.marker([sLat + CELL_LAT / 2, sLng + CELL_LNG / 2], {
+            interactive: false,
+            icon: L.divIcon({
+              className: "",
+              html: `<div style="text-align:center;color:#5a3d8a;font-size:10px;font-weight:700;line-height:1.15;text-shadow:0 0 3px rgba(255,255,255,.85);white-space:nowrap;">${label}<br><span style="color:#2f7a34;">${Math.round(pct * 100)}%</span></div>`,
+              iconSize: [64, 26], iconAnchor: [32, 13],
+            }),
+          }).addTo(gridLayer);
         }
-      ).addTo(gridLayer);
+      }
     }
   }
 
-  const pct      = total > 0 ? Math.round(coveredCount / total * 100) : 0;
-  const cellSize = step >= 0.01 ? "~1 km" : step >= 0.005 ? "~500 m" : step >= 0.002 ? "~200 m" : "~100 m";
-  const statsEl  = document.getElementById("coverageStats");
-  const kmStr    = totalExploredKm > 0 ? `  ·  ${totalExploredKm.toFixed(1)} km explored` : "";
-  statsEl.textContent = `${pct}% of ${areaName} surveyed  ·  ${coveredCount}/${total} cells (${cellSize})${kmStr}`;
+  // Stats pill: the cell under the map centre + total explored
+  const c   = map.getCenter();
+  const ci  = cellIndices(c.lat, c.lng);
+  const cpc = Math.round(cellCoverage(ci.row, ci.col, coveredSub) * 100);
+  const statsEl = document.getElementById("coverageStats");
+  const kmStr   = totalExploredKm > 0 ? ` · ${totalExploredKm.toFixed(1)} km explored` : "";
+  statsEl.textContent = tooMany
+    ? `Zoom in to see cells${kmStr}`
+    : `Cell ${cellLabel(ci.row, ci.col)} · ${cpc}% explored${kmStr}`;
   statsEl.style.display = "block";
 }
 
@@ -2498,12 +3063,14 @@ async function loadDistanceStats() {
     if (!res.ok) return;
     const { km_total } = await res.json();
     totalExploredKm = km_total;
-    if (!gridVisible && coverageVisible && km_total > 0) {
-      const statsEl = document.getElementById("coverageStats");
+    const statsEl = document.getElementById("coverageStats");
+    if (gridVisible) {
+      drawGrid(); // refresh grid stats to include km
+    } else if (coverageVisible && km_total > 0) {
       statsEl.textContent = `${km_total.toFixed(1)} km explored total`;
       statsEl.style.display = "block";
-    } else if (gridVisible) {
-      drawGrid(); // refresh grid stats to include km
+    } else {
+      statsEl.style.display = "none";
     }
   } catch (_) {}
 }
@@ -2513,16 +3080,13 @@ function toggleGridFromMenu() {
   gridVisible = !gridVisible;
   document.getElementById("menuGridIndicator").classList.toggle("on", gridVisible);
   if (gridVisible) {
-    buildGrid();
     gridLayer.addTo(map);
+    drawGrid();
   } else {
+    gridLayer.clearLayers();
     map.removeLayer(gridLayer);
+    loadDistanceStats();   // restore pill to km-only (or hide it)
   }
-}
-
-function buildGrid() {
-  drawGrid();
-  fetchAreaName();
 }
 
 async function fetchAreaName() {
@@ -2546,8 +3110,8 @@ map.on("zoomend", () => { if (gridVisible) drawGrid(); });
 
 map.on("moveend", () => {
   if (coverageVisible) loadTracks();
-  if (gridVisible) { drawGrid(); fetchAreaName(); }
-});;
+  if (gridVisible) drawGrid();
+});
 
 // ── Toast ─────────────────────────────────────────────────────────────────────
 

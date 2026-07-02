@@ -11,6 +11,7 @@ from fastapi.responses import FileResponse
 from routers.markers import router as markers_router
 from routers.routes import router as routes_router
 from routers.tracks import router as tracks_router
+from routers.strava import router as strava_router
 
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://access:access@localhost:5432/accessmap")
 
@@ -71,6 +72,35 @@ async def migrate_db(pool: asyncpg.Pool) -> None:
         await conn.execute(
             "ALTER TYPE marker_type ADD VALUE IF NOT EXISTS 'passage';"
         )
+        # v7: multiple subtype tags per marker (JSONB array of {type, key, label})
+        await conn.execute(
+            "ALTER TABLE markers ADD COLUMN IF NOT EXISTS subtypes JSONB NOT NULL DEFAULT '[]'::jsonb;"
+        )
+        # v8: Strava OAuth tokens (single-user MVP: one row)
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS strava_accounts (
+                athlete_id    BIGINT PRIMARY KEY,
+                access_token  TEXT NOT NULL,
+                refresh_token TEXT NOT NULL,
+                expires_at    BIGINT NOT NULL,
+                firstname     TEXT,
+                lastname      TEXT,
+                connected_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+            );
+        """)
+        # v9: remember which Strava activities were already imported / dismissed
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS strava_activities (
+                activity_id   BIGINT PRIMARY KEY,
+                athlete_id    BIGINT,
+                name          TEXT,
+                sport_type    TEXT,
+                distance_m    DOUBLE PRECISION,
+                start_date    TIMESTAMPTZ,
+                status        TEXT NOT NULL DEFAULT 'pending',
+                seen_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
+            );
+        """)
 
 
 async def create_pool_with_retry(url: str, retries: int = 10, delay: float = 3.0):
@@ -107,6 +137,7 @@ app.add_middleware(
 app.include_router(markers_router, prefix="/api")
 app.include_router(routes_router, prefix="/api")
 app.include_router(tracks_router, prefix="/api")
+app.include_router(strava_router, prefix="/api")
 
 if FRONTEND_DIR.exists():
     app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")

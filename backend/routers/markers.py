@@ -1,11 +1,12 @@
 import os
+import json
 import base64
 from typing import Optional
 from fastapi import APIRouter, HTTPException, UploadFile, File, Form, Depends
 from asyncpg import Connection
 
 from pydantic import BaseModel
-from models.marker import MarkerCreate, MarkerResponse, MarkerType, Severity, ConfirmationCreate
+from models.marker import MarkerCreate, MarkerResponse, MarkerType, Severity, ConfirmationCreate, Tag
 
 
 class CommentCreate(BaseModel):
@@ -15,11 +16,27 @@ class CommentCreate(BaseModel):
 class MarkerUpdate(BaseModel):
     type: Optional[MarkerType] = None
     subtype: Optional[str] = None
+    subtypes: Optional[list[Tag]] = None
     severity: Optional[Severity] = None
     note: Optional[str] = None
 from db import get_db
 
 router = APIRouter(prefix="/markers", tags=["markers"])
+
+
+def _parse_subtypes(val):
+    """asyncpg returns jsonb as a str; normalise to a list of tag dicts."""
+    if val is None:
+        return []
+    if isinstance(val, str):
+        try:
+            parsed = json.loads(val)
+        except (ValueError, TypeError):
+            return []
+        return parsed if isinstance(parsed, list) else []
+    if isinstance(val, list):
+        return val
+    return []
 
 
 @router.post("", response_model=MarkerResponse, status_code=201)
@@ -28,11 +45,23 @@ async def create_marker(
     lng: float = Form(...),
     type: MarkerType = Form(...),
     subtype: Optional[str] = Form(None),
+    subtypes: Optional[str] = Form(None),
     severity: Optional[Severity] = Form(None),
     note: Optional[str] = Form(None),
     photo: Optional[UploadFile] = File(None),
     db: Connection = Depends(get_db),
 ):
+    # subtypes arrives as a JSON string (multipart form). Parse to a list of tags.
+    try:
+        tags = json.loads(subtypes) if subtypes else []
+        if not isinstance(tags, list):
+            tags = []
+    except (ValueError, TypeError):
+        tags = []
+    # Backfill legacy single `subtype` from first tag if not supplied
+    if not subtype and tags:
+        subtype = tags[0].get("label") if isinstance(tags[0], dict) else None
+
     photo_url = None
     if photo:
         try:
@@ -47,17 +76,18 @@ async def create_marker(
 
     row = await db.fetchrow(
         """
-        INSERT INTO markers (location, type, subtype, severity, note, photo_url)
-        VALUES (ST_SetSRID(ST_MakePoint($1, $2), 4326), $3, $4, $5, $6, $7)
+        INSERT INTO markers (location, type, subtype, subtypes, severity, note, photo_url)
+        VALUES (ST_SetSRID(ST_MakePoint($1, $2), 4326), $3, $4, $5::jsonb, $6, $7, $8)
         RETURNING
             id,
             ST_Y(location) AS lat,
             ST_X(location) AS lng,
-            type, subtype, severity, note, photo_url, source, created_at, updated_at
+            type, subtype, subtypes, severity, note, photo_url, source, created_at, updated_at
         """,
-        lng, lat, type.value, subtype, severity.value if severity else None, note, photo_url,
+        lng, lat, type.value, subtype, json.dumps(tags),
+        severity.value if severity else None, note, photo_url,
     )
-    return {**dict(row), "confirmation_count": 0}
+    return {**dict(row), "subtypes": _parse_subtypes(row["subtypes"]), "confirmation_count": 0}
 
 
 @router.get("", response_model=list[MarkerResponse])
@@ -74,7 +104,7 @@ async def list_markers(
             m.id,
             ST_Y(m.location) AS lat,
             ST_X(m.location) AS lng,
-            m.type, m.subtype, m.severity, m.note, m.photo_url, m.source,
+            m.type, m.subtype, m.subtypes, m.severity, m.note, m.photo_url, m.source,
             m.created_at, m.updated_at,
             COUNT(c.id) AS confirmation_count
         FROM markers m
@@ -87,7 +117,7 @@ async def list_markers(
         """,
         min_lng, min_lat, max_lng, max_lat,
     )
-    return [dict(r) for r in rows]
+    return [{**dict(r), "subtypes": _parse_subtypes(r["subtypes"])} for r in rows]
 
 
 @router.get("/{marker_id}", response_model=MarkerResponse)
@@ -98,7 +128,7 @@ async def get_marker(marker_id: int, db: Connection = Depends(get_db)):
             m.id,
             ST_Y(m.location) AS lat,
             ST_X(m.location) AS lng,
-            m.type, m.subtype, m.severity, m.note, m.photo_url, m.source,
+            m.type, m.subtype, m.subtypes, m.severity, m.note, m.photo_url, m.source,
             m.created_at, m.updated_at,
             COUNT(c.id) AS confirmation_count
         FROM markers m
@@ -110,7 +140,7 @@ async def get_marker(marker_id: int, db: Connection = Depends(get_db)):
     )
     if not row:
         raise HTTPException(status_code=404, detail="Marker not found")
-    return dict(row)
+    return {**dict(row), "subtypes": _parse_subtypes(row["subtypes"])}
 
 
 @router.patch("/{marker_id}", response_model=MarkerResponse)
@@ -122,25 +152,31 @@ async def update_marker(marker_id: int, body: MarkerUpdate, db: Connection = Dep
         raise HTTPException(status_code=404, detail="Marker not found")
 
     new_type     = body.type.value     if body.type     is not None else row["type"]
-    new_subtype  = body.subtype        if body.subtype  is not None else row["subtype"]
     new_severity = body.severity.value if body.severity is not None else row["severity"]
     new_note     = body.note           if body.note     is not None else row["note"]
+
+    if body.subtypes is not None:
+        new_tags = [t.model_dump() for t in body.subtypes]
+        new_subtype = new_tags[0]["label"] if new_tags else None
+    else:
+        new_tags = _parse_subtypes(row["subtypes"])
+        new_subtype = body.subtype if body.subtype is not None else row["subtype"]
 
     updated = await db.fetchrow(
         """
         UPDATE markers
-        SET type = $1, subtype = $2, severity = $3, note = $4
-        WHERE id = $5
+        SET type = $1, subtype = $2, subtypes = $3::jsonb, severity = $4, note = $5
+        WHERE id = $6
         RETURNING
             id,
             ST_Y(location) AS lat,
             ST_X(location) AS lng,
-            type, subtype, severity, note, photo_url, source, created_at, updated_at
+            type, subtype, subtypes, severity, note, photo_url, source, created_at, updated_at
         """,
-        new_type, new_subtype, new_severity, new_note, marker_id,
+        new_type, new_subtype, json.dumps(new_tags), new_severity, new_note, marker_id,
     )
     count = await db.fetchval("SELECT COUNT(*) FROM confirmations WHERE marker_id = $1", marker_id)
-    return {**dict(updated), "confirmation_count": count}
+    return {**dict(updated), "subtypes": _parse_subtypes(updated["subtypes"]), "confirmation_count": count}
 
 
 @router.delete("/{marker_id}", status_code=204)

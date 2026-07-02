@@ -35,8 +35,22 @@ class TrackResponse(BaseModel):
 async def create_track(body: TrackCreate, db: Connection = Depends(get_db)):
     if len(body.points) < 2:
         raise HTTPException(status_code=400, detail="Track needs at least 2 points")
+    return await save_track_points(db, body.name, body.points, body.gpx_source)
 
-    coords = ", ".join(f"{p.lng} {p.lat}" for p in body.points)
+
+async def save_track_points(db: Connection, name, points, gpx_source="gpx"):
+    """Save a list of points as a track, deduplicating against existing coverage.
+    `points` is a list of objects/dicts with .lat/.lng (or ['lat','lng']).
+    Reused by the GPX upload endpoint and the Strava importer."""
+    def _lat(p):
+        return p.lat if hasattr(p, "lat") else p["lat"]
+    def _lng(p):
+        return p.lng if hasattr(p, "lng") else p["lng"]
+
+    if len(points) < 2:
+        raise HTTPException(status_code=400, detail="Track needs at least 2 points")
+
+    coords = ", ".join(f"{_lng(p)} {_lat(p)}" for p in points)
     new_wkt = f"LINESTRING({coords})"
 
     # ── Deduplicate against existing coverage ────────────────────────────────
@@ -51,7 +65,7 @@ async def create_track(body: TrackCreate, db: Connection = Depends(get_db)):
             RETURNING id, name, gpx_source, recorded_at,
                       ST_Length(path::geography) / 1000.0 AS km
             """,
-            body.name, new_wkt, body.gpx_source,
+            name, new_wkt, gpx_source,
         )
         return {
             "segments_saved": 1,
@@ -117,14 +131,14 @@ async def create_track(body: TrackCreate, db: Connection = Depends(get_db)):
         if len(line_coords) < 2:
             continue
         seg_wkt = "LINESTRING(" + ", ".join(f"{c[0]} {c[1]}" for c in line_coords) + ")"
-        seg_name = f"{body.name} (part {i+1})" if body.name and len(all_lines) > 1 else body.name
+        seg_name = f"{name} (part {i+1})" if name and len(all_lines) > 1 else name
         km_row = await db.fetchrow(
             """
             INSERT INTO tracks (name, path, gpx_source)
             VALUES ($1, ST_GeomFromText($2, 4326), $3)
             RETURNING ST_Length(path::geography) / 1000.0 AS km
             """,
-            seg_name, seg_wkt, body.gpx_source,
+            seg_name, seg_wkt, gpx_source,
         )
         km_new += float(km_row["km"])
 
