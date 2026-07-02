@@ -34,10 +34,10 @@
       z-index: 1000;
       width: 84px; height: 84px;
       border-radius: 50%;
-      background: #f2872e;
-      border: 3px solid #ffb066; color: #180e08;
+      background: #e0761f;
+      border: 3px solid #4a2545; color: #180e08;
       font-size: 38px; cursor: pointer;
-      box-shadow: 0 6px 28px rgba(242,135,46,.55);
+      box-shadow: 0 6px 28px rgba(224,118,31,.5);
       display: flex; align-items: center; justify-content: center;
       transition: transform .1s;
       -webkit-tap-highlight-color: transparent;
@@ -51,14 +51,14 @@
       z-index: 1000;
       width: 54px; height: 54px;
       border-radius: 50%;
-      background: #f2872e;
-      border: 2.5px solid #4a2545;
-      color: #180e08; font-size: 24px; cursor: pointer;
+      background: #351735;
+      border: 2.5px solid #6b3a63;
+      color: #f2872e; font-size: 24px; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 2px 12px rgba(0,0,0,.5), 0 0 14px rgba(242,135,46,.55);
+      box-shadow: 0 2px 12px rgba(0,0,0,.5);
       -webkit-tap-highlight-color: transparent;
     }
-    #locateBtn:active { transform: scale(.92); background: #ff9a3e; }
+    #locateBtn:active { transform: scale(.92); background: #4a2545; }
     #locateBtn.locating {
       animation: locatePulse 1s ease-out infinite;
       border-color: #fff; color: #fff;
@@ -661,14 +661,14 @@
       z-index: 1000;
       width: 48px; height: 48px;
       border-radius: 50%;
-      background: #1c1008;
-      border: 2.5px solid #4a2545;
+      background: #351735;
+      border: 2.5px solid #6b3a63;
       color: #f2872e; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 2px 10px rgba(0,0,0,.45);
       -webkit-tap-highlight-color: transparent;
     }
-    #targetBtn.place-mode { background: #8a3e18; color: #e8e4da; border-color: #4a2545; }
+    #targetBtn.place-mode { background: #8a3e18; color: #e8e4da; border-color: #6b3a63; }
     #targetBtn:active { opacity: .8; }
 
     /* ── North button — directly above FAB (radial fan) ── */
@@ -678,14 +678,14 @@
       z-index: 1000;
       width: 46px; height: 46px;
       border-radius: 50%;
-      background: #1c1008;
-      border: 2.5px solid #4a2545;
+      background: #351735;
+      border: 2.5px solid #6b3a63;
       color: #f2872e; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 2px 10px rgba(0,0,0,.45);
       -webkit-tap-highlight-color: transparent;
     }
-    #northBtn:active { background: #8a3e18; color: #e8e4da; }
+    #northBtn:active { background: #4a2545; color: #e8e4da; }
     #northBtn.rotated { border-color: #f2872e; color: #f2872e; }
 
     /* ══════════════════════════════════════
@@ -1134,6 +1134,47 @@
       white-space: nowrap;
     }
 
+    /* ── Category burst (radial "what did you find?" buttons) ── */
+    #catBurst {
+      position: fixed; inset: 0; z-index: 1600;
+      display: none;
+      background: rgba(28,14,26,.24);
+      -webkit-backdrop-filter: blur(1.5px); backdrop-filter: blur(1.5px);
+    }
+    #catBurst.open { display: block; }
+    .burst-item {
+      position: absolute;
+      width: 84px;
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      background: none; border: none; cursor: pointer; padding: 0;
+      transform: translate(-50%, -50%);
+      transition: transform .36s cubic-bezier(.34,1.42,.5,1), opacity .3s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .burst-circle {
+      width: 62px; height: 62px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(224,118,31,.82);
+      border: 2px solid rgba(255,224,188,.6);
+      box-shadow: 0 6px 20px rgba(0,0,0,.38);
+      color: #2A132A;
+      -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+    }
+    .burst-circle svg { width: 32px; height: 32px; }
+    .burst-cap {
+      font-size: 12px; font-weight: 700; color: #fff;
+      text-shadow: 0 1px 5px rgba(0,0,0,.75); white-space: nowrap;
+    }
+    /* Hide the other floating controls while the burst is open; FAB becomes a close */
+    body.burst-open #locateBtn, body.burst-open #targetBtn, body.burst-open #northBtn,
+    body.burst-open #routeBtn, body.burst-open #showRoutesBtn, body.burst-open #menuBtn {
+      opacity: 0; pointer-events: none; transition: opacity .2s;
+    }
+    body.burst-open #fab {
+      z-index: 1700; background: #4a2545; border-color: #6b3a63;
+      transform: rotate(45deg); box-shadow: 0 6px 24px rgba(0,0,0,.4);
+    }
+
     /* ══════════════════════════════════════
        MARKER DETAIL SHEET — 1970s parchment redesign
        (scoped to #markerPanel; overrides the global mauve theme)
@@ -1264,6 +1305,9 @@
     <div id="authStatus"></div>
   </div>
 </div>
+
+<!-- ── Category burst (radial pickers from the ＋ button) ── -->
+<div id="catBurst" onclick="closeCategoryBurst(true)"></div>
 
 <!-- ── Marker sheet ── -->
 <div id="sheet">
@@ -1743,7 +1787,6 @@ const ICONS = {
 
 const CATEGORIES = [
   { id: "gate",          label: "Gate",   iconBg: "#2a1e0a", iconBorder: "#E7A13E55" },
-  { id: "stile",         label: "Stile",  iconBg: "#0e2010", iconBorder: "#91C65A55" },
   { id: "steep",         label: "Steep",  iconBg: "#16142a", iconBorder: "#B8B4EA55" },
   { id: "narrow",        label: "Narrow", iconBg: "#0e1e10", iconBorder: "#7DBB5A55" },
   { id: "rough_surface", label: "Rough Terrain", iconBg: "#1e1810", iconBorder: "#B8AA9655" },
@@ -1804,8 +1847,8 @@ const SUBTYPES = {
     { label: "Kissing gate",   key: "gate_kissing_gate"   },
     { label: "Locked gate",    key: "gate_locked_gate"    },
     { label: "Narrow gate",    key: "gate_narrow_gate"    },
+    { label: "Stile",          key: "stile_standard_stile"},
   ],
-  stile: [],
   steep: [
     { label: "Steep climb",    key: "steep_long_climb"     },
     { label: "Steep descent",  key: "steep_long_descent"   },
@@ -2036,7 +2079,8 @@ function openSheet(lat, lng) {
   document.getElementById("photoCamera").value  = "";
   document.getElementById("photoLibrary").value = "";
   goToStep1();
-  document.getElementById("sheet").classList.add("open");
+  // Instead of the sheet's category grid, burst the category buttons out of the ＋.
+  openCategoryBurst();
 }
 
 function closeSheet() {
@@ -2045,10 +2089,74 @@ function closeSheet() {
   setTimeout(goToStep1, 300);
 }
 
+// ── Category burst — floating buttons that fan out of the ＋ button ────────────
+let burstOpen = false;
+
+function openCategoryBurst() {
+  const overlay = document.getElementById("catBurst");
+  overlay.innerHTML = "";
+  const ox = window.innerWidth  - 62;                 // ＋ button centre
+  const oy = window.innerHeight - 66;
+  const cx = window.innerWidth  / 2;                  // ring centre (middle-ish)
+  const cy = window.innerHeight * 0.42;
+  const r  = Math.min(window.innerWidth, window.innerHeight) * 0.30;
+  const n  = CATEGORIES.length;
+
+  CATEGORIES.forEach((cat, i) => {
+    const ang = -Math.PI / 2 + i * (2 * Math.PI / n); // start at top, go round
+    const fx  = cx + r * Math.cos(ang);
+    const fy  = cy + r * Math.sin(ang);
+    const item = document.createElement("button");
+    item.className = "burst-item";
+    item.style.left = `${fx}px`;
+    item.style.top  = `${fy}px`;
+    item.innerHTML =
+      `<span class="burst-circle">${MONO_ICONS[cat.id] || MONO_ICONS.other}</span>` +
+      `<span class="burst-cap">${cat.label}</span>`;
+    // Start collapsed at the ＋ origin, then animate out to the ring.
+    item.style.transform = `translate(-50%,-50%) translate(${ox - fx}px, ${oy - fy}px) scale(.2)`;
+    item.style.opacity = "0";
+    item.style.transitionDelay = `${i * 0.03}s`;
+    item.addEventListener("click", e => { e.stopPropagation(); selectBurstCategory(cat.id); });
+    overlay.appendChild(item);
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      item.style.transform = "translate(-50%,-50%)";
+      item.style.opacity = "1";
+    }));
+  });
+
+  overlay.classList.add("open");
+  document.body.classList.add("burst-open");
+  burstOpen = true;
+}
+
+function closeCategoryBurst(clear = true) {
+  const overlay = document.getElementById("catBurst");
+  overlay.classList.remove("open");
+  overlay.innerHTML = "";
+  document.body.classList.remove("burst-open");
+  burstOpen = false;
+  if (clear) clearFormState();
+}
+
+function selectBurstCategory(catId) {
+  const cat = CATEGORIES.find(c => c.id === catId);
+  if (!cat) return;
+  closeCategoryBurst(false);          // keep pending location + any accumulated tags
+  goToStep2(cat);
+  document.getElementById("sheet").classList.add("open");
+}
+
+// Re-open the burst from step 2 (Back / Add another category) without resetting.
+function reopenCategoryBurst() {
+  document.getElementById("sheet").classList.remove("open");
+  openCategoryBurst();
+}
+
 document.getElementById("cancelBtn1").addEventListener("click", closeSheet);
 document.getElementById("cancelBtn2").addEventListener("click", closeSheet);
-document.getElementById("backBtn").addEventListener("click", goToStep1);
-document.getElementById("addAnotherBtn").addEventListener("click", goToStep1);
+document.getElementById("backBtn").addEventListener("click", reopenCategoryBurst);
+document.getElementById("addAnotherBtn").addEventListener("click", reopenCategoryBurst);
 
 // ── Swipe-down-to-dismiss for bottom sheets ───────────────────────────────────
 // Pull down from the top of a sheet to close it (like a native bottom sheet).
@@ -2161,6 +2269,7 @@ function exitPlaceMarkerMode() {
 // ── FAB ───────────────────────────────────────────────────────────────────────
 
 document.getElementById("fab").addEventListener("click", () => {
+  if (burstOpen) { closeCategoryBurst(true); return; }   // ＋ acts as close while bursting
   if (routeMode) { exitRouteMode(); return; }
   const btn = document.getElementById("locateBtn");
   btn.classList.add("locating");
