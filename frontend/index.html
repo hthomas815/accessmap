@@ -47,27 +47,27 @@
     /* ── Locate — west of FAB (radial fan) ── */
     #locateBtn {
       position: absolute;
-      bottom: 42px; right: 126px;
+      bottom: 40px; right: 124px;
       z-index: 1000;
-      width: 48px; height: 48px;
+      width: 54px; height: 54px;
       border-radius: 50%;
-      background: #1c1008;
-      border: 2px solid #8a5020;
-      color: #c47a3a; font-size: 20px; cursor: pointer;
+      background: #f2872e;
+      border: 2px solid #ffb066;
+      color: #180e08; font-size: 24px; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 2px 10px rgba(0,0,0,.45);
+      box-shadow: 0 2px 12px rgba(0,0,0,.5), 0 0 14px rgba(242,135,46,.55);
       -webkit-tap-highlight-color: transparent;
     }
-    #locateBtn:active { background: #8a3e18; color: #e8e4da; }
+    #locateBtn:active { transform: scale(.92); background: #ff9a3e; }
     #locateBtn.locating {
-      animation: locatePulse .8s ease-in-out infinite;
-      border-color: #c47a3a; color: #fff;
-      background: #8a3e18;
+      animation: locatePulse 1s ease-out infinite;
+      border-color: #fff; color: #fff;
+      background: #ff8a1f;
     }
     @keyframes locatePulse {
-      0%   { box-shadow: 0 0 0 0 rgba(196,122,58,.7); }
-      70%  { box-shadow: 0 0 0 16px rgba(196,122,58,0); }
-      100% { box-shadow: 0 0 0 0 rgba(196,122,58,0); }
+      0%   { box-shadow: 0 0 0 0 rgba(242,135,46,.85), 0 0 14px rgba(242,135,46,.6); }
+      70%  { box-shadow: 0 0 0 24px rgba(242,135,46,0),  0 0 14px rgba(242,135,46,.6); }
+      100% { box-shadow: 0 0 0 0 rgba(242,135,46,0),     0 0 14px rgba(242,135,46,.6); }
     }
 
     /* ── Route button ── */
@@ -78,15 +78,15 @@
       width: 70px; height: 70px;
       border-radius: 50%;
       background: #180e08;
-      border: 2px solid #c47a3a;
-      color: #c47a3a;
+      border: 2px solid #f2872e;
+      color: #f2872e;
       font-size: 24px; cursor: pointer;
       box-shadow: 0 4px 16px rgba(0,0,0,.4);
       display: flex; align-items: center; justify-content: center;
       transition: background .15s, color .15s, transform .1s;
       -webkit-tap-highlight-color: transparent;
     }
-    #routeBtn.active { background: #c47a3a; color: #180e08; }
+    #routeBtn.active { background: #f2872e; color: #180e08; }
     #routeBtn:active { transform: scale(.93); }
 
     /* ── Route instruction banner ── */
@@ -96,7 +96,7 @@
       transform: translateX(-50%);
       z-index: 1001;
       background: #180e08;
-      border: 1.5px solid #c47a3a;
+      border: 1.5px solid #f2872e;
       color: #eee;
       padding: 10px 20px;
       border-radius: 20px;
@@ -384,7 +384,7 @@
       padding: 12px 16px 8px; gap: 12px;
     }
     .route-stats { flex: 1; display: flex; gap: 20px; align-items: flex-end; }
-    .route-stat .val  { font-size: 20px; font-weight: 700; color: #c47a3a; line-height: 1.1; }
+    .route-stat .val  { font-size: 20px; font-weight: 700; color: #f2872e; line-height: 1.1; }
     .route-stat .lbl  { font-size: 11px; color: #556; text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; }
 
     #clearRouteBtn {
@@ -455,7 +455,7 @@
       margin-left: auto;
       padding: 6px 14px;
       border-radius: 20px; border: none;
-      background: #c47a3a; color: #0d0b08;
+      background: #f2872e; color: #0d0b08;
       font-size: 13px; font-weight: 700;
       cursor: pointer;
       opacity: 0; pointer-events: none;
@@ -566,7 +566,7 @@
       border-radius: 50%;
       background: #1c1008;
       border: 2px solid #8a5020;
-      color: #c47a3a; cursor: pointer;
+      color: #f2872e; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 2px 10px rgba(0,0,0,.45);
       -webkit-tap-highlight-color: transparent;
@@ -583,13 +583,13 @@
       border-radius: 50%;
       background: #1c1008;
       border: 2px solid #8a5020;
-      color: #c47a3a; cursor: pointer;
+      color: #f2872e; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 2px 10px rgba(0,0,0,.45);
       -webkit-tap-highlight-color: transparent;
     }
     #northBtn:active { background: #8a3e18; color: #e8e4da; }
-    #northBtn.rotated { border-color: #c47a3a; color: #c47a3a; }
+    #northBtn.rotated { border-color: #f2872e; color: #f2872e; }
 
     /* ══════════════════════════════════════
        MARKER PANEL (comments / updates)
@@ -838,7 +838,7 @@
 <button id="routeBtn" title="Plan a route"><svg width="28" height="28" viewBox="0 0 40 40" fill="none"><circle cx="8" cy="33" r="5" stroke="currentColor" stroke-width="3"/><path d="M13 33 H30 Q36 33 36 27 Q36 21 30 21 H12 Q6 21 6 15 Q6 9 12 9 H28" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/><polyline points="23,4 28,9 23,14" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 <button id="menuBtn" title="Menu">☰</button>
 <button id="targetBtn" title="Place marker on map"><svg width="20" height="26" viewBox="0 0 24 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 1C7.03 1 3 5.03 3 10c0 7.25 9 19 9 19s9-11.75 9-19c0-4.97-4.03-9-9-9z" fill="currentColor"/><circle cx="12" cy="10" r="3.5" fill="#180e08"/></svg></button>
-<button id="northBtn" title="Map orientation"><span class="north-arrow" style="display:flex;flex-direction:column;align-items:center;line-height:1;gap:1px;transition:transform 0.3s ease"><span style="color:#c47a3a;font-size:11px">▲</span><span style="font-size:10px;font-weight:700;color:#d0c0a0">N</span></span></button>
+<button id="northBtn" title="Map orientation"><span class="north-arrow" style="display:flex;flex-direction:column;align-items:center;line-height:1;gap:1px;transition:transform 0.3s ease"><span style="color:#f2872e;font-size:11px">▲</span><span style="font-size:10px;font-weight:700;color:#d0c0a0">N</span></span></button>
 <input type="file" id="gpxFileInput" accept=".gpx,.xml" style="display:none" />
 <div id="routeBanner"></div>
 <div id="coverageStats"></div>
@@ -963,14 +963,14 @@
       <div class="menu-row-indicator" id="menuGridIndicator"></div>
     </div>
     <div class="menu-row" onclick="document.getElementById('gpxFileInput').click()">
-      <div class="menu-row-icon" style="background:#160e08;border-color:#c47a3a55">📂</div>
+      <div class="menu-row-icon" style="background:#160e08;border-color:#f2872e55">📂</div>
       <div class="menu-row-text">
         <div class="menu-row-label">Import GPX walk</div>
         <div class="menu-row-sub">Upload a recorded walk</div>
       </div>
     </div>
     <div class="menu-row" onclick="saveAreaOffline()">
-      <div class="menu-row-icon" style="background:#160e08;border-color:#c47a3a55">📥</div>
+      <div class="menu-row-icon" style="background:#160e08;border-color:#f2872e55">📥</div>
       <div class="menu-row-text">
         <div class="menu-row-label">Save area offline</div>
         <div class="menu-row-sub">Cache map tiles for offline use</div>
@@ -1054,7 +1054,7 @@ const ICONS = {
   rough_surface: `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Rough terrain icon"> <path d="M28 51L38 33C40 30 45 30 47 34L58 51H28Z" fill="#B8AA96"/> <path d="M13 59L22 45C24 42 28 42 30 46L39 59H13Z" fill="#D6C5A7"/> <path d="M44 61L54 49C57 46 61 47 63 51L70 61H44Z" fill="#C6B8A4"/> <ellipse cx="38" cy="65" rx="25" ry="4" fill="#8B8276" opacity="0.5"/> <circle cx="21" cy="66" r="3" fill="#D6C5A7"/><circle cx="58" cy="68" r="3" fill="#B8AA96"/><circle cx="67" cy="63" r="2" fill="#D6C5A7"/> </svg>`,
   other: `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Other icon"> <circle cx="40" cy="40" r="28" stroke="#B99BEA" stroke-width="5"/> <circle cx="28" cy="40" r="4" fill="#B99BEA"/> <circle cx="40" cy="40" r="4" fill="#B99BEA"/> <circle cx="52" cy="40" r="4" fill="#B99BEA"/> </svg>`,
   field: `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Field icon"> <path d="M14 62H66" stroke="#3d7a3d" stroke-width="4" stroke-linecap="round"/> <path d="M20 62C20 52 18 40 20 28C22 33 24 33 23 28" stroke="#68b26b" stroke-width="3" stroke-linecap="round" fill="none"/> <path d="M31 62C31 52 29 40 31 28C33 33 35 33 34 28" stroke="#5cb85c" stroke-width="3" stroke-linecap="round" fill="none"/> <path d="M42 62C42 52 40 40 42 28C44 33 46 33 45 28" stroke="#68b26b" stroke-width="3" stroke-linecap="round" fill="none"/> <path d="M53 62C53 52 51 40 53 28C55 33 57 33 56 28" stroke="#5cb85c" stroke-width="3" stroke-linecap="round" fill="none"/> <path d="M64 62C64 52 62 40 64 28C66 33 68 33 67 28" stroke="#68b26b" stroke-width="3" stroke-linecap="round" fill="none"/> </svg>`,
-  passage: `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Passage gap icon"><ellipse cx="18" cy="44" rx="13" ry="18" fill="#4a8a3a"/><ellipse cx="21" cy="30" rx="10" ry="11" fill="#5aa84a"/><ellipse cx="62" cy="44" rx="13" ry="18" fill="#4a8a3a"/><ellipse cx="59" cy="30" rx="10" ry="11" fill="#5aa84a"/><path d="M33 40H47" stroke="#c47a3a" stroke-width="3.5" stroke-linecap="round"/><path d="M43 36L48 40L43 44" stroke="#c47a3a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 64H70" stroke="#7a5a3a" stroke-width="3" stroke-linecap="round" opacity="0.7"/></svg>`,
+  passage: `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Passage gap icon"><ellipse cx="18" cy="44" rx="13" ry="18" fill="#4a8a3a"/><ellipse cx="21" cy="30" rx="10" ry="11" fill="#5aa84a"/><ellipse cx="62" cy="44" rx="13" ry="18" fill="#4a8a3a"/><ellipse cx="59" cy="30" rx="10" ry="11" fill="#5aa84a"/><path d="M33 40H47" stroke="#f2872e" stroke-width="3.5" stroke-linecap="round"/><path d="M43 36L48 40L43 44" stroke="#f2872e" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 64H70" stroke="#7a5a3a" stroke-width="3" stroke-linecap="round" opacity="0.7"/></svg>`,
 };
 
 const CATEGORIES = [
@@ -1065,7 +1065,7 @@ const CATEGORIES = [
   { id: "narrow",        label: "Narrow", iconBg: "#0e1e10", iconBorder: "#7DBB5A55" },
   { id: "rough_surface", label: "Rough",  iconBg: "#1e1810", iconBorder: "#B8AA9655" },
   { id: "field",         label: "Field",  iconBg: "#0d1e0d", iconBorder: "#68b26b55" },
-  { id: "passage", label: "Passage", iconBg: "#1a1008", iconBorder: "#c47a3a55" },
+  { id: "passage", label: "Passage", iconBg: "#1a1008", iconBorder: "#f2872e55" },
   { id: "other",         label: "Other",  iconBg: "#18142a", iconBorder: "#B99BEA55" },
 ];
 
@@ -1644,7 +1644,7 @@ function showSearchActions(lat, lng, name) {
   `;
   bar.innerHTML = `
     <span style="max-width:140px;overflow:hidden;text-overflow:ellipsis;color:#aab">${name}</span>
-    <button onclick="navigateToSearchPin(${lat},${lng})" style="padding:7px 14px;border-radius:12px;border:none;background:#c47a3a;color:#180e08;font-weight:700;font-size:13px;cursor:pointer;">↗ Route here</button>
+    <button onclick="navigateToSearchPin(${lat},${lng})" style="padding:7px 14px;border-radius:12px;border:none;background:#f2872e;color:#180e08;font-weight:700;font-size:13px;cursor:pointer;">↗ Route here</button>
     <button onclick="document.getElementById('searchActionBar').remove();if(window._searchPin){window._searchPin.remove();window._searchPin=null;}" style="padding:7px 10px;border-radius:12px;border:none;background:#2e1a0a;color:#aaa;font-size:13px;cursor:pointer;">✕</button>
   `;
   document.body.appendChild(bar);
@@ -2010,7 +2010,9 @@ loadMarkers();
 
 // ── Route mode ────────────────────────────────────────────────────────────────
 
-let routeWaypoints = []; // [start, end]
+let routeWaypoints = [];       // [start, ...vias, end]
+let routeSolidLines = [];      // all solid leg polylines (tracked for clean redraw)
+let forceGapIds = new Set();   // gaps the user chose to force-route through
 
 document.getElementById("routeBtn").addEventListener("click", () => {
   routeMode ? exitRouteMode() : enterRouteMode();
@@ -2018,17 +2020,24 @@ document.getElementById("routeBtn").addEventListener("click", () => {
 document.getElementById("clearRouteBtn").addEventListener("click", exitRouteMode);
 
 function enterRouteMode() {
-  routeMode = true; routeWaypoints = [];
+  routeMode = true; routeWaypoints = []; forceGapIds.clear();
   closeSheet();
   document.getElementById("routeBtn").classList.add("active");
   showBanner("Tap your start point", true);
 }
 
 function exitRouteMode() {
-  routeMode = false; routeWaypoints = [];
+  routeMode = false; routeWaypoints = []; forceGapIds.clear();
   document.getElementById("routeBtn").classList.remove("active");
   hideBanner();
   clearRoute();
+}
+
+function routeBannerText() {
+  const n = routeWaypoints.length;
+  if (n === 0) return "Tap your start point";
+  if (n === 1) return "Tap your destination — or a point to route via";
+  return `${n} points set · tap Done, or tap to add another via-point`;
 }
 
 // ── Avoid chips ───────────────────────────────────────────────────────────────
@@ -2036,7 +2045,7 @@ function exitRouteMode() {
 document.getElementById("avoidHighChip").addEventListener("click", () => toggleAvoid("high"));
 document.getElementById("avoidMedChip").addEventListener("click",  () => toggleAvoid("medium"));
 document.getElementById("rerouteBtn").addEventListener("click", () => {
-  if (avoidSeverities.size > 0) fetchAndDrawRoute(Array.from(avoidSeverities));
+  if (avoidSeverities.size > 0) fetchAndDrawRoute(Array.from(avoidSeverities), Array.from(forceGapIds));
 });
 
 function toggleAvoid(sev) {
@@ -2061,6 +2070,8 @@ function clearRoute() {
   if (routeLayer) { map.removeLayer(routeLayer); routeLayer = null; }
   routePolyline = null;
   routeDashedLines = [];
+  routeSolidLines = [];
+  forceGapIds.clear();
   avoidSeverities.clear();
   syncAvoidChips();
   Object.values(mapMarkers).forEach(({ marker, data }) => marker.setIcon(makeIcon(data.type)));
@@ -2070,7 +2081,7 @@ function clearRoute() {
 function showBanner(msg, showDoneBtn = false) {
   const el = document.getElementById("routeBanner");
   el.innerHTML = showDoneBtn
-    ? `${msg} <button onclick="finishRoute()" style="margin-left:10px;padding:3px 10px;border-radius:10px;border:none;background:#c47a3a;color:#180e08;font-size:12px;font-weight:700;cursor:pointer;">Done</button>`
+    ? `${msg} <button onclick="finishRoute()" style="margin-left:10px;padding:3px 10px;border-radius:10px;border:none;background:#f2872e;color:#180e08;font-size:12px;font-weight:700;cursor:pointer;">Done</button>`
     : msg;
   el.style.pointerEvents = showDoneBtn ? "auto" : "none";
   el.classList.add("show");
@@ -2081,86 +2092,102 @@ function hideBanner() {
 
 async function handleRouteClick(lat, lng) {
   if (!routeLayer) routeLayer = L.layerGroup().addTo(map);
-  // Only start + end: a third tap starts a fresh route.
-  if (routeWaypoints.length >= 2) {
-    clearRoute();
-    routeWaypoints = [];
-  }
   const n = routeWaypoints.length;
-  const color = n === 0 ? "#4caf50" : "#e8903a";
-  const label = n === 0 ? "Start" : "End";
+  const color = n === 0 ? "#4caf50" : "#f2872e";
+  const label = n === 0 ? "Start" : `Point ${n + 1}`;
   L.circleMarker([lat, lng], { radius: 9, fillColor: color, color: "#fff", weight: 2.5, fillOpacity: 1 })
     .bindPopup(label).addTo(routeLayer);
   routeWaypoints.push({ lat, lng });
-  if (routeWaypoints.length === 1) {
-    showBanner("Tap your destination", true);
-  } else {
-    showBanner("Start and end set · tap Done", true);
-  }
+  showBanner(routeBannerText(), true);
 }
 
 async function finishRoute() {
-  if (routeWaypoints.length < 2) { showToast("Set a start and an end point first"); return; }
+  if (routeWaypoints.length < 2) { showToast("Set at least a start and an end point"); return; }
   hideBanner();
   routeMode = false;
   document.getElementById("routeBtn").classList.remove("active");
   await fetchAndDrawRoute();
 }
 
-async function fetchAndDrawRoute(avoid = []) {
-  const msg = avoid.length > 0 ? "Rerouting to avoid obstacles…" : "Finding route…";
+// Chain waypoints as legs (A→B, B→C, …); each leg does its own gap bypass.
+async function fetchAndDrawRoute(avoid = [], forceGaps = []) {
+  const msg = (avoid.length || forceGaps.length) ? "Rerouting…" : "Finding route…";
   showToast(msg, 10000);
   try {
-    const res = await fetch(`${API}/routes/preview`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        start: routeWaypoints[0],
-        end:   routeWaypoints[routeWaypoints.length - 1],
-        buffer_m: 50,
-        avoid_severities: avoid,
-      }),
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.detail || `HTTP ${res.status}`);
+    const legs = [];
+    for (let i = 0; i < routeWaypoints.length - 1; i++) {
+      const res = await fetch(`${API}/routes/preview`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          start: routeWaypoints[i],
+          end:   routeWaypoints[i + 1],
+          buffer_m: 50,
+          avoid_severities: avoid,
+          force_gap_ids: forceGaps,
+        }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.detail || `HTTP ${res.status}`);
+      }
+      legs.push(await res.json());
     }
-    drawRouteResult(await res.json(), avoid);
+    drawRoute(legs, avoid);
   } catch (err) {
     showToast("Route error: " + err.message);
     // Only re-enter pick mode if this was the first route (not a reroute)
-    if (avoid.length === 0) {
+    if (avoid.length === 0 && forceGaps.length === 0) {
       routeMode = true;
       document.getElementById("routeBtn").classList.add("active");
-      showBanner("Start and end set · tap Done", true);
+      showBanner(routeBannerText(), true);
     }
   }
 }
 
-function drawRouteResult(data, avoid = []) {
+function drawRoute(legs, avoid = []) {
   if (!routeLayer) routeLayer = L.layerGroup().addTo(map);
 
-  // Remove previous route lines when rerouting (keep the start/end dots)
-  if (routePolyline) { routeLayer.removeLayer(routePolyline); routePolyline = null; }
+  // Remove previous route lines only (keep the waypoint dots)
+  routeSolidLines.forEach(l => routeLayer.removeLayer(l));
   routeDashedLines.forEach(l => routeLayer.removeLayer(l));
+  routeSolidLines = [];
   routeDashedLines = [];
+  routePolyline = null;
 
   const routeColor = avoid.length > 0 ? "#a03828" : "#b84038";
-  const usedGap    = data.avoidance_method === "gap_bypass";
   const boundsCoords = [];
+  const seenMarkers = new Set(), allNearby = [];
+  const seenGaps = new Set(),    allGaps = [];
+  let totalDist = 0, totalDur = 0, anyAvoid = false, usedGap = false;
 
-  const coords = data.geometry.coordinates.map(([lng, lat]) => [lat, lng]);
-  routePolyline = L.polyline(coords, { color: routeColor, weight: 5, opacity: 0.85 }).addTo(routeLayer);
-  boundsCoords.push(...coords);
+  legs.forEach(data => {
+    const coords = data.geometry.coordinates.map(([lng, lat]) => [lat, lng]);
+    const line = L.polyline(coords, { color: routeColor, weight: 5, opacity: 0.85 }).addTo(routeLayer);
+    routeSolidLines.push(line);
+    if (!routePolyline) routePolyline = line;   // first leg — used for locate bounds
+    boundsCoords.push(...coords);
 
-  // Straight-line gap crossings (off-path bits) as dashed amber
-  (data.bypass_segments || []).forEach(seg => {
-    const segCoords = seg.map(([lng, lat]) => [lat, lng]);
-    const dashed = L.polyline(segCoords, {
-      color: "#e8903a", weight: 3.5, opacity: 0.95, dashArray: "7 5",
-    }).addTo(routeLayer);
-    routeDashedLines.push(dashed);
-    boundsCoords.push(...segCoords);
+    // Straight-line gap crossings (off-path bits) as dashed amber
+    (data.bypass_segments || []).forEach(seg => {
+      const segCoords = seg.map(([lng, lat]) => [lat, lng]);
+      const dashed = L.polyline(segCoords, {
+        color: "#f2872e", weight: 3.5, opacity: 0.95, dashArray: "7 5",
+      }).addTo(routeLayer);
+      routeDashedLines.push(dashed);
+      boundsCoords.push(...segCoords);
+    });
+
+    totalDist += data.distance_m;
+    totalDur  += data.duration_s;
+    if (data.avoidance_applied) anyAvoid = true;
+    if (data.avoidance_method === "gap_bypass") usedGap = true;
+    (data.nearby_markers || []).forEach(m => {
+      if (!seenMarkers.has(m.id)) { seenMarkers.add(m.id); allNearby.push(m); }
+    });
+    (data.suggested_gaps || []).forEach(g => {
+      if (!seenGaps.has(g.id)) { seenGaps.add(g.id); allGaps.push(g); }
+    });
   });
 
   if (boundsCoords.length) {
@@ -2168,20 +2195,40 @@ function drawRouteResult(data, avoid = []) {
   }
 
   // Highlight markers on the route plus any suggested nearby gaps
-  const nearbyIds = new Set(data.nearby_markers.map(m => m.id));
-  (data.suggested_gaps || []).forEach(g => nearbyIds.add(g.id));
+  const highlightIds = new Set(allNearby.map(m => m.id));
+  allGaps.forEach(g => highlightIds.add(g.id));
   Object.entries(mapMarkers).forEach(([id, { marker, data: mData }]) => {
-    marker.setIcon(nearbyIds.has(parseInt(id)) ? makeHighlightedIcon(mData.type) : makeIcon(mData.type));
+    marker.setIcon(highlightIds.has(parseInt(id)) ? makeHighlightedIcon(mData.type) : makeIcon(mData.type));
   });
 
-  renderRoutePanel(data, avoid);
+  const merged = {
+    distance_m: totalDist,
+    duration_s: totalDur,
+    nearby_markers: allNearby,
+    suggested_gaps: allGaps.sort((a, b) => a.distance_m - b.distance_m),
+    avoidance_applied: anyAvoid,
+    avoidance_method: usedGap ? "gap_bypass" : (anyAvoid ? "rerouted" : null),
+  };
+  renderRoutePanel(merged, avoid);
   document.getElementById("routePanel").classList.add("open");
 
-  const toastMsg = usedGap                 ? "Rerouted ✓ through an accessible gap"
-                 : data.avoidance_applied  ? "Rerouted ✓ avoiding obstacles"
-                 : avoid.length > 0        ? "Route found (best available)"
-                 :                           "Route found ✓";
+  const toastMsg = usedGap    ? "Rerouted ✓ through an accessible gap"
+                 : anyAvoid   ? "Rerouted ✓ avoiding obstacles"
+                 : avoid.length > 0 ? "Route found (best available)"
+                 :             "Route found ✓";
   showToast(toastMsg);
+}
+
+// Force-route through a specific suggested gap, then reroute.
+function applyGapAndReroute(gapId) {
+  forceGapIds.add(gapId);
+  // The gap bypass only runs while avoiding obstacles — enable it if it's off.
+  if (avoidSeverities.size === 0) {
+    avoidSeverities.add("high");
+    avoidSeverities.add("medium");
+    syncAvoidChips();
+  }
+  fetchAndDrawRoute(Array.from(avoidSeverities), Array.from(forceGapIds));
 }
 
 function renderRoutePanel(data, avoid = []) {
@@ -2210,20 +2257,22 @@ function renderRoutePanel(data, avoid = []) {
     summaryEl.innerHTML = html;
   }
 
-  // Nice-option hint: accessible gaps nearby (within suggest range) that weren't auto-used.
+  // Accessible gaps nearby (beyond the auto range) — offer a button to route through each.
   const gaps = data.suggested_gaps || [];
   let gapHintEl = document.getElementById("routeGapHint");
   if (!gapHintEl) {
     gapHintEl = document.createElement("div");
     gapHintEl.id = "routeGapHint";
-    gapHintEl.style.cssText = "margin-top:6px;font-size:13px;color:#e8903a;";
+    gapHintEl.style.cssText = "margin-top:8px;";
     summaryEl.insertAdjacentElement("afterend", gapHintEl);
   }
   if (gaps.length > 0) {
-    const nearest = Math.round(gaps[0].distance_m);
-    gapHintEl.innerHTML =
-      `🌿 ${gaps.length} accessible gap${gaps.length > 1 ? "s" : ""} nearby ` +
-      `(closest ${nearest}m) — could make a nicer field-edge walk`;
+    gapHintEl.innerHTML = gaps.map(g =>
+      `<div style="display:flex;align-items:center;gap:8px;margin-top:6px;">
+         <span style="flex:1;color:#f2872e;font-size:13px;">🌿 Accessible gap ${Math.round(g.distance_m)}m away</span>
+         <button onclick="applyGapAndReroute(${g.id})" style="padding:5px 12px;border-radius:10px;border:none;background:#f2872e;color:#180e08;font-weight:700;font-size:12px;cursor:pointer;">Use gap</button>
+       </div>`
+    ).join("");
     gapHintEl.style.display = "";
   } else {
     gapHintEl.style.display = "none";

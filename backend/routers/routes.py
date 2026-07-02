@@ -31,8 +31,9 @@ class RouteRequest(BaseModel):
     buffer_m: int = 50
     avoid_severities: list[str] = []   # e.g. ["high"] or ["high", "medium"]
     avoid_radius_m: int = 15           # buffer circle radius around each avoided marker
-    gap_bypass_m: int = 20             # auto-route through a passage gap this close to an avoided obstacle
-    gap_suggest_m: int = 100           # flag (don't auto-use) passage gaps this close as a nice option
+    gap_bypass_m: int = 50             # auto-route through a passage gap this close to an avoided obstacle
+    gap_suggest_m: int = 100           # offer (don't auto-use) passage gaps this close as an option
+    force_gap_ids: list[int] = []      # passage gaps the user explicitly chose to route through
 
 # Walking pace used to derive duration for straight off-path bypass segments.
 WALK_SPEED_MS = 1.4
@@ -106,14 +107,17 @@ async def get_avoid_polygons(
 async def find_bypass_pairs(
     db: Connection, route_geojson: str, severities: list[str],
     avoid_radius_m: int, gap_bypass_m: int,
+    force_gap_ids: list[int] | None = None, gap_suggest_m: int = 100,
 ) -> list[dict]:
     """
     Find avoided obstacles that sit on the route and have an accessible passage
-    gap within `gap_bypass_m`. Each returned pair is an obstacle + its nearest
-    passage gap, ordered by position along the route (start → end).
+    gap within `gap_bypass_m` (auto), or a user-chosen gap in `force_gap_ids`
+    within the wider `gap_suggest_m`. Each returned pair is an obstacle + its
+    nearest qualifying gap, ordered by position along the route (start → end).
     """
     if not severities:
         return []
+    force_gap_ids = force_gap_ids or []
     rows = await db.fetch(
         """
         WITH rte AS (SELECT ST_SetSRID(ST_GeomFromGeoJSON($1), 4326) AS g)
@@ -133,8 +137,12 @@ async def find_bypass_pairs(
             FROM markers pp
             WHERE pp.type = 'passage'
               AND pp.archived = FALSE
-              AND ST_DWithin(pp.location::geography, o.location::geography, $4)
-            ORDER BY pp.location <-> o.location
+              AND (
+                    ST_DWithin(pp.location::geography, o.location::geography, $4)
+                 OR (pp.id = ANY($5::int[])
+                     AND ST_DWithin(pp.location::geography, o.location::geography, $6))
+              )
+            ORDER BY (pp.id = ANY($5::int[])) DESC, pp.location <-> o.location
             LIMIT 1
         ) p ON TRUE
         WHERE o.archived = FALSE
@@ -142,7 +150,8 @@ async def find_bypass_pairs(
           AND ST_DWithin(o.location::geography, rte.g::geography, $3)
         ORDER BY obs_frac
         """,
-        route_geojson, severities, float(avoid_radius_m), float(gap_bypass_m),
+        route_geojson, severities, float(avoid_radius_m),
+        float(gap_bypass_m), force_gap_ids, float(gap_suggest_m),
     )
     return [dict(r) for r in rows]
 
@@ -359,6 +368,7 @@ async def preview_route(body: RouteRequest, db: Connection = Depends(get_db)):
             pairs = await find_bypass_pairs(
                 db, base_geojson, body.avoid_severities,
                 body.avoid_radius_m, body.gap_bypass_m,
+                body.force_gap_ids, body.gap_suggest_m,
             )
             used_gap_ids: set[int] = set()
             geom = base["geometry"]
