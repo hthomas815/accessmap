@@ -60,12 +60,14 @@
     }
     #locateBtn:active { background: #e94560; color: #fff; }
     #locateBtn.locating {
-      animation: locatePulse 1s ease-in-out infinite;
-      border-color: #4fc3f7; color: #4fc3f7;
+      animation: locatePulse .8s ease-in-out infinite;
+      border-color: #4fc3f7; color: #fff;
+      background: #4fc3f7;
     }
     @keyframes locatePulse {
-      0%,100% { box-shadow: 0 2px 8px rgba(0,0,0,.4); }
-      50%      { box-shadow: 0 0 0 6px rgba(79,195,247,.25); }
+      0%   { box-shadow: 0 0 0 0 rgba(79,195,247,.7); }
+      70%  { box-shadow: 0 0 0 16px rgba(79,195,247,0); }
+      100% { box-shadow: 0 0 0 0 rgba(79,195,247,0); }
     }
 
     /* ── Route button ── */
@@ -1574,19 +1576,36 @@ function showSearchActions(lat, lng, name) {
   document.body.appendChild(bar);
 }
 
-function navigateToSearchPin(lat, lng) {
+function navigateToSearchPin(destLat, destLng) {
   const bar = document.getElementById("searchActionBar");
   if (bar) bar.remove();
-  // Enter route mode and pre-fill the destination
-  if (!routeMode) {
-    document.getElementById("routeBtn").click();
-    // Small delay to let route mode initialise, then set end point
-    setTimeout(() => {
-      handleRouteClick(lat, lng);
-    }, 300);
-  } else {
-    handleRouteClick(lat, lng);
-  }
+
+  showToast("Getting your location…", 5000);
+  const locBtn = document.getElementById("locateBtn");
+  locBtn.classList.add("locating");
+
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      locBtn.classList.remove("locating");
+      const { latitude: startLat, longitude: startLng } = pos.coords;
+
+      // Ensure route mode is active and reset any previous waypoints
+      if (routeMode) exitRouteMode();
+      enterRouteMode();
+
+      // Add start (current location) then destination, then immediately route
+      handleRouteClick(startLat, startLng).then(() => {
+        handleRouteClick(destLat, destLng).then(() => {
+          finishRoute();
+        });
+      });
+    },
+    err => {
+      locBtn.classList.remove("locating");
+      showToast("Could not get your location: " + err.message);
+    },
+    { enableHighAccuracy: true, timeout: 12000 }
+  );
 }
 
 searchInput.addEventListener("input", () => {
