@@ -35,7 +35,7 @@
       width: 84px; height: 84px;
       border-radius: 50%;
       background: #e0761f;
-      border: 3px solid #ffc98a; color: #180e08;
+      border: 3px solid #ffc98a; color: #42204a;
       font-size: 38px; cursor: pointer;
       box-shadow: 0 6px 28px rgba(224,118,31,.5);
       display: flex; align-items: center; justify-content: center;
@@ -92,7 +92,7 @@
     /* ── Route instruction banner ── */
     #routeBanner {
       position: absolute;
-      top: 74px; left: 50%;
+      top: 86px; left: 50%;
       transform: translateX(-50%);
       z-index: 1001;
       background: #180e08;
@@ -494,7 +494,7 @@
     /* ── Toast ── */
     #toast {
       position: absolute;
-      top: 20px; left: 50%;
+      top: 86px; left: 50%;
       transform: translateX(-50%);
       background: #1c1008; border: 1px solid #2e1a0a;
       color: #d0d8ee; padding: 10px 20px;
@@ -508,7 +508,7 @@
     /* ── Connecting banner ── */
     #connBanner {
       position: absolute;
-      top: 20px; left: 50%;
+      top: 86px; left: 50%;
       transform: translateX(-50%);
       display: none; align-items: center; gap: 8px;
       background: #1c1008; border: 1px solid #2e1a0a;
@@ -627,20 +627,22 @@
       z-index: 1003;
       width: 44px; height: 44px;
       border-radius: 50%;
-      background: #42204a;
-      border: 2px solid #7d4a75;
-      color: #e8d6e4; font-size: 18px; cursor: pointer;
+      background: #fff3e2;
+      border: 2px solid #d6741f;
+      color: #8a3410; font-size: 18px; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 2px 12px rgba(0,0,0,.5);
+      box-shadow: 0 8px 22px rgba(90,52,16,.24);
       -webkit-tap-highlight-color: transparent;
     }
-    #menuBtn:active { background: #7d4a75; color: #fff; }
+    #menuBtn:active { background: #f7a765; color: #2e1a0b; }
     #menuPanel {
       position: absolute;
       bottom: 0; left: 0; right: 0;
       z-index: 2100;
       background: #0d0b08;
       border-radius: 24px 24px 0 0;
+      border-top: 1.5px solid #d6741f;
+      box-shadow: 0 -14px 40px rgba(90,52,16,.28);
       transform: translateY(100%);
       transition: transform .28s cubic-bezier(.33,1,.68,1);
       pointer-events: none;
@@ -649,17 +651,71 @@
     .menu-handle { width: 40px; height: 4px; border-radius: 2px; background: #3a2814; margin: 12px auto 0; }
     .menu-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px 10px; border-bottom: 1px solid #221408; }
     .menu-title { font-size: 16px; font-weight: 700; color: #eee; }
-    .menu-close-btn { background: none; border: none; color: #7a5a38; font-size: 20px; cursor: pointer; padding: 4px 8px; }
+    .menu-close-btn {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: #fff3e2;
+      border: 1.5px solid #d6741f;
+      color: #8a3410;
+      font-size: 18px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      padding: 0;
+    }
     .menu-rows { padding: 8px 0 24px; }
-    .menu-row { display: flex; align-items: center; gap: 14px; padding: 14px 20px; border-bottom: 1px solid #1c1008; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    .menu-row {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 20px; border-bottom: 1px solid #1c1008;
+      cursor: pointer; transition: background .12s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
     .menu-row:last-child { border-bottom: none; }
-    .menu-row:active { background: #1c1008; }
-    .menu-row-icon { width: 40px; height: 40px; flex-shrink: 0; border-radius: 12px; border: 1.5px solid #2e1a0a; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    .menu-row:active { background: #f7a765; }
+    .menu-row-icon {
+      width: 40px; height: 40px; flex-shrink: 0;
+      border-radius: 12px; border: 1.5px solid #d6741f;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; background: #fff3e2; color: #8a3410;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.45);
+    }
+    .menu-row-icon.coverage { background: #eaf5ea; border-color: #66bb6a99; color: #356a3c; }
+    .menu-row-icon.record { background: #fbe1dc; border-color: #d87063; color: #a23e35; }
+    .menu-row-icon.help { background: #f7ead9; border-color: #c9935d; color: #8a5b28; }
+    .menu-row-icon.logout { background: #f8e4db; border-color: #d88a62; color: #9a4a27; }
     .menu-row-text { flex: 1; }
     .menu-row-label { font-size: 15px; font-weight: 600; color: #dde; }
     .menu-row-sub { font-size: 12px; color: #7a5a38; margin-top: 2px; }
-    .menu-row-indicator { width: 10px; height: 10px; border-radius: 50%; background: #2e1a0a; flex-shrink: 0; }
-    .menu-row-indicator.on { background: #66bb6a; }
+    .menu-switch {
+      width: 52px; height: 30px;
+      border-radius: 999px;
+      border: 1.5px solid #d8b493;
+      background: #ecd6c0;
+      flex-shrink: 0;
+      position: relative;
+      box-sizing: border-box;
+      transition: background .16s ease, border-color .16s ease, opacity .16s ease;
+      pointer-events: none;
+    }
+    .menu-switch::after {
+      content: "";
+      position: absolute;
+      top: 3px; left: 3px;
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: #fffaf4;
+      box-shadow: 0 2px 8px rgba(90,52,16,.22);
+      transition: transform .16s ease, background .16s ease;
+    }
+    .menu-switch.on {
+      background: #8a3410;
+      border-color: #8a3410;
+    }
+    .menu-switch.on::after {
+      transform: translateX(22px);
+      background: #fff3e2;
+    }
+    .menu-switch.disabled {
+      opacity: 0.45;
+    }
     #menuGridRow { opacity: 0.4; pointer-events: none; }
     #menuGridRow.enabled { opacity: 1; pointer-events: auto; }
 
@@ -1008,6 +1064,26 @@
       border-color: #d6741f !important;
       color: #2e1a0b !important;
     }
+    .menu-row-icon.coverage {
+      background: #eaf5ea !important;
+      border-color: #66bb6a99 !important;
+      color: #356a3c !important;
+    }
+    .menu-row-icon.record {
+      background: #fbe1dc !important;
+      border-color: #d87063 !important;
+      color: #a23e35 !important;
+    }
+    .menu-row-icon.help {
+      background: #f7ead9 !important;
+      border-color: #c9935d !important;
+      color: #8a5b28 !important;
+    }
+    .menu-row-icon.logout {
+      background: #f8e4db !important;
+      border-color: #d88a62 !important;
+      color: #9a4a27 !important;
+    }
     /* Divider borders */
     .menu-row, .mp-header, .mp-meta, .mp-note, .mp-comments-section,
     .route-panel-header, .route-friction-summary, .route-avoid-section,
@@ -1126,8 +1202,9 @@
       margin: 0 20px 10px;
       padding: 14px 16px;
       border-radius: 18px;
-      background: #fff4e6;
-      border: 1px solid #e8bd8e;
+      background: #fff3e2;
+      border: 1.5px solid #d6741f;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.45);
     }
     #menuUserName {
       font-size: 15px;
@@ -1206,19 +1283,28 @@
       color: #2A132A;
     }
     .bd-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .bd-head-copy { flex: 1; min-width: 0; }
     .bd-tile {
       width: 52px; height: 52px; border-radius: 14px; flex-shrink: 0;
       background: #C75A1C; color: #2A132A;
       display: flex; align-items: center; justify-content: center;
     }
     .bd-tile svg { width: 30px; height: 30px; }
-    .bd-title { font-size: 22px; font-weight: 800; color: #2A132A; flex: 1; }
+    .bd-title { font-size: 22px; font-weight: 800; color: #2A132A; }
+    .bd-subtitle { margin-top: 3px; font-size: 13px; color: #7A4A2A; font-weight: 600; }
     .bd-back {
       width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
       background: #FFF6E6; border: 1.5px solid #e7cfa0; color: #2A132A;
       font-size: 18px; cursor: pointer;
     }
     .bd-label { font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #7A4A2A; margin: 14px 0 8px; }
+    .bd-cats { display: flex; flex-wrap: wrap; gap: 8px; }
+    .bd-cat-chip {
+      padding: 9px 13px; border-radius: 999px; cursor: pointer;
+      background: #FFF6E6; border: 1.5px solid #e7cfa0; color: #4a2e15;
+      font-size: 13px; font-weight: 700; -webkit-tap-highlight-color: transparent;
+    }
+    .bd-cat-chip.active { background: #ffe0b8; border-color: #C75A1C; color: #2A132A; }
     .bd-subs { display: flex; flex-wrap: wrap; gap: 8px; }
     .bd-sub {
       padding: 10px 14px; border-radius: 14px; cursor: pointer;
@@ -1257,6 +1343,12 @@
       background: #C75A1C; color: #FFF6E6; font-size: 16px; font-weight: 800; cursor: pointer;
       -webkit-tap-highlight-color: transparent;
     }
+    .bd-add-cat {
+      width: 100%; margin-top: 12px; padding: 13px 14px; border-radius: 14px;
+      border: 1.5px dashed #C75A1C; background: transparent; color: #7A4A2A;
+      font-size: 14px; font-weight: 800; cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
     .bd-save:disabled { opacity: .6; }
     /* Hide the other floating controls while the burst is open; FAB becomes a close */
     body.burst-open #locateBtn, body.burst-open #targetBtn, body.burst-open #northBtn,
@@ -1265,6 +1357,7 @@
     }
     body.burst-open #fab {
       z-index: 1700; background: #4a2545; border-color: #7d4a75;
+      color: #f2872e;
       transform: rotate(45deg); box-shadow: 0 6px 24px rgba(0,0,0,.4);
     }
 
@@ -1290,14 +1383,20 @@
       box-shadow: 0 -8px 40px rgba(42,19,42,.28);
       max-height: 66dvh;
     }
+    #routePanel {
+      background: rgba(255,240,210,.97) !important;
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 -8px 40px rgba(42,19,42,.28);
+    }
     #markerPanel .drag-handle { background: var(--md-plum) !important; width: 44px; height: 5px; }
     #markerPanelContent { position: relative; padding-bottom: 22px; }
 
     .md-close {
       position: absolute; top: 14px; right: 16px; z-index: 3;
       width: 42px; height: 42px; border-radius: 50%;
-      background: var(--md-cream); border: 1.5px solid #e7cfa0;
-      color: var(--md-plum); font-size: 18px; cursor: pointer;
+      background: var(--md-aubergine); border: 1.5px solid #7d4a75;
+      color: var(--md-orange); font-size: 18px; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 2px 8px rgba(42,19,42,.15);
       -webkit-tap-highlight-color: transparent;
@@ -1527,51 +1626,51 @@
   </div>
   <div class="menu-rows">
     <div class="menu-row" onclick="toggleCoverage()">
-      <div class="menu-row-icon" style="background:#1a3020;border-color:#66bb6a55">◉</div>
+      <div class="menu-row-icon coverage">◉</div>
       <div class="menu-row-text">
         <div class="menu-row-label">Explored paths</div>
-        <div class="menu-row-sub" id="menuCoverageSub">Show your coverage layer</div>
+        <div class="menu-row-sub" id="menuCoverageSub">Show your explored areas on the map</div>
       </div>
-      <div class="menu-row-indicator" id="menuCoverageIndicator"></div>
+      <div class="menu-switch" id="menuCoverageToggle" role="switch" aria-checked="false"></div>
     </div>
     <div class="menu-row" id="menuGridRow" onclick="toggleGridFromMenu()">
-      <div class="menu-row-icon" style="background:#1a3020;border-color:#66bb6a55">⊞</div>
+      <div class="menu-row-icon coverage">⊞</div>
       <div class="menu-row-text">
         <div class="menu-row-label">Coverage grid</div>
-        <div class="menu-row-sub">Overlay a grid on coverage</div>
+        <div class="menu-row-sub" id="menuGridSub">Turn on explored paths first</div>
       </div>
-      <div class="menu-row-indicator" id="menuGridIndicator"></div>
+      <div class="menu-switch disabled" id="menuGridToggle" role="switch" aria-checked="false" aria-disabled="true"></div>
     </div>
     <div class="menu-row" onclick="startRecording()">
-      <div class="menu-row-icon" style="background:#2a0e0e;border-color:#e0483f55">⏺</div>
+      <div class="menu-row-icon record">⏺</div>
       <div class="menu-row-text">
         <div class="menu-row-label">Record a walk</div>
         <div class="menu-row-sub">Track your route live with GPS — no Strava needed</div>
       </div>
     </div>
     <div class="menu-row" onclick="document.getElementById('gpxFileInput').click()">
-      <div class="menu-row-icon" style="background:#160e08;border-color:#f2872e55">📂</div>
+      <div class="menu-row-icon">📂</div>
       <div class="menu-row-text">
         <div class="menu-row-label">Import GPX walk</div>
         <div class="menu-row-sub">Upload a recorded walk</div>
       </div>
     </div>
     <div class="menu-row" onclick="saveAreaOffline()">
-      <div class="menu-row-icon" style="background:#160e08;border-color:#f2872e55">📥</div>
+      <div class="menu-row-icon">📥</div>
       <div class="menu-row-text">
         <div class="menu-row-label">Save area offline</div>
         <div class="menu-row-sub">Cache map tiles for offline use</div>
       </div>
     </div>
     <div class="menu-row" onclick="closeMenu();openHelp()">
-      <div class="menu-row-icon" style="background:#0e0c08;border-color:#c0906055">❓</div>
+      <div class="menu-row-icon help">❓</div>
       <div class="menu-row-text">
         <div class="menu-row-label">How to use</div>
         <div class="menu-row-sub">Guide to all buttons and features</div>
       </div>
     </div>
     <div class="menu-row" onclick="signOutUser()">
-      <div class="menu-row-icon" style="background:#2a1408;border-color:#d88a62">⇠</div>
+      <div class="menu-row-icon logout">⇠</div>
       <div class="menu-row-text">
         <div class="menu-row-label">Log out</div>
         <div class="menu-row-sub">Switch account</div>
@@ -1798,9 +1897,6 @@ async function handleSignedOut(showOverlay = false) {
   clearMapData();
   coverageVisible = false;
   gridVisible = false;
-  document.getElementById("menuCoverageIndicator").classList.remove("on");
-  document.getElementById("menuGridIndicator").classList.remove("on");
-  document.getElementById("menuGridRow").classList.remove("enabled");
   updateUserBadge();
   updateCoverageModeUI();
   if (showOverlay) showAuthOverlay();
@@ -2042,6 +2138,7 @@ if (map.rotateControl) map.rotateControl.remove();
 // ── State ─────────────────────────────────────────────────────────────────────
 
 let selectedCategory   = null;
+let selectedCategories = [];
 let selectedTags       = [];   // [{ type, key, label }] — multi-select across categories
 let selectedDifficulty = null;
 let pendingLat  = null;
@@ -2054,13 +2151,14 @@ let currentPhoto   = null;
 function saveFormState() {
   if (!selectedCategory) return;
   sessionStorage.setItem("am_cat",  selectedCategory.id);
+  sessionStorage.setItem("am_cats", JSON.stringify(selectedCategories));
   sessionStorage.setItem("am_lat",  pendingLat);
   sessionStorage.setItem("am_lng",  pendingLng);
   sessionStorage.setItem("am_tags", JSON.stringify(selectedTags));
   if (selectedDifficulty) sessionStorage.setItem("am_diff", selectedDifficulty);
 }
 function clearFormState() {
-  ["am_cat","am_lat","am_lng","am_tags","am_diff"].forEach(k => sessionStorage.removeItem(k));
+  ["am_cat","am_cats","am_lat","am_lng","am_tags","am_diff"].forEach(k => sessionStorage.removeItem(k));
 }
 function restoreFormState() {
   const catId = sessionStorage.getItem("am_cat");
@@ -2070,15 +2168,50 @@ function restoreFormState() {
   const cat = CATEGORIES.find(c => c.id === catId);
   if (!cat) return;
   pendingLat = lat; pendingLng = lng;
+  try { selectedCategories = JSON.parse(sessionStorage.getItem("am_cats") || "[]"); } catch { selectedCategories = []; }
   try { selectedTags = JSON.parse(sessionStorage.getItem("am_tags") || "[]"); } catch { selectedTags = []; }
+  if (!selectedCategories.length) {
+    selectedCategories = [...new Set([cat.id, ...selectedTags.map(t => t.type).filter(Boolean)])];
+  }
   selectedDifficulty = sessionStorage.getItem("am_diff") || null;
-  goToStep2(cat);
+  selectedCategory = cat;
+  renderBurstDetail(cat);
   if (selectedDifficulty) {
-    document.querySelectorAll(".diff-btn").forEach(b => {
-      if (b.dataset.val === selectedDifficulty) b.classList.add("selected");
+    document.querySelectorAll(".bd-diff").forEach(b => {
+      if (b.dataset.val === selectedDifficulty) b.classList.add("on");
     });
   }
-  document.getElementById("sheet").classList.add("open");
+}
+
+function ensureSelectedCategory(catId) {
+  if (catId && !selectedCategories.includes(catId)) selectedCategories.push(catId);
+}
+
+function activeCategoryIds(activeCatId = selectedCategory?.id) {
+  const ids = [];
+  if (activeCatId) ids.push(activeCatId);
+  selectedCategories.forEach(id => { if (!ids.includes(id)) ids.push(id); });
+  selectedTags.forEach(tag => {
+    if (tag?.type && !ids.includes(tag.type)) ids.push(tag.type);
+  });
+  return ids;
+}
+
+function subtypeOptionsFor(catIds) {
+  const seen = new Set();
+  return catIds.flatMap(id => (SUBTYPES[id] || []).map(st => ({ ...st, type: id }))).filter(st => {
+    if (seen.has(st.key)) return false;
+    seen.add(st.key);
+    return true;
+  });
+}
+
+function unresolvedCategoryTags() {
+  return activeCategoryIds().filter(id => !selectedTags.some(tag => tag.type === id)).map(id => ({
+    type: id,
+    key: null,
+    label: getCat(id).label,
+  }));
 }
 
 // ── Marker cluster group ──────────────────────────────────────────────────────
@@ -2137,6 +2270,7 @@ CATEGORIES.forEach(cat => {
 
 function goToStep2(cat) {
   selectedCategory = cat;
+  ensureSelectedCategory(cat.id);
 
   // Hero header
   const hero = document.getElementById("heroIcon");
@@ -2145,7 +2279,7 @@ function goToStep2(cat) {
   document.getElementById("selectedCatLabel").textContent = cat.label;
 
   // Subtype buttons (multi-select toggles). Some categories (e.g. Stile) have none.
-  const subs = SUBTYPES[cat.id] || [];
+  const subs = subtypeOptionsFor(activeCategoryIds(cat.id));
   const hasSubs = subs.length > 0;
   document.getElementById("subtypeLabel").style.display = hasSubs ? "" : "none";
   const grid = document.getElementById("subtypeGrid");
@@ -2162,7 +2296,7 @@ function goToStep2(cat) {
     btn.addEventListener("click", () => {
       const i = selectedTags.findIndex(t => t.key === st.key);
       if (i >= 0) { selectedTags.splice(i, 1); btn.classList.remove("selected"); }
-      else { selectedTags.push({ type: cat.id, key: st.key, label: st.label }); btn.classList.add("selected"); }
+      else { selectedTags.push({ type: st.type || cat.id, key: st.key, label: st.label }); btn.classList.add("selected"); }
       renderSelectedTags();
     });
     grid.appendChild(btn);
@@ -2206,6 +2340,7 @@ function goToStep1() {
 function openSheet(lat, lng) {
   pendingLat = lat; pendingLng = lng;
   selectedCategory = null;
+  selectedCategories = [];
   selectedTags = [];
   selectedDifficulty = null;
   currentPhoto = null;
@@ -2277,7 +2412,13 @@ function closeCategoryBurst(clear = true) {
   overlay.innerHTML = "";
   document.body.classList.remove("burst-open");
   burstOpen = false;
-  if (clear) clearFormState();
+  if (clear) {
+    clearFormState();
+    selectedCategory = null;
+    selectedCategories = [];
+    selectedTags = [];
+    selectedDifficulty = null;
+  }
 }
 
 function selectBurstCategory(catId) {
@@ -2289,13 +2430,15 @@ function selectBurstCategory(catId) {
 // Detail step, rendered inside the burst overlay: subtypes + difficulty + note + photo.
 function renderBurstDetail(cat) {
   selectedCategory = cat;
+  ensureSelectedCategory(cat.id);
   const overlay = document.getElementById("catBurst");
   overlay.innerHTML = "";
   overlay.classList.add("open");
   document.body.classList.add("burst-open");
   burstOpen = true;
 
-  const subs = SUBTYPES[cat.id] || [];
+  const categoryIds = activeCategoryIds(cat.id);
+  const subs = subtypeOptionsFor(categoryIds);
   const card = document.createElement("div");
   card.className = "bd-card";
   card.addEventListener("click", e => e.stopPropagation());
@@ -2303,9 +2446,13 @@ function renderBurstDetail(cat) {
     <div class="bd-head">
       <button class="bd-back" title="Back">‹</button>
       <div class="bd-tile">${MONO_ICONS[cat.id] || MONO_ICONS.other}</div>
-      <div class="bd-title">${cat.label}</div>
+      <div class="bd-head-copy">
+        <div class="bd-title">${cat.label}</div>
+        <div class="bd-subtitle">${categoryIds.length > 1 ? `Plus ${categoryIds.length - 1} more categor${categoryIds.length === 2 ? "y" : "ies"}` : "Add details"}</div>
+      </div>
     </div>
-    ${subs.length ? `<div class="bd-label">Type · tap all that apply</div><div class="bd-subs" id="bdSubs"></div>` : ""}
+    ${categoryIds.length ? `<div class="bd-label">Categories</div><div class="bd-cats" id="bdCats"></div>` : ""}
+    ${subs.length ? `<div class="bd-label">Type · tap all that apply</div><div class="bd-subs" id="bdSubs"></div><button type="button" class="bd-add-cat" id="bdAddCat">＋ Add another category</button>` : `<button type="button" class="bd-add-cat" id="bdAddCat">＋ Add another category</button>`}
     <div class="bd-label">Difficulty</div>
     <div class="bd-diff-row" id="bdDiff">
       <button class="bd-diff" data-val="low"><span class="bd-diff-dot" style="background:#43a047"></span>Easy</button>
@@ -2324,6 +2471,21 @@ function renderBurstDetail(cat) {
   `;
   overlay.appendChild(card);
 
+  const catsWrap = card.querySelector("#bdCats");
+  if (catsWrap) {
+    categoryIds.forEach(id => {
+      const chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "bd-cat-chip" + (id === cat.id ? " active" : "");
+      chip.textContent = getCat(id).label;
+      chip.onclick = () => {
+        const next = CATEGORIES.find(c => c.id === id);
+        if (next) renderBurstDetail(next);
+      };
+      catsWrap.appendChild(chip);
+    });
+  }
+
   // Subtype toggles (multi-select, shared with selectedTags)
   if (subs.length) {
     const wrap = card.querySelector("#bdSubs");
@@ -2334,7 +2496,7 @@ function renderBurstDetail(cat) {
       b.onclick = () => {
         const idx = selectedTags.findIndex(t => t.key === st.key);
         if (idx >= 0) { selectedTags.splice(idx, 1); b.classList.remove("on"); }
-        else { selectedTags.push({ type: cat.id, key: st.key, label: st.label }); b.classList.add("on"); }
+        else { selectedTags.push({ type: st.type || cat.id, key: st.key, label: st.label }); b.classList.add("on"); }
       };
       wrap.appendChild(b);
     });
@@ -2353,6 +2515,10 @@ function renderBurstDetail(cat) {
   // Note (persisted via the hidden #noteInput so Back keeps it)
   const noteEl = card.querySelector("#bdNote");
   noteEl.value = document.getElementById("noteInput").value || "";
+  card.querySelector("#bdAddCat").onclick = () => {
+    document.getElementById("noteInput").value = noteEl.value;
+    openCategoryBurst();
+  };
 
   // Photo — reuse the existing hidden inputs + pipeline
   card.querySelector("#bdCam").onclick = () => { saveFormState(); document.getElementById("photoCamera").click(); };
@@ -2560,13 +2726,14 @@ async function saveMarker(note) {
   if (!isSignedIn()) { showAuthOverlay("Sign in before saving a marker."); return false; }
   if (!selectedCategory) { showToast("Please pick a category first"); return false; }
   if (pendingLat == null) { showToast("No location set"); return false; }
-  const primaryType = selectedTags[0]?.type || selectedCategory.id;
+  const tagsToSave = [...selectedTags, ...unresolvedCategoryTags()];
+  const primaryType = tagsToSave[0]?.type || selectedCategory.id;
   const fd = new FormData();
   fd.append("lat", pendingLat);
   fd.append("lng", pendingLng);
   fd.append("type", primaryType);
-  fd.append("subtypes", JSON.stringify(selectedTags));
-  if (selectedTags[0])    fd.append("subtype",  selectedTags[0].label);
+  fd.append("subtypes", JSON.stringify(tagsToSave));
+  if (tagsToSave[0])      fd.append("subtype",  tagsToSave[0].label);
   if (selectedDifficulty) fd.append("severity", selectedDifficulty);
   if (note)               fd.append("note",     note);
   if (currentPhoto)       fd.append("photo",    currentPhoto);
@@ -2700,15 +2867,15 @@ function showSearchActions(lat, lng, name) {
   const bar = document.createElement("div");
   bar.id = "searchActionBar";
   bar.style.cssText = `
-    position:absolute; bottom:110px; left:50%; transform:translateX(-50%);
-    z-index:1500; background:#180e08; border:1.5px solid #2e1a0a;
-    border-radius:20px; padding:10px 16px; display:flex; gap:12px;
-    align-items:center; box-shadow:0 4px 20px rgba(0,0,0,.5);
-    white-space:nowrap; font-size:14px; color:#eee;
+    position:absolute; bottom:126px; left:50%; transform:translateX(-50%);
+    width:min(calc(100vw - 32px), 340px); z-index:1500; background:#180e08; border:1.5px solid #2e1a0a;
+    border-radius:20px; padding:10px 14px; display:flex; gap:10px;
+    align-items:center; justify-content:center; box-shadow:0 4px 20px rgba(0,0,0,.5);
+    font-size:14px; color:#eee;
     -webkit-tap-highlight-color:transparent;
   `;
   bar.innerHTML = `
-    <span style="max-width:140px;overflow:hidden;text-overflow:ellipsis;color:#aab">${name}</span>
+    <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;text-align:center;color:#aab">${name}</span>
     <button onclick="navigateToSearchPin(${lat},${lng})" style="padding:7px 14px;border-radius:12px;border:none;background:#f2872e;color:#180e08;font-weight:700;font-size:13px;cursor:pointer;">↗ Route here</button>
     <button onclick="document.getElementById('searchActionBar').remove();if(window._searchPin){window._searchPin.remove();window._searchPin=null;}" style="padding:7px 10px;border-radius:12px;border:none;background:#2e1a0a;color:#aaa;font-size:13px;cursor:pointer;">✕</button>
   `;
@@ -3100,7 +3267,8 @@ function openMarkerPanel(m) {
   const cat  = getCat(m.type);
   const mono = MONO_ICONS[cat.id] || MONO_ICONS.other;
   const tags = mpTags(m);
-  const sub  = tags.map(t => t.label).join(", ");
+  const title = tags[0]?.label || cat.label;
+  const sub  = tags.length > 1 ? tags.slice(1).map(t => t.label).join(", ") : "";
   const sev  = SEV_DETAIL[m.severity];
 
   document.getElementById("markerPanelContent").innerHTML = `
@@ -3110,7 +3278,7 @@ function openMarkerPanel(m) {
     <div class="md-header">
       <div class="md-tile">${mono}</div>
       <div class="md-titles">
-        <div class="md-title">${cat.label}</div>
+        <div class="md-title">${title}</div>
         ${sub ? `<div class="md-sub">${sub}</div>` : ""}
       </div>
     </div>
@@ -3816,14 +3984,32 @@ function coverageSummaryText() {
   return `${me.toFixed(1)} km explored`;
 }
 
-// Coverage is now a simple on/off showing your own explored paths — no mode switch.
-function updateCoverageModeUI() {}
+function updateCoverageModeUI() {
+  const coverageToggle = document.getElementById("menuCoverageToggle");
+  const coverageSub = document.getElementById("menuCoverageSub");
+  const gridRow = document.getElementById("menuGridRow");
+  const gridToggle = document.getElementById("menuGridToggle");
+  const gridSub = document.getElementById("menuGridSub");
+
+  coverageToggle.classList.toggle("on", coverageVisible);
+  coverageToggle.setAttribute("aria-checked", coverageVisible ? "true" : "false");
+  coverageSub.textContent = coverageVisible
+    ? (totalExploredKm > 0 ? `Showing ${coverageSummaryText()}` : "Showing your explored areas")
+    : "Show your explored areas on the map";
+
+  gridRow.classList.toggle("enabled", coverageVisible);
+  gridToggle.classList.toggle("on", gridVisible);
+  gridToggle.classList.toggle("disabled", !coverageVisible);
+  gridToggle.setAttribute("aria-checked", gridVisible ? "true" : "false");
+  gridToggle.setAttribute("aria-disabled", coverageVisible ? "false" : "true");
+  gridSub.textContent = coverageVisible
+    ? "Overlay a grid on your explored areas"
+    : "Turn on explored paths first";
+}
 
 function toggleCoverage() {
   if (!isSignedIn()) { showAuthOverlay("Sign in to keep your own explored area."); return; }
   coverageVisible = !coverageVisible;
-  document.getElementById("menuCoverageIndicator").classList.toggle("on", coverageVisible);
-  document.getElementById("menuGridRow").classList.toggle("enabled", coverageVisible);
   if (coverageVisible) {
     coverageLayer.addTo(map);
     loadTracks();
@@ -3833,10 +4019,10 @@ function toggleCoverage() {
     document.getElementById("coverageStats").style.display = "none";
     if (gridVisible) {
       gridVisible = false;
-      document.getElementById("menuGridIndicator").classList.remove("on");
       map.removeLayer(gridLayer);
     }
   }
+  updateCoverageModeUI();
 }
 
 document.getElementById("gpxFileInput").addEventListener("change", async e => {
@@ -4213,6 +4399,7 @@ async function loadDistanceStats() {
     if (!res.ok) return;
     coverageStatsModel = await res.json();
     totalExploredKm = coverageStatsModel.km_me || 0;
+    updateCoverageModeUI();
     const statsEl = document.getElementById("coverageStats");
     if (gridVisible) {
       drawGrid(); // refresh grid stats to include km
@@ -4228,7 +4415,6 @@ async function loadDistanceStats() {
 function toggleGridFromMenu() {
   if (!coverageVisible) return;
   gridVisible = !gridVisible;
-  document.getElementById("menuGridIndicator").classList.toggle("on", gridVisible);
   if (gridVisible) {
     gridLayer.addTo(map);
     drawGrid();
@@ -4237,6 +4423,7 @@ function toggleGridFromMenu() {
     map.removeLayer(gridLayer);
     loadDistanceStats();   // restore pill to km-only (or hide it)
   }
+  updateCoverageModeUI();
 }
 
 async function fetchAreaName() {
@@ -4359,6 +4546,8 @@ async function saveAreaOffline() {
   // Kick off tile prefetch in the service worker
   sw.postMessage({ type: "PREFETCH_TILES", urls: tileUrls });
 }
+
+updateCoverageModeUI();
 
 initAuth().catch(err => {
   console.error("Auth bootstrap failed:", err);
