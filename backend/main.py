@@ -14,10 +14,14 @@ from routers.tracks import router as tracks_router
 from routers.strava import router as strava_router
 
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://access:access@localhost:5432/accessmap")
+SUPABASE_URL = os.getenv("SUPABASE_URL", "").rstrip("/")
+SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY", "")
 
 BASE_DIR = Path(__file__).parent
 FRONTEND_DIR = BASE_DIR / "frontend"
 SCHEMA_FILE = BASE_DIR / "db" / "init.sql"
+if not SCHEMA_FILE.exists():
+    SCHEMA_FILE = BASE_DIR.parent / "db" / "init.sql"
 
 
 async def init_db(pool: asyncpg.Pool) -> None:
@@ -34,9 +38,20 @@ async def init_db(pool: asyncpg.Pool) -> None:
 async def migrate_db(pool: asyncpg.Pool) -> None:
     """Idempotent migrations — safe to run on every boot."""
     async with pool.acquire() as conn:
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS profiles (
+                id           TEXT PRIMARY KEY,
+                email        TEXT,
+                display_name TEXT,
+                created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
+            );
+        """)
         # v2: subtype column for two-step marker flow
         await conn.execute(
             "ALTER TABLE markers ADD COLUMN IF NOT EXISTS subtype TEXT;"
+        )
+        await conn.execute(
+            "ALTER TABLE markers ADD COLUMN IF NOT EXISTS user_id TEXT;"
         )
         # v3: tracks table for GPX coverage layer
         await conn.execute("""
@@ -49,7 +64,13 @@ async def migrate_db(pool: asyncpg.Pool) -> None:
             );
         """)
         await conn.execute(
+            "ALTER TABLE tracks ADD COLUMN IF NOT EXISTS user_id TEXT;"
+        )
+        await conn.execute(
             "CREATE INDEX IF NOT EXISTS idx_tracks_path ON tracks USING GIST (path);"
+        )
+        await conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_tracks_user_id ON tracks (user_id);"
         )
         # v4: comments table for marker updates
         await conn.execute("""
@@ -61,7 +82,13 @@ async def migrate_db(pool: asyncpg.Pool) -> None:
             );
         """)
         await conn.execute(
+            "ALTER TABLE comments ADD COLUMN IF NOT EXISTS user_id TEXT;"
+        )
+        await conn.execute(
             "CREATE INDEX IF NOT EXISTS idx_comments_marker ON comments (marker_id);"
+        )
+        await conn.execute(
+            "ALTER TABLE confirmations ADD COLUMN IF NOT EXISTS user_id TEXT;"
         )
         # v5: 'field' marker type — ALTER TYPE cannot run inside a transaction
         # asyncpg executes each statement in its own implicit transaction, so this is safe
@@ -88,6 +115,12 @@ async def migrate_db(pool: asyncpg.Pool) -> None:
                 connected_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
             );
         """)
+        await conn.execute(
+            "ALTER TABLE strava_accounts ADD COLUMN IF NOT EXISTS user_id TEXT;"
+        )
+        await conn.execute(
+            "CREATE UNIQUE INDEX IF NOT EXISTS idx_strava_accounts_user_id ON strava_accounts (user_id) WHERE user_id IS NOT NULL;"
+        )
         # v9: remember which Strava activities were already imported / dismissed
         await conn.execute("""
             CREATE TABLE IF NOT EXISTS strava_activities (
@@ -99,6 +132,20 @@ async def migrate_db(pool: asyncpg.Pool) -> None:
                 start_date    TIMESTAMPTZ,
                 status        TEXT NOT NULL DEFAULT 'pending',
                 seen_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
+            );
+        """)
+        await conn.execute(
+            "ALTER TABLE strava_activities ADD COLUMN IF NOT EXISTS user_id TEXT;"
+        )
+        await conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_strava_activities_user_status ON strava_activities (user_id, status);"
+        )
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS strava_oauth_states (
+                state       TEXT PRIMARY KEY,
+                user_id     TEXT NOT NULL,
+                created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                expires_at  TIMESTAMPTZ NOT NULL
             );
         """)
 
@@ -146,6 +193,14 @@ if FRONTEND_DIR.exists():
 @app.get("/health")
 async def health():
     return {"status": "ok"}
+
+
+@app.get("/api/app-config")
+async def app_config():
+    return {
+        "supabase_url": SUPABASE_URL,
+        "supabase_anon_key": SUPABASE_ANON_KEY,
+    }
 
 
 @app.get("/sw.js")

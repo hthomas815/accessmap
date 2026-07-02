@@ -1,9 +1,10 @@
 import json
 from typing import Optional
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Query
 from asyncpg import Connection
 from pydantic import BaseModel
 
+from auth import AuthUser, ensure_profile, get_current_user
 from db import get_db
 
 router = APIRouter(prefix="/tracks", tags=["tracks"])
@@ -32,13 +33,18 @@ class TrackResponse(BaseModel):
 
 
 @router.post("", status_code=201)
-async def create_track(body: TrackCreate, db: Connection = Depends(get_db)):
+async def create_track(
+    body: TrackCreate,
+    db: Connection = Depends(get_db),
+    user: AuthUser = Depends(get_current_user),
+):
     if len(body.points) < 2:
         raise HTTPException(status_code=400, detail="Track needs at least 2 points")
-    return await save_track_points(db, body.name, body.points, body.gpx_source)
+    await ensure_profile(db, user)
+    return await save_track_points(db, body.name, body.points, body.gpx_source, user.id)
 
 
-async def save_track_points(db: Connection, name, points, gpx_source="gpx"):
+async def save_track_points(db: Connection, name, points, gpx_source="gpx", user_id: str | None = None):
     """Save a list of points as a track, deduplicating against existing coverage.
     `points` is a list of objects/dicts with .lat/.lng (or ['lat','lng']).
     Reused by the GPX upload endpoint and the Strava importer."""
@@ -54,18 +60,21 @@ async def save_track_points(db: Connection, name, points, gpx_source="gpx"):
     new_wkt = f"LINESTRING({coords})"
 
     # ── Deduplicate against existing coverage ────────────────────────────────
-    existing = await db.fetchval("SELECT ST_Union(path) FROM tracks")
+    if user_id:
+        existing = await db.fetchval("SELECT ST_Union(path) FROM tracks WHERE user_id = $1", user_id)
+    else:
+        existing = await db.fetchval("SELECT ST_Union(path) FROM tracks")
 
     if existing is None:
         # No existing tracks — save the full upload
         row = await db.fetchrow(
             """
-            INSERT INTO tracks (name, path, gpx_source)
-            VALUES ($1, ST_GeomFromText($2, 4326), $3)
+            INSERT INTO tracks (name, path, gpx_source, user_id)
+            VALUES ($1, ST_GeomFromText($2, 4326), $3, $4)
             RETURNING id, name, gpx_source, recorded_at,
                       ST_Length(path::geography) / 1000.0 AS km
             """,
-            name, new_wkt, gpx_source,
+            name, new_wkt, gpx_source, user_id,
         )
         return {
             "segments_saved": 1,
@@ -134,11 +143,11 @@ async def save_track_points(db: Connection, name, points, gpx_source="gpx"):
         seg_name = f"{name} (part {i+1})" if name and len(all_lines) > 1 else name
         km_row = await db.fetchrow(
             """
-            INSERT INTO tracks (name, path, gpx_source)
-            VALUES ($1, ST_GeomFromText($2, 4326), $3)
+            INSERT INTO tracks (name, path, gpx_source, user_id)
+            VALUES ($1, ST_GeomFromText($2, 4326), $3, $4)
             RETURNING ST_Length(path::geography) / 1000.0 AS km
             """,
-            seg_name, seg_wkt, gpx_source,
+            seg_name, seg_wkt, gpx_source, user_id,
         )
         km_new += float(km_row["km"])
 
@@ -156,12 +165,19 @@ async def save_track_points(db: Connection, name, points, gpx_source="gpx"):
 
 
 @router.get("/stats")
-async def track_stats(db: Connection = Depends(get_db)):
-    """Return total unique distance explored (deduplicates overlapping tracks)."""
-    km = await db.fetchval(
+async def track_stats(
+    db: Connection = Depends(get_db),
+    user: AuthUser = Depends(get_current_user),
+):
+    """Return personal and community unique distance totals."""
+    km_me = await db.fetchval(
+        "SELECT COALESCE(ST_Length(ST_Union(path)::geography) / 1000.0, 0) FROM tracks WHERE user_id = $1",
+        user.id,
+    )
+    km_all = await db.fetchval(
         "SELECT COALESCE(ST_Length(ST_Union(path)::geography) / 1000.0, 0) FROM tracks"
     )
-    return {"km_total": round(float(km), 2)}
+    return {"km_me": round(float(km_me), 2), "km_all": round(float(km_all), 2)}
 
 
 @router.get("")
@@ -171,20 +187,25 @@ async def list_tracks(
     max_lat: float,
     max_lng: float,
     db: Connection = Depends(get_db),
+    user: AuthUser = Depends(get_current_user),
+    scope: str = Query("me", pattern="^(me|all|both)$"),
 ):
+    where_scope = "TRUE" if scope in ("all", "both") else "user_id = $5"
     rows = await db.fetch(
-        """
+        f"""
         SELECT
             id,
             name,
             gpx_source,
             recorded_at,
-            ST_AsGeoJSON(path) AS geojson
+            ST_AsGeoJSON(path) AS geojson,
+            COALESCE(user_id = $5, FALSE) AS is_mine
         FROM tracks
         WHERE path && ST_MakeEnvelope($1, $2, $3, $4, 4326)
+          AND {where_scope}
         ORDER BY recorded_at DESC
         """,
-        min_lng, min_lat, max_lng, max_lat,
+        min_lng, min_lat, max_lng, max_lat, user.id,
     )
     return [
         {
@@ -193,6 +214,7 @@ async def list_tracks(
             "gpx_source": r["gpx_source"],
             "recorded_at": r["recorded_at"].isoformat(),
             "geojson": r["geojson"],
+            "is_mine": bool(r["is_mine"]),
         }
         for r in rows
     ]

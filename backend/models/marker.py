@@ -56,6 +56,7 @@ class MarkerResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     confirmation_count: int = 0
+    created_by_me: bool = False
 
     class Config:
         from_attributes = True

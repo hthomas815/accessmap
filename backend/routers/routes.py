@@ -5,6 +5,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from asyncpg import Connection
 
+from auth import AuthUser, get_current_user
 from db import get_db
 
 router = APIRouter(prefix="/routes", tags=["routes"])
@@ -48,7 +49,7 @@ async def get_nearby_markers(db: Connection, geometry_json: str, buffer_m: float
             m.id,
             ST_Y(m.location)  AS lat,
             ST_X(m.location)  AS lng,
-            m.type, m.subtype, m.severity, m.note,
+            m.type, m.subtype, m.subtypes, m.severity, m.note,
             ROUND(
                 ST_Distance(
                     m.location::geography,
@@ -67,7 +68,16 @@ async def get_nearby_markers(db: Connection, geometry_json: str, buffer_m: float
         """,
         geometry_json, float(buffer_m),
     )
-    return [dict(r) for r in rows]
+    nearby = []
+    for row in rows:
+        item = dict(row)
+        if isinstance(item.get("subtypes"), str):
+            try:
+                item["subtypes"] = json.loads(item["subtypes"])
+            except ValueError:
+                item["subtypes"] = []
+        nearby.append(item)
+    return nearby
 
 
 async def get_avoid_polygons(
@@ -335,7 +345,11 @@ async def route_via_osrm(
 # ── Endpoint ──────────────────────────────────────────────────────────────────
 
 @router.post("/preview")
-async def preview_route(body: RouteRequest, db: Connection = Depends(get_db)):
+async def preview_route(
+    body: RouteRequest,
+    db: Connection = Depends(get_db),
+    user: AuthUser = Depends(get_current_user),
+):
     """
     Get a walking route between two points.
 

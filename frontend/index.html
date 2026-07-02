@@ -949,6 +949,100 @@
       color: #3f2812 !important;
     }
 
+    /* ── Auth overlay ── */
+    #authOverlay {
+      position: fixed; inset: 0; z-index: 9000;
+      display: none; align-items: center; justify-content: center;
+      padding: 24px;
+      background:
+        radial-gradient(circle at top, rgba(242,135,46,.18), transparent 36%),
+        linear-gradient(180deg, #1c120b 0%, #120b07 100%);
+    }
+    #authOverlay.show { display: flex; }
+    #authCard {
+      width: min(100%, 420px);
+      background: #ffe8d3;
+      color: #3f2812;
+      border: 1px solid #e8bd8e;
+      border-radius: 28px;
+      box-shadow: 0 18px 60px rgba(0,0,0,.35);
+      padding: 28px 24px 24px;
+    }
+    #authCard h1 {
+      font-size: 32px; line-height: 1;
+      margin-bottom: 12px;
+    }
+    #authCard p {
+      color: #7f5630;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+    .auth-stack { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
+    .auth-btn, .auth-input, .auth-secondary {
+      width: 100%;
+      border-radius: 16px;
+      border: 1px solid #e8bd8e;
+      font-size: 15px;
+    }
+    .auth-btn {
+      background: #f2872e;
+      color: #180e08;
+      font-weight: 700;
+      padding: 14px 16px;
+      cursor: pointer;
+    }
+    .auth-secondary {
+      background: #fff4e6;
+      color: #6e4420;
+      font-weight: 600;
+      padding: 13px 16px;
+      cursor: pointer;
+    }
+    .auth-input {
+      background: #fffaf5;
+      color: #3f2812;
+      padding: 14px 16px;
+      outline: none;
+    }
+    #authDivider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 18px 0 10px;
+      color: #9a6a38;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+    #authDivider::before, #authDivider::after {
+      content: "";
+      flex: 1; height: 1px; background: #efccaa;
+    }
+    #authStatus {
+      min-height: 20px;
+      margin-top: 14px;
+      color: #9a6a38;
+      font-size: 13px;
+    }
+    #menuUserBadge {
+      margin: 0 20px 10px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: #fff4e6;
+      border: 1px solid #e8bd8e;
+    }
+    #menuUserName {
+      font-size: 15px;
+      font-weight: 700;
+      color: #3f2812;
+    }
+    #menuUserEmail {
+      margin-top: 3px;
+      font-size: 12px;
+      color: #9a6a38;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
   </style>
 </head>
 <body>
@@ -974,6 +1068,22 @@
 <input type="file" id="gpxFileInput" accept=".gpx,.xml" style="display:none" />
 <div id="routeBanner"></div>
 <div id="coverageStats"></div>
+
+<div id="authOverlay">
+  <div id="authCard">
+    <h1>AccessMap</h1>
+    <p id="authIntro">Sign in to keep your own explored area, link Strava safely, and contribute to the shared map with friends.</p>
+    <div class="auth-stack">
+      <button class="auth-btn" id="authGoogleBtn" type="button">Continue with Google</button>
+    </div>
+    <div id="authDivider">or</div>
+    <div class="auth-stack">
+      <input class="auth-input" id="authEmailInput" type="email" placeholder="you@example.com" autocomplete="email" />
+      <button class="auth-secondary" id="authMagicBtn" type="button">Email me a magic link</button>
+    </div>
+    <div id="authStatus"></div>
+  </div>
+</div>
 
 <!-- ── Marker sheet ── -->
 <div id="sheet">
@@ -1085,14 +1195,25 @@
     <div class="menu-title">Layers &amp; tools</div>
     <button class="menu-close-btn" onclick="closeMenu()">✕</button>
   </div>
+  <div id="menuUserBadge">
+    <div id="menuUserName">Signed out</div>
+    <div id="menuUserEmail">Sign in to sync your routes and markers.</div>
+  </div>
   <div class="menu-rows">
     <div class="menu-row" onclick="toggleCoverage()">
       <div class="menu-row-icon" style="background:#1a3020;border-color:#66bb6a55">◉</div>
       <div class="menu-row-text">
         <div class="menu-row-label">Explored paths</div>
-        <div class="menu-row-sub">Show your coverage layer</div>
+        <div class="menu-row-sub" id="menuCoverageSub">Show your coverage layer</div>
       </div>
       <div class="menu-row-indicator" id="menuCoverageIndicator"></div>
+    </div>
+    <div class="menu-row" onclick="cycleCoverageMode()">
+      <div class="menu-row-icon" style="background:#211609;border-color:#e8bd8e">◌</div>
+      <div class="menu-row-text">
+        <div class="menu-row-label">Coverage view</div>
+        <div class="menu-row-sub" id="menuCoverageModeSub">My explored area</div>
+      </div>
     </div>
     <div class="menu-row" id="menuGridRow" onclick="toggleGridFromMenu()">
       <div class="menu-row-icon" style="background:#1a3020;border-color:#66bb6a55">⊞</div>
@@ -1129,6 +1250,13 @@
       <div class="menu-row-text">
         <div class="menu-row-label">How to use</div>
         <div class="menu-row-sub">Guide to all buttons and features</div>
+      </div>
+    </div>
+    <div class="menu-row" onclick="signOutUser()">
+      <div class="menu-row-icon" style="background:#2a1408;border-color:#d88a62">⇠</div>
+      <div class="menu-row-text">
+        <div class="menu-row-label">Log out</div>
+        <div class="menu-row-sub">Switch account</div>
       </div>
     </div>
   </div>
@@ -1200,8 +1328,171 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>
 <script src="https://unpkg.com/leaflet-rotate@0.2.8/dist/leaflet-rotate-src.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const API = "/api";
+let appConfig = null;
+let supabaseClient = null;
+let authSession = null;
+let currentUser = null;
+let authBooted = false;
+let coverageMode = "me"; // me | all | both
+let coverageStatsModel = { km_me: 0, km_all: 0 };
+
+function isSignedIn() {
+  return !!authSession?.access_token;
+}
+
+function getAccessToken() {
+  return authSession?.access_token || null;
+}
+
+async function apiFetch(url, options = {}) {
+  const headers = new Headers(options.headers || {});
+  if (url.startsWith(API) && url !== `${API}/app-config`) {
+    if (!isSignedIn()) throw new Error("Sign in required");
+    headers.set("Authorization", `Bearer ${getAccessToken()}`);
+  }
+  const res = await fetch(url, { ...options, headers });
+  if (res.status === 401 && authBooted) {
+    showToast("Your session expired. Please sign in again.", 3500);
+    await handleSignedOut(true);
+  }
+  return res;
+}
+
+function setAuthStatus(msg, isError = false) {
+  const el = document.getElementById("authStatus");
+  el.textContent = msg || "";
+  el.style.color = isError ? "#b5521d" : "#9a6a38";
+}
+
+function updateUserBadge() {
+  document.getElementById("menuUserName").textContent =
+    currentUser?.user_metadata?.full_name || currentUser?.user_metadata?.name || currentUser?.email || "Signed out";
+  document.getElementById("menuUserEmail").textContent =
+    currentUser?.email || "Sign in to sync your routes and markers.";
+}
+
+function showAuthOverlay(customMsg = "") {
+  document.getElementById("authOverlay").classList.add("show");
+  if (customMsg) setAuthStatus(customMsg);
+}
+
+function hideAuthOverlay() {
+  document.getElementById("authOverlay").classList.remove("show");
+  setAuthStatus("");
+}
+
+function clearMapData() {
+  Object.values(mapMarkers).forEach(({ marker }) => clusterGroup.removeLayer(marker));
+  Object.keys(mapMarkers).forEach(id => delete mapMarkers[id]);
+  coverageLayer.clearLayers();
+  gridLayer.clearLayers();
+  allTrackPoints = [];
+  totalExploredKm = 0;
+  coverageStatsModel = { km_me: 0, km_all: 0 };
+  document.getElementById("coverageStats").style.display = "none";
+}
+
+async function refreshAppData() {
+  clearMapData();
+  await bootstrapMarkers();
+  if (coverageVisible) {
+    await loadTracks();
+    await loadDistanceStats();
+  }
+  await refreshStravaStatus();
+  updateCoverageModeUI();
+}
+
+async function handleSignedIn(session, restoreDraft = false) {
+  authSession = session;
+  currentUser = session?.user || null;
+  updateUserBadge();
+  hideAuthOverlay();
+  if (restoreDraft) restoreFormState();
+  await refreshAppData();
+}
+
+async function handleSignedOut(showOverlay = false) {
+  authSession = null;
+  currentUser = null;
+  closeMenu();
+  closeStrava();
+  closeMarkerPanel();
+  clearRoute();
+  map.removeLayer(coverageLayer);
+  map.removeLayer(gridLayer);
+  clearMapData();
+  coverageVisible = false;
+  gridVisible = false;
+  document.getElementById("menuCoverageIndicator").classList.remove("on");
+  document.getElementById("menuGridIndicator").classList.remove("on");
+  document.getElementById("menuGridRow").classList.remove("enabled");
+  updateUserBadge();
+  updateCoverageModeUI();
+  if (showOverlay) showAuthOverlay();
+}
+
+async function signInWithGoogle() {
+  if (!supabaseClient) return;
+  setAuthStatus("Redirecting to Google…");
+  const { error } = await supabaseClient.auth.signInWithOAuth({
+    provider: "google",
+    options: { redirectTo: window.location.origin },
+  });
+  if (error) setAuthStatus(error.message, true);
+}
+
+async function signInWithMagicLink() {
+  if (!supabaseClient) return;
+  const email = document.getElementById("authEmailInput").value.trim();
+  if (!email) {
+    setAuthStatus("Enter your email first.", true);
+    return;
+  }
+  setAuthStatus("Sending magic link…");
+  const { error } = await supabaseClient.auth.signInWithOtp({
+    email,
+    options: { emailRedirectTo: window.location.origin },
+  });
+  if (error) setAuthStatus(error.message, true);
+  else setAuthStatus("Magic link sent. Open it on this phone to finish signing in.");
+}
+
+async function signOutUser() {
+  if (!supabaseClient) return;
+  await supabaseClient.auth.signOut();
+  await handleSignedOut(true);
+}
+
+async function initAuth() {
+  const res = await fetch(`${API}/app-config`);
+  appConfig = await res.json();
+  if (!appConfig.supabase_url || !appConfig.supabase_anon_key) {
+    showAuthOverlay("Set SUPABASE_URL and SUPABASE_ANON_KEY on the server to enable sign-in.");
+    document.getElementById("authGoogleBtn").disabled = true;
+    document.getElementById("authMagicBtn").disabled = true;
+    return;
+  }
+
+  supabaseClient = window.supabase.createClient(appConfig.supabase_url, appConfig.supabase_anon_key, {
+    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
+  });
+  document.getElementById("authGoogleBtn").addEventListener("click", signInWithGoogle);
+  document.getElementById("authMagicBtn").addEventListener("click", signInWithMagicLink);
+
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  authBooted = true;
+  if (session) await handleSignedIn(session, true);
+  else showAuthOverlay();
+
+  supabaseClient.auth.onAuthStateChange(async (_event, sessionNow) => {
+    if (sessionNow?.access_token) await handleSignedIn(sessionNow, false);
+    else if (authBooted) await handleSignedOut(true);
+  });
+}
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 
@@ -1683,6 +1974,7 @@ map.on("click", e => {
 // ── Save marker ───────────────────────────────────────────────────────────────
 
 document.getElementById("saveBtn").addEventListener("click", async () => {
+  if (!isSignedIn()) { showAuthOverlay("Sign in before saving a marker."); return; }
   if (!selectedCategory) { showToast("Please select a category first"); return; }
   if (pendingLat == null) { showToast("No location set — tap the map first"); return; }
 
@@ -1703,7 +1995,7 @@ document.getElementById("saveBtn").addEventListener("click", async () => {
   btn.disabled   = true;
   btn.textContent = "Saving…";
   try {
-    const res = await fetch(`${API}/markers`, { method: "POST", body: fd });
+    const res = await apiFetch(`${API}/markers`, { method: "POST", body: fd });
     if (!res.ok) {
       const body = await res.text();
       throw new Error(`${res.status} — ${body}`);
@@ -1921,8 +2213,14 @@ document.getElementById("menuPanel").addEventListener("click", e => {
 let stravaState = { configured: false, connected: false };
 
 async function refreshStravaStatus() {
+  if (!isSignedIn()) {
+    stravaState = { configured: false, connected: false };
+    document.getElementById("menuStravaSub").textContent = "Sign in to connect Strava";
+    document.getElementById("menuStravaIndicator").classList.remove("on");
+    return;
+  }
   try {
-    const res = await fetch(`${API}/strava/status`);
+    const res = await apiFetch(`${API}/strava/status`);
     if (!res.ok) return;
     stravaState = await res.json();
     const sub = document.getElementById("menuStravaSub");
@@ -1944,6 +2242,10 @@ async function refreshStravaStatus() {
 function closeStrava() { document.getElementById("stravaPanel").classList.remove("open"); }
 
 async function openStrava() {
+  if (!isSignedIn()) {
+    showAuthOverlay("Sign in first to link your personal Strava account.");
+    return;
+  }
   closeMenu();
   await refreshStravaStatus();
   const el = document.getElementById("stravaPanelContent");
@@ -1997,14 +2299,14 @@ async function openStrava() {
 
 async function stravaConnect() {
   try {
-    const res = await fetch(`${API}/strava/connect`);
+    const res = await apiFetch(`${API}/strava/connect`);
     const { url } = await res.json();
     if (url) window.location.href = url;
   } catch (err) { showToast("Couldn't start Strava connect"); }
 }
 
 async function stravaDisconnect() {
-  await fetch(`${API}/strava/disconnect`, { method: "POST" });
+  await apiFetch(`${API}/strava/disconnect`, { method: "POST" });
   showToast("Strava disconnected");
   refreshStravaStatus();
   openStrava();
@@ -2014,7 +2316,7 @@ async function stravaSync() {
   const btn = document.getElementById("stravaSyncBtn");
   if (btn) { btn.disabled = true; btn.textContent = "Checking…"; }
   try {
-    const res = await fetch(`${API}/strava/sync`, { method: "POST" });
+    const res = await apiFetch(`${API}/strava/sync`, { method: "POST" });
     if (!res.ok) throw new Error(await res.text());
     const data = await res.json();
     showToast(data.new > 0 ? `${data.new} new walk${data.new === 1 ? "" : "s"} found` : "No new walks");
@@ -2031,7 +2333,7 @@ async function loadStravaActivities() {
   const list = document.getElementById("stravaList");
   if (!list) return;
   try {
-    const res = await fetch(`${API}/strava/activities?status=pending`);
+    const res = await apiFetch(`${API}/strava/activities?status=pending`);
     const acts = await res.json();
     if (!acts.length) {
       list.innerHTML = `<div style="padding:16px;color:#9a6a38;font-size:13px;">No walks waiting. Tap "Check for new walks" to look for more.</div>`;
@@ -2056,7 +2358,7 @@ async function loadStravaActivities() {
 async function stravaImport(id, btn) {
   if (btn) { btn.disabled = true; btn.textContent = "Adding…"; }
   try {
-    const res = await fetch(`${API}/strava/activities/${id}/import`, { method: "POST" });
+    const res = await apiFetch(`${API}/strava/activities/${id}/import`, { method: "POST" });
     if (!res.ok) throw new Error(await res.text());
     const data = await res.json();
     showToast(data.message || "Walk added ✓", 3500);
@@ -2070,7 +2372,7 @@ async function stravaImport(id, btn) {
 }
 
 async function stravaDismiss(id) {
-  await fetch(`${API}/strava/activities/${id}/dismiss`, { method: "POST" });
+  await apiFetch(`${API}/strava/activities/${id}/dismiss`, { method: "POST" });
   document.getElementById(`strava-act-${id}`)?.remove();
   refreshStravaStatus();
 }
@@ -2087,7 +2389,6 @@ document.getElementById("stravaPanel").addEventListener("click", e => {
   else if (p === "error") showToast("Strava connection failed");
   history.replaceState(null, "", location.pathname);
 })();
-refreshStravaStatus();
 
 document.getElementById("targetBtn").addEventListener("click", () => {
   if (placeMarkerMode) { exitPlaceMarkerMode(); return; }
@@ -2238,10 +2539,10 @@ function openMarkerPanel(m) {
         <button id="mpCommentBtn" onclick="submitComment()">Post</button>
       </div>
     </div>
-    <div class="mp-actions" style="display:flex;gap:8px;">
+    ${m.created_by_me ? `<div class="mp-actions" style="display:flex;gap:8px;">
       <button class="mp-edit-btn" onclick="openEditForm()">✏️ Edit</button>
       <button class="mp-delete-btn" onclick="deleteMarkerFromPanel(${m.id})">🗑 Delete</button>
-    </div>
+    </div>` : ""}
   `;
 
   document.getElementById("markerPanel").classList.add("open");
@@ -2288,8 +2589,9 @@ function closePhotoLightbox() {
 })();
 
 async function loadComments(markerId) {
+  if (!isSignedIn()) return;
   try {
-    const res = await fetch(`${API}/markers/${markerId}/comments`);
+    const res = await apiFetch(`${API}/markers/${markerId}/comments`);
     if (!res.ok) return;
     const comments = await res.json();
     const listEl = document.getElementById("mpCommentList");
@@ -2300,6 +2602,7 @@ async function loadComments(markerId) {
     }
     listEl.innerHTML = comments.map(c => `
       <div class="mp-comment">
+        <div class="mp-comment-date" style="margin-bottom:4px;font-weight:600;">${c.author_name || "AccessMap user"}${c.created_by_me ? " · You" : ""}</div>
         <div class="mp-comment-body">${c.body.replace(/</g,"&lt;")}</div>
         <div class="mp-comment-date">${fmt(c.created_at)}</div>
       </div>
@@ -2311,6 +2614,7 @@ async function loadComments(markerId) {
 }
 
 async function submitComment() {
+  if (!isSignedIn()) return;
   if (!currentMarkerPanelId) return;
   const input = document.getElementById("mpCommentInput");
   const body  = input.value.trim();
@@ -2318,7 +2622,7 @@ async function submitComment() {
   const btn = document.getElementById("mpCommentBtn");
   btn.disabled = true;
   try {
-    const res = await fetch(`${API}/markers/${currentMarkerPanelId}/comments`, {
+    const res = await apiFetch(`${API}/markers/${currentMarkerPanelId}/comments`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ body }),
@@ -2448,7 +2752,7 @@ async function saveMarkerEdit(id) {
   saveBtn.textContent = "Saving…";
 
   try {
-    const res = await fetch(`${API}/markers/${id}`, {
+    const res = await apiFetch(`${API}/markers/${id}`, {
       method:  "PATCH",
       headers: { "Content-Type": "application/json" },
       body:    JSON.stringify(payload),
@@ -2473,9 +2777,10 @@ async function saveMarkerEdit(id) {
 }
 
 async function loadMarkers() {
+  if (!isSignedIn()) return false;
   const b = map.getBounds();
   try {
-    const res = await fetch(
+    const res = await apiFetch(
       `${API}/markers?min_lat=${b.getSouth()}&min_lng=${b.getWest()}&max_lat=${b.getNorth()}&max_lng=${b.getEast()}`
     );
     if (!res.ok) return false;
@@ -2506,6 +2811,7 @@ async function pingHealth(timeout = 4000) {
 }
 
 async function bootstrapMarkers() {
+  if (!isSignedIn()) return;
   // Fast path: if the server is already awake, load immediately with no banner.
   if (await loadMarkers()) return;
 
@@ -2525,7 +2831,6 @@ async function bootstrapMarkers() {
   hideConnecting();
   showToast("Server still waking up — pan the map to retry", 5000);
 }
-bootstrapMarkers();
 
 // ── Route mode ────────────────────────────────────────────────────────────────
 
@@ -2534,6 +2839,7 @@ let routeSolidLines = [];      // all solid leg polylines (tracked for clean red
 let forceGapIds = new Set();   // gaps the user chose to force-route through
 
 document.getElementById("routeBtn").addEventListener("click", () => {
+  if (!isSignedIn()) { showAuthOverlay("Sign in to plan routes, save markers, and keep your own coverage."); return; }
   routeMode ? exitRouteMode() : enterRouteMode();
 });
 document.getElementById("clearRouteBtn").addEventListener("click", exitRouteMode);
@@ -2635,7 +2941,7 @@ async function fetchAndDrawRoute(avoid = [], forceGaps = []) {
   try {
     const legs = [];
     for (let i = 0; i < routeWaypoints.length - 1; i++) {
-      const res = await fetch(`${API}/routes/preview`, {
+      const res = await apiFetch(`${API}/routes/preview`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -2849,7 +3155,7 @@ function showConfirm(msg, okLabel = "Delete") {
 async function deleteMarker(id) {
   if (!(await showConfirm("Delete this marker?"))) return;
   try {
-    const res = await fetch(`${API}/markers/${id}`, { method: "DELETE" });
+    const res = await apiFetch(`${API}/markers/${id}`, { method: "DELETE" });
     if (!res.ok && res.status !== 204) throw new Error(await res.text());
     if (mapMarkers[id]) {
       clusterGroup.removeLayer(mapMarkers[id].marker);
@@ -2873,7 +3179,40 @@ let allTrackPoints = []; // all {lat,lng} from loaded tracks
 let areaName       = "this area";
 let areaNameTimer  = null;
 
+function coverageSummaryText() {
+  const me = coverageStatsModel.km_me || 0;
+  const all = coverageStatsModel.km_all || 0;
+  if (coverageMode === "me") return `${me.toFixed(1)} km explored by me`;
+  if (coverageMode === "all") return `${all.toFixed(1)} km explored by everyone`;
+  return `Mine ${me.toFixed(1)} km · Everyone ${all.toFixed(1)} km`;
+}
+
+function updateCoverageModeUI() {
+  const sub = document.getElementById("menuCoverageModeSub");
+  const cov = document.getElementById("menuCoverageSub");
+  if (coverageMode === "me") {
+    sub.textContent = "My explored area";
+    cov.textContent = "Show only my imported walks";
+  } else if (coverageMode === "all") {
+    sub.textContent = "Everyone's explored area";
+    cov.textContent = "Show community coverage";
+  } else {
+    sub.textContent = "Mine + everyone's";
+    cov.textContent = "Overlay my walks and community coverage";
+  }
+}
+
+function cycleCoverageMode() {
+  coverageMode = coverageMode === "me" ? "all" : coverageMode === "all" ? "both" : "me";
+  updateCoverageModeUI();
+  if (coverageVisible) {
+    loadTracks();
+    loadDistanceStats();
+  }
+}
+
 function toggleCoverage() {
+  if (!isSignedIn()) { showAuthOverlay("Sign in to keep your own explored area."); return; }
   coverageVisible = !coverageVisible;
   document.getElementById("menuCoverageIndicator").classList.toggle("on", coverageVisible);
   document.getElementById("menuGridRow").classList.toggle("enabled", coverageVisible);
@@ -2893,6 +3232,7 @@ function toggleCoverage() {
 }
 
 document.getElementById("gpxFileInput").addEventListener("change", async e => {
+  if (!isSignedIn()) { showAuthOverlay("Sign in before importing a walk."); return; }
   const file = e.target.files[0];
   if (!file) return;
   e.target.value = ""; // reset so same file can be re-imported
@@ -2901,7 +3241,7 @@ document.getElementById("gpxFileInput").addEventListener("change", async e => {
     const points = parseGpx(text);
     if (points.length < 2) { showToast("GPX has no track points"); return; }
     showToast("Importing walk…", 10000);
-    const res = await fetch(`${API}/tracks`, {
+    const res = await apiFetch(`${API}/tracks`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name: file.name.replace(/\.gpx$/i, ""), points, gpx_source: "gpx" }),
@@ -2930,11 +3270,11 @@ function parseGpx(xmlText) {
 }
 
 async function loadTracks() {
-  if (!coverageVisible) return;
+  if (!coverageVisible || !isSignedIn()) return;
   const b = map.getBounds();
   try {
-    const res = await fetch(
-      `${API}/tracks?min_lat=${b.getSouth()}&min_lng=${b.getWest()}&max_lat=${b.getNorth()}&max_lng=${b.getEast()}`
+    const res = await apiFetch(
+      `${API}/tracks?scope=${coverageMode}&min_lat=${b.getSouth()}&min_lng=${b.getWest()}&max_lat=${b.getNorth()}&max_lng=${b.getEast()}`
     );
     if (!res.ok) return;
     coverageLayer.clearLayers();
@@ -2945,11 +3285,15 @@ async function loadTracks() {
       if (geo.type !== "LineString") return;
       const lls = geo.coordinates.map(([lng, lat]) => [lat, lng]);
       geo.coordinates.forEach(([lng, lat]) => allTrackPoints.push({ lat, lng }));
-      // Wider purple/mauve coverage boundary only (soft band, no thin centre line)
-      L.polyline(lls, { color: "#9b6dd6", weight: 30, opacity: 0.14,
-        lineCap: "round", lineJoin: "round", interactive: false }).addTo(coverageLayer);
-      L.polyline(lls, { color: "#b98fe6", weight: 18, opacity: 0.32,
-        lineCap: "round", lineJoin: "round", interactive: false }).addTo(coverageLayer);
+      const isMine = !!track.is_mine;
+      const outer = coverageMode === "both" && !isMine
+        ? { color: "#d8c2ee", weight: 24, opacity: 0.10 }
+        : { color: "#9b6dd6", weight: 30, opacity: 0.14 };
+      const inner = coverageMode === "both" && !isMine
+        ? { color: "#ddc9f0", weight: 12, opacity: 0.18 }
+        : { color: "#b98fe6", weight: 18, opacity: 0.32 };
+      L.polyline(lls, { ...outer, lineCap: "round", lineJoin: "round", interactive: false }).addTo(coverageLayer);
+      L.polyline(lls, { ...inner, lineCap: "round", lineJoin: "round", interactive: false }).addTo(coverageLayer);
     });
     if (gridVisible) drawGrid();
   } catch (_) {}
@@ -3048,7 +3392,9 @@ function drawGrid() {
   const ci  = cellIndices(c.lat, c.lng);
   const cpc = Math.round(cellCoverage(ci.row, ci.col, coveredSub) * 100);
   const statsEl = document.getElementById("coverageStats");
-  const kmStr   = totalExploredKm > 0 ? ` · ${totalExploredKm.toFixed(1)} km explored` : "";
+  const kmStr = coverageStatsModel.km_all > 0 || coverageStatsModel.km_me > 0
+    ? ` · ${coverageSummaryText()}`
+    : "";
   statsEl.textContent = tooMany
     ? `Zoom in to see cells${kmStr}`
     : `Cell ${cellLabel(ci.row, ci.col)} · ${cpc}% explored${kmStr}`;
@@ -3058,16 +3404,19 @@ function drawGrid() {
 let totalExploredKm = 0;
 
 async function loadDistanceStats() {
+  if (!isSignedIn()) return;
   try {
-    const res = await fetch(`${API}/tracks/stats`);
+    const res = await apiFetch(`${API}/tracks/stats`);
     if (!res.ok) return;
-    const { km_total } = await res.json();
-    totalExploredKm = km_total;
+    coverageStatsModel = await res.json();
+    totalExploredKm = coverageMode === "me"
+      ? coverageStatsModel.km_me
+      : coverageStatsModel.km_all;
     const statsEl = document.getElementById("coverageStats");
     if (gridVisible) {
       drawGrid(); // refresh grid stats to include km
-    } else if (coverageVisible && km_total > 0) {
-      statsEl.textContent = `${km_total.toFixed(1)} km explored total`;
+    } else if (coverageVisible && (coverageStatsModel.km_me > 0 || coverageStatsModel.km_all > 0)) {
+      statsEl.textContent = coverageSummaryText();
       statsEl.style.display = "block";
     } else {
       statsEl.style.display = "none";
@@ -3115,8 +3464,7 @@ map.on("moveend", () => {
 
 // ── Toast ─────────────────────────────────────────────────────────────────────
 
-// Restore state if iOS suspended the page during file pick
-restoreFormState();
+updateCoverageModeUI();
 
 let toastTimer = null;
 function showToast(msg, duration = 2500) {
@@ -3172,6 +3520,7 @@ function tilesForBoundsAtZoom(bounds, z) {
 }
 
 async function saveAreaOffline() {
+  if (!isSignedIn()) { showAuthOverlay("Sign in first to save areas for your account."); return; }
   const sw = navigator.serviceWorker?.controller;
   if (!sw) {
     showToast("Reload the page once to enable offline saving");
@@ -3200,11 +3549,16 @@ async function saveAreaOffline() {
 
   // Also warm the API cache for the current viewport
   const b = map.getBounds();
-  fetch(`${API}/markers?min_lat=${b.getSouth()}&min_lng=${b.getWest()}&max_lat=${b.getNorth()}&max_lng=${b.getEast()}`).catch(() => {});
+  apiFetch(`${API}/markers?min_lat=${b.getSouth()}&min_lng=${b.getWest()}&max_lat=${b.getNorth()}&max_lng=${b.getEast()}`).catch(() => {});
 
   // Kick off tile prefetch in the service worker
   sw.postMessage({ type: "PREFETCH_TILES", urls: tileUrls });
 }
+
+initAuth().catch(err => {
+  console.error("Auth bootstrap failed:", err);
+  showAuthOverlay("Couldn't start sign-in. Check your Supabase settings and try again.");
+});
 </script>
 </body>
 </html>
