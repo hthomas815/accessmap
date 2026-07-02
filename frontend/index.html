@@ -976,7 +976,7 @@
       background: rgba(242,135,46,.34);
       -webkit-backdrop-filter: blur(6px);
       backdrop-filter: blur(6px);
-      color: #241305;
+      color: #ffffff;
       border: 2px solid #a8480f;
       border-radius: 22px;
       box-shadow: 0 12px 40px rgba(0,0,0,.4);
@@ -985,9 +985,10 @@
     #authCard h1 {
       font-size: 27px; line-height: 1;
       margin-bottom: 8px;
+      color: #ffffff;
     }
     #authCard p {
-      color: #3a2008;
+      color: rgba(255,255,255,.92);
       font-size: 13px;
       line-height: 1.5;
     }
@@ -1347,6 +1348,7 @@ let supabaseClient = null;
 let authSession = null;
 let currentUser = null;
 let authBooted = false;
+let authDisabled = false;   // set from /app-config when the server bypass is on
 let coverageMode = "me"; // me | all | both
 let coverageStatsModel = { km_me: 0, km_all: 0 };
 
@@ -1360,12 +1362,12 @@ function getAccessToken() {
 
 async function apiFetch(url, options = {}) {
   const headers = new Headers(options.headers || {});
-  if (url.startsWith(API) && url !== `${API}/app-config`) {
+  if (url.startsWith(API) && url !== `${API}/app-config` && !authDisabled) {
     if (!isSignedIn()) throw new Error("Sign in required");
     headers.set("Authorization", `Bearer ${getAccessToken()}`);
   }
   const res = await fetch(url, { ...options, headers });
-  if (res.status === 401 && authBooted) {
+  if (res.status === 401 && authBooted && !authDisabled) {
     showToast("Your session expired. Please sign in again.", 3500);
     await handleSignedOut(true);
   }
@@ -1375,7 +1377,7 @@ async function apiFetch(url, options = {}) {
 function setAuthStatus(msg, isError = false) {
   const el = document.getElementById("authStatus");
   el.textContent = msg || "";
-  el.style.color = isError ? "#b5521d" : "#9a6a38";
+  el.style.color = isError ? "#ffdcd0" : "rgba(255,255,255,.9)";
 }
 
 function updateUserBadge() {
@@ -1481,6 +1483,17 @@ async function signOutUser() {
 async function initAuth() {
   const res = await fetch(`${API}/app-config`);
   appConfig = await res.json();
+
+  // Server-side bypass: no login required, everything runs as a shared guest.
+  if (appConfig.auth_disabled) {
+    authDisabled = true;
+    authBooted = true;
+    hideAuthOverlay();
+    updateUserBadge();
+    await refreshAppData();
+    return;
+  }
+
   if (!appConfig.supabase_url || !appConfig.supabase_anon_key) {
     showAuthOverlay("Set SUPABASE_URL and SUPABASE_ANON_KEY on the server to enable sign-in.");
     document.getElementById("authMagicBtn").disabled = true;

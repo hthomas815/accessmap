@@ -10,6 +10,11 @@ from asyncpg import Connection
 SUPABASE_URL = os.getenv("SUPABASE_URL", "").rstrip("/")
 SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY", "")
 
+# Emergency/dev bypass: when AUTH_DISABLED is truthy, every request runs as a
+# single shared "guest" user and no login is required. Flip via env var.
+AUTH_DISABLED = os.getenv("AUTH_DISABLED", "").strip().lower() in ("1", "true", "yes", "on")
+GUEST_USER_ID = "guest"
+
 _TOKEN_CACHE: dict[str, tuple[float, "AuthUser"]] = {}
 _CACHE_TTL_S = 300
 
@@ -26,6 +31,9 @@ def _configured() -> bool:
 
 
 async def get_current_user(authorization: str | None = Header(None)) -> AuthUser:
+    if AUTH_DISABLED:
+        return AuthUser(id=GUEST_USER_ID, email="guest@roamable.app", display_name="Guest")
+
     if not _configured():
         raise HTTPException(status_code=503, detail="Supabase auth is not configured on the server.")
 

@@ -200,6 +200,7 @@ async def app_config():
     return {
         "supabase_url": SUPABASE_URL,
         "supabase_anon_key": SUPABASE_ANON_KEY,
+        "auth_disabled": os.getenv("AUTH_DISABLED", "").strip().lower() in ("1", "true", "yes", "on"),
     }
 
 
