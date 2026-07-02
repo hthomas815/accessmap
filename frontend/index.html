@@ -967,40 +967,43 @@
       display: none; align-items: center; justify-content: center;
       padding: 24px;
       background:
-        linear-gradient(180deg, rgba(20,12,7,.45) 0%, rgba(20,12,7,.72) 100%),
+        linear-gradient(180deg, rgba(20,12,7,.22) 0%, rgba(20,12,7,.45) 100%),
         url('/static/background.jpg') center / cover no-repeat;
     }
     #authOverlay.show { display: flex; }
     #authCard {
-      width: min(100%, 420px);
-      background: #fff3e2;
-      color: #2e1a0b;
-      border: 1px solid #d6741f;
-      border-radius: 28px;
-      box-shadow: 0 18px 60px rgba(0,0,0,.35);
-      padding: 28px 24px 24px;
+      width: min(100%, 320px);
+      background: rgba(242,135,46,.34);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+      color: #241305;
+      border: 2px solid #a8480f;
+      border-radius: 22px;
+      box-shadow: 0 12px 40px rgba(0,0,0,.4);
+      padding: 20px 18px 18px;
     }
     #authCard h1 {
-      font-size: 32px; line-height: 1;
-      margin-bottom: 12px;
+      font-size: 27px; line-height: 1;
+      margin-bottom: 8px;
     }
     #authCard p {
-      color: #7f5630;
-      font-size: 14px;
-      line-height: 1.55;
+      color: #3a2008;
+      font-size: 13px;
+      line-height: 1.5;
     }
-    .auth-stack { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
+    .auth-stack { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
     .auth-btn, .auth-input, .auth-secondary {
       width: 100%;
-      border-radius: 16px;
+      border-radius: 14px;
       border: 1px solid #e8bd8e;
       font-size: 15px;
     }
     .auth-btn {
-      background: #f2872e;
-      color: #180e08;
+      background: #8a3410;
+      color: #fff;
+      border-color: #8a3410;
       font-weight: 700;
-      padding: 14px 16px;
+      padding: 13px 16px;
       cursor: pointer;
     }
     .auth-secondary {
@@ -1086,12 +1089,8 @@
     <h1>Roamable</h1>
     <p id="authIntro">Sign in to keep your own explored area, and link to Strava.</p>
     <div class="auth-stack">
-      <button class="auth-btn" id="authGoogleBtn" type="button">Continue with Google</button>
-    </div>
-    <div id="authDivider">or</div>
-    <div class="auth-stack">
       <input class="auth-input" id="authEmailInput" type="email" placeholder="you@example.com" autocomplete="email" />
-      <button class="auth-secondary" id="authMagicBtn" type="button">Email me a magic link</button>
+      <button class="auth-btn" id="authMagicBtn" type="button">Email me a magic link</button>
     </div>
     <div id="authStatus"></div>
   </div>
@@ -1484,7 +1483,6 @@ async function initAuth() {
   appConfig = await res.json();
   if (!appConfig.supabase_url || !appConfig.supabase_anon_key) {
     showAuthOverlay("Set SUPABASE_URL and SUPABASE_ANON_KEY on the server to enable sign-in.");
-    document.getElementById("authGoogleBtn").disabled = true;
     document.getElementById("authMagicBtn").disabled = true;
     return;
   }
@@ -1492,7 +1490,6 @@ async function initAuth() {
   supabaseClient = window.supabase.createClient(appConfig.supabase_url, appConfig.supabase_anon_key, {
     auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
   });
-  document.getElementById("authGoogleBtn").addEventListener("click", signInWithGoogle);
   document.getElementById("authMagicBtn").addEventListener("click", signInWithMagicLink);
 
   const { data: { session } } = await supabaseClient.auth.getSession();
