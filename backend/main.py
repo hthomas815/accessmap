@@ -67,6 +67,10 @@ async def migrate_db(pool: asyncpg.Pool) -> None:
         await conn.execute(
             "ALTER TYPE marker_type ADD VALUE IF NOT EXISTS 'field';"
         )
+        # v6: passage marker type for off-map walkable gaps
+        await conn.execute(
+            "ALTER TYPE marker_type ADD VALUE IF NOT EXISTS 'passage';"
+        )
 
 
 async def create_pool_with_retry(url: str, retries: int = 10, delay: float = 3.0):

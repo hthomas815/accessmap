@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.css" />
   <link rel="manifest" href="/manifest.json" />
-  <meta name="theme-color" content="#2d5a3d" />
+  <meta name="theme-color" content="#8a3e18" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -17,7 +17,7 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #0e1810;
+      background: #0e0c08;
       color: #eee;
       height: 100dvh;
       display: flex;
@@ -34,10 +34,10 @@
       z-index: 1000;
       width: 84px; height: 84px;
       border-radius: 50%;
-      background: #2d5a3d;
+      background: #8a3e18;
       border: none; color: #e8e4da;
       font-size: 38px; cursor: pointer;
-      box-shadow: 0 6px 28px rgba(45,90,61,.55);
+      box-shadow: 0 6px 28px rgba(138,62,24,.55);
       display: flex; align-items: center; justify-content: center;
       transition: transform .1s;
       -webkit-tap-highlight-color: transparent;
@@ -51,23 +51,23 @@
       z-index: 1000;
       width: 48px; height: 48px;
       border-radius: 50%;
-      background: #162818;
-      border: 2px solid #4a7a5a;
-      color: #7aba7a; font-size: 20px; cursor: pointer;
+      background: #1c1008;
+      border: 2px solid #8a5020;
+      color: #c47a3a; font-size: 20px; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 2px 10px rgba(0,0,0,.45);
       -webkit-tap-highlight-color: transparent;
     }
-    #locateBtn:active { background: #2d5a3d; color: #e8e4da; }
+    #locateBtn:active { background: #8a3e18; color: #e8e4da; }
     #locateBtn.locating {
       animation: locatePulse .8s ease-in-out infinite;
-      border-color: #7aba7a; color: #fff;
-      background: #2d5a3d;
+      border-color: #c47a3a; color: #fff;
+      background: #8a3e18;
     }
     @keyframes locatePulse {
-      0%   { box-shadow: 0 0 0 0 rgba(122,186,122,.7); }
-      70%  { box-shadow: 0 0 0 16px rgba(122,186,122,0); }
-      100% { box-shadow: 0 0 0 0 rgba(122,186,122,0); }
+      0%   { box-shadow: 0 0 0 0 rgba(196,122,58,.7); }
+      70%  { box-shadow: 0 0 0 16px rgba(196,122,58,0); }
+      100% { box-shadow: 0 0 0 0 rgba(196,122,58,0); }
     }
 
     /* ── Route button ── */
@@ -77,16 +77,16 @@
       z-index: 1000;
       width: 70px; height: 70px;
       border-radius: 50%;
-      background: #132018;
-      border: 2px solid #7aba7a;
-      color: #7aba7a;
+      background: #180e08;
+      border: 2px solid #c47a3a;
+      color: #c47a3a;
       font-size: 24px; cursor: pointer;
       box-shadow: 0 4px 16px rgba(0,0,0,.4);
       display: flex; align-items: center; justify-content: center;
       transition: background .15s, color .15s, transform .1s;
       -webkit-tap-highlight-color: transparent;
     }
-    #routeBtn.active { background: #7aba7a; color: #132018; }
+    #routeBtn.active { background: #c47a3a; color: #180e08; }
     #routeBtn:active { transform: scale(.93); }
 
     /* ── Route instruction banner ── */
@@ -95,8 +95,8 @@
       top: 74px; left: 50%;
       transform: translateX(-50%);
       z-index: 1001;
-      background: #132018;
-      border: 1.5px solid #7aba7a;
+      background: #180e08;
+      border: 1.5px solid #c47a3a;
       color: #eee;
       padding: 10px 20px;
       border-radius: 20px;
@@ -114,7 +114,7 @@
       position: absolute;
       bottom: 0; left: 0; right: 0;
       z-index: 2000;
-      background: #0d1a0e;
+      background: #0d0b08;
       border-radius: 24px 24px 0 0;
       transform: translateY(100%);
       transition: transform .28s cubic-bezier(.32,0,.67,0);
@@ -131,7 +131,7 @@
 
     .drag-handle {
       width: 36px; height: 4px;
-      background: #1e3028;
+      background: #201408;
       border-radius: 2px;
       margin: 14px auto 0;
     }
@@ -148,7 +148,7 @@
       color: #f0f0f8; letter-spacing: -.01em;
     }
     .sheet-title p {
-      font-size: 13px; color: #4a6a4a; margin-top: 3px;
+      font-size: 13px; color: #7a4e28; margin-top: 3px;
     }
 
     .category-grid {
@@ -159,8 +159,8 @@
     }
 
     .cat-btn {
-      background: #162818;
-      border: 1.5px solid #1e3028;
+      background: #1c1008;
+      border: 1.5px solid #201408;
       border-radius: 18px;
       padding: 20px 12px 16px;
       color: #c8d2e8;
@@ -172,7 +172,7 @@
       -webkit-tap-highlight-color: transparent;
       transition: border-color .15s, background .15s;
     }
-    .cat-btn:active { border-color: #2d5a3d; background: #162a18; }
+    .cat-btn:active { border-color: #8a3e18; background: #1e1008; }
 
     .cat-icon-wrap {
       width: 68px; height: 68px;
@@ -192,18 +192,18 @@
       padding: 12px 24px;
       border-radius: 50px;
       background: transparent;
-      border-color: #1e3028;
+      border-color: #201408;
       gap: 10px;
     }
     .cat-btn.other-btn .cat-icon-wrap {
       width: 36px; height: 36px;
       border-radius: 50%;
       font-size: 18px;
-      background: #1e3028 !important;
+      background: #201408 !important;
       border: none !important;
     }
     .cat-btn.other-btn .cat-label { font-size: 15px; }
-    .cat-btn.other-btn:active { border-color: #2d5a3d; background: #162818; }
+    .cat-btn.other-btn:active { border-color: #8a3e18; background: #1c1008; }
 
     #step1 .cancel-row { display: flex; justify-content: center; margin-top: 4px; }
     .cancel-text-btn {
@@ -224,7 +224,7 @@
     }
     .back-btn {
       width: 36px; height: 36px; border-radius: 50%;
-      background: #162818; border: none; color: #5a7a5a;
+      background: #1c1008; border: none; color: #7a5a38;
       font-size: 22px; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       flex-shrink: 0; -webkit-tap-highlight-color: transparent;
@@ -237,12 +237,12 @@
     }
     .cat-hero-text { display: flex; flex-direction: column; gap: 2px; }
     .cat-hero-name { font-size: 20px; font-weight: 700; color: #f0f0f8; letter-spacing: -.01em; }
-    .cat-hero-sub  { font-size: 12px; color: #3a5a38; }
+    .cat-hero-sub  { font-size: 12px; color: #583618; }
 
     .sec-label {
       font-size: 11px; font-weight: 700;
       letter-spacing: .08em; text-transform: uppercase;
-      color: #2a3c28; margin-bottom: 10px;
+      color: #382614; margin-bottom: 10px;
     }
 
     /* Subtype grid */
@@ -251,39 +251,39 @@
       gap: 8px; margin-bottom: 20px;
     }
     .sub-btn {
-      background: #162818; border: 1.5px solid #1e3028;
+      background: #1c1008; border: 1.5px solid #201408;
       border-radius: 12px; padding: 11px 10px;
-      color: #6a8a6a; font-size: 13px; font-weight: 500;
+      color: #8a6038; font-size: 13px; font-weight: 500;
       text-align: left; cursor: pointer;
       display: flex; align-items: center; gap: 8px;
       -webkit-tap-highlight-color: transparent;
       transition: border-color .12s, background .12s, color .12s;
     }
     .sub-btn .sub-icon { font-size: 16px; flex-shrink: 0; }
-    .sub-btn.selected { border-color: #2d5a3d; background: #1e1530; color: #f0f0f8; }
+    .sub-btn.selected { border-color: #8a3e18; background: #1e1530; color: #f0f0f8; }
 
     /* Difficulty */
     .difficulty-row { display: flex; gap: 8px; margin-bottom: 20px; }
     .diff-btn {
       flex: 1; padding: 10px 4px;
-      border-radius: 10px; border: 1.5px solid #1e3028;
-      background: #162818; color: #4a6a4a;
+      border-radius: 10px; border: 1.5px solid #201408;
+      background: #1c1008; color: #7a4e28;
       font-size: 13px; font-weight: 500; cursor: pointer; text-align: center;
       -webkit-tap-highlight-color: transparent;
       transition: border-color .12s, color .12s, background .12s;
     }
-    .diff-btn.selected { border-color: #2d5a3d; color: #f0f0f8; background: #1e1530; }
+    .diff-btn.selected { border-color: #8a3e18; color: #f0f0f8; background: #1e1530; }
 
     /* Note */
     #noteInput {
       width: 100%; padding: 12px 14px;
-      border-radius: 12px; border: 1.5px solid #1e3028;
-      background: #162818; color: #d0d8ee;
+      border-radius: 12px; border: 1.5px solid #201408;
+      background: #1c1008; color: #d0d8ee;
       font-size: 14px; resize: none;
       margin-bottom: 16px; font-family: inherit; line-height: 1.5;
     }
     #noteInput::placeholder { color: #2e3c55; }
-    #noteInput:focus { outline: none; border-color: #2a5038; }
+    #noteInput:focus { outline: none; border-color: #3a2010; }
 
     /* Photo section */
     .photo-section {
@@ -294,15 +294,15 @@
     }
     .photo-opt-btn {
       flex: 1; padding: 14px 10px;
-      background: #162818; border: 1.5px solid #1e3028;
-      border-radius: 12px; color: #5a7a5a;
+      background: #1c1008; border: 1.5px solid #201408;
+      border-radius: 12px; color: #7a5a38;
       font-size: 13px; font-weight: 600;
       display: flex; flex-direction: column; align-items: center; gap: 6px;
       cursor: pointer; -webkit-tap-highlight-color: transparent;
       transition: border-color .12s, background .12s;
     }
     .photo-opt-btn span { font-size: 22px; }
-    .photo-opt-btn:active { border-color: #2d5a3d; background: #162a18; }
+    .photo-opt-btn:active { border-color: #8a3e18; background: #1e1008; }
     .photo-opt-btn.has-photo { border-color: #4caf50; color: #4caf50; }
     .photo-preview {
       margin-top: 10px; border-radius: 10px; overflow: hidden;
@@ -321,7 +321,7 @@
     }
     #confirmOverlay.show { display: flex; }
     .confirm-sheet {
-      background: #0d1a0e; border-radius: 24px 24px 0 0;
+      background: #0d0b08; border-radius: 24px 24px 0 0;
       padding: 28px 20px 44px; width: 100%;
     }
     .confirm-msg {
@@ -331,12 +331,12 @@
     .confirm-btns { display: flex; gap: 10px; }
     .confirm-cancel {
       flex: 1; padding: 14px; border-radius: 12px;
-      border: 1.5px solid #1e3028; background: transparent;
-      color: #3a5a38; font-size: 15px; cursor: pointer;
+      border: 1.5px solid #201408; background: transparent;
+      color: #583618; font-size: 15px; cursor: pointer;
     }
     .confirm-ok {
       flex: 1; padding: 14px; border-radius: 12px;
-      border: none; background: #2d5a3d;
+      border: none; background: #8a3e18;
       color: #fff; font-size: 15px; font-weight: 700; cursor: pointer;
     }
 
@@ -344,16 +344,16 @@
     .action-row { display: flex; gap: 10px; align-items: center; }
     .cancel-outline-btn {
       padding: 14px 20px; border-radius: 12px;
-      border: 1.5px solid #1e3028; background: transparent;
-      color: #3a5a38; font-size: 15px; font-weight: 500; cursor: pointer;
+      border: 1.5px solid #201408; background: transparent;
+      color: #583618; font-size: 15px; font-weight: 500; cursor: pointer;
       -webkit-tap-highlight-color: transparent;
     }
     #saveBtn {
       flex: 1; padding: 15px; border-radius: 12px; border: none;
-      background: #2d5a3d; color: #fff;
+      background: #8a3e18; color: #fff;
       font-size: 16px; font-weight: 700; cursor: pointer;
       display: flex; align-items: center; justify-content: center; gap: 8px;
-      box-shadow: 0 4px 16px rgba(45,90,61,.35);
+      box-shadow: 0 4px 16px rgba(138,62,24,.35);
       -webkit-tap-highlight-color: transparent;
     }
     #saveBtn:active { transform: scale(.98); }
@@ -365,7 +365,7 @@
       position: absolute;
       bottom: 0; left: 0; right: 0;
       z-index: 1500;
-      background: #132018;
+      background: #180e08;
       border-radius: 20px 20px 0 0;
       transform: translateY(100%);
       transition: transform .25s ease;
@@ -384,7 +384,7 @@
       padding: 12px 16px 8px; gap: 12px;
     }
     .route-stats { flex: 1; display: flex; gap: 20px; align-items: flex-end; }
-    .route-stat .val  { font-size: 20px; font-weight: 700; color: #7aba7a; line-height: 1.1; }
+    .route-stat .val  { font-size: 20px; font-weight: 700; color: #c47a3a; line-height: 1.1; }
     .route-stat .lbl  { font-size: 11px; color: #556; text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; }
 
     #clearRouteBtn {
@@ -398,12 +398,12 @@
 
     .route-friction-summary {
       padding: 4px 16px 12px; font-size: 13px; color: #889;
-      border-bottom: 1px solid #183520;
+      border-bottom: 1px solid #221408;
     }
     .route-marker-list { padding: 0 16px 32px; }
     .route-marker-item {
       display: flex; align-items: center; gap: 10px;
-      padding: 10px 0; border-top: 1px solid #183520;
+      padding: 10px 0; border-top: 1px solid #221408;
     }
     .route-marker-icon { font-size: 22px; flex-shrink: 0; }
     .route-marker-info { flex: 1; min-width: 0; }
@@ -419,7 +419,7 @@
     .sev-dot.low    { background: #4caf50; }
     .sev-dot.medium { background: #ff9800; }
     .sev-dot.high   { background: #f44336; }
-    .sev-dot.none   { background: #2a3c28; }
+    .sev-dot.none   { background: #382614; }
     .route-marker-dist {
       font-size: 12px; color: #556; flex-shrink: 0;
       min-width: 36px; text-align: right;
@@ -428,12 +428,12 @@
     /* ── Avoid chips + reroute ── */
     .route-avoid-section {
       padding: 10px 16px 12px;
-      border-bottom: 1px solid #183520;
+      border-bottom: 1px solid #221408;
     }
     .route-avoid-label {
       font-size: 11px; font-weight: 700;
       letter-spacing: .07em; text-transform: uppercase;
-      color: #2a3c28; margin-bottom: 8px;
+      color: #382614; margin-bottom: 8px;
     }
     .route-avoid-row {
       display: flex; align-items: center; gap: 8px;
@@ -441,9 +441,9 @@
     .avoid-chip {
       padding: 6px 13px;
       border-radius: 20px;
-      border: 1.5px solid #1e3028;
-      background: #162818;
-      color: #4a6a4a;
+      border: 1.5px solid #201408;
+      background: #1c1008;
+      color: #7a4e28;
       font-size: 13px; font-weight: 500;
       cursor: pointer;
       transition: border-color .15s, background .15s, color .15s;
@@ -455,7 +455,7 @@
       margin-left: auto;
       padding: 6px 14px;
       border-radius: 20px; border: none;
-      background: #7aba7a; color: #0d1a0e;
+      background: #c47a3a; color: #0d0b08;
       font-size: 13px; font-weight: 700;
       cursor: pointer;
       opacity: 0; pointer-events: none;
@@ -477,7 +477,7 @@
       position: absolute;
       top: 20px; left: 50%;
       transform: translateX(-50%);
-      background: #162818; border: 1px solid #1e3822;
+      background: #1c1008; border: 1px solid #2e1a0a;
       color: #d0d8ee; padding: 10px 20px;
       border-radius: 20px; font-size: 13px;
       z-index: 3000; opacity: 0; transition: opacity .3s;
@@ -488,13 +488,13 @@
 
     /* ── Leaflet popup ── */
     .leaflet-popup-content-wrapper {
-      background: #162818 !important; border: 1px solid #1e3822 !important;
+      background: #1c1008 !important; border: 1px solid #2e1a0a !important;
       color: #d0d8ee !important; border-radius: 12px !important;
     }
-    .leaflet-popup-tip { background: #162818 !important; }
+    .leaflet-popup-tip { background: #1c1008 !important; }
     .leaflet-popup-content { margin: 12px 14px !important; }
 
-    .leaflet-tile-pane { filter: brightness(.8) saturate(.85) hue-rotate(10deg); }
+    .leaflet-tile-pane { filter: brightness(.85) saturate(.88); }
 
     /* ── Coverage stats pill ── */
     #coverageStats {
@@ -502,7 +502,7 @@
       top: 74px; left: 50%;
       transform: translateX(-50%);
       z-index: 1001;
-      background: #132018;
+      background: #180e08;
       border: 1.5px solid #66bb6a;
       color: #eee;
       padding: 8px 16px;
@@ -521,38 +521,38 @@
       z-index: 1003;
       width: 44px; height: 44px;
       border-radius: 50%;
-      background: #132018;
-      border: 2px solid #8aaa8a;
-      color: #8aaa8a; font-size: 18px; cursor: pointer;
+      background: #180e08;
+      border: 2px solid #c09060;
+      color: #c09060; font-size: 18px; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 2px 12px rgba(0,0,0,.5);
       -webkit-tap-highlight-color: transparent;
     }
-    #menuBtn:active { background: #8aaa8a; color: #132018; }
+    #menuBtn:active { background: #c09060; color: #180e08; }
     #menuPanel {
       position: absolute;
       bottom: 0; left: 0; right: 0;
       z-index: 2100;
-      background: #0d1a0e;
+      background: #0d0b08;
       border-radius: 24px 24px 0 0;
       transform: translateY(100%);
       transition: transform .28s cubic-bezier(.33,1,.68,1);
       pointer-events: none;
     }
     #menuPanel.open { transform: translateY(0); pointer-events: auto; }
-    .menu-handle { width: 40px; height: 4px; border-radius: 2px; background: #2a3c2a; margin: 12px auto 0; }
-    .menu-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px 10px; border-bottom: 1px solid #183520; }
+    .menu-handle { width: 40px; height: 4px; border-radius: 2px; background: #3a2814; margin: 12px auto 0; }
+    .menu-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px 10px; border-bottom: 1px solid #221408; }
     .menu-title { font-size: 16px; font-weight: 700; color: #eee; }
-    .menu-close-btn { background: none; border: none; color: #5a7a5a; font-size: 20px; cursor: pointer; padding: 4px 8px; }
+    .menu-close-btn { background: none; border: none; color: #7a5a38; font-size: 20px; cursor: pointer; padding: 4px 8px; }
     .menu-rows { padding: 8px 0 24px; }
-    .menu-row { display: flex; align-items: center; gap: 14px; padding: 14px 20px; border-bottom: 1px solid #162818; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    .menu-row { display: flex; align-items: center; gap: 14px; padding: 14px 20px; border-bottom: 1px solid #1c1008; cursor: pointer; -webkit-tap-highlight-color: transparent; }
     .menu-row:last-child { border-bottom: none; }
-    .menu-row:active { background: #162818; }
-    .menu-row-icon { width: 40px; height: 40px; flex-shrink: 0; border-radius: 12px; border: 1.5px solid #1e3822; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    .menu-row:active { background: #1c1008; }
+    .menu-row-icon { width: 40px; height: 40px; flex-shrink: 0; border-radius: 12px; border: 1.5px solid #2e1a0a; display: flex; align-items: center; justify-content: center; font-size: 18px; }
     .menu-row-text { flex: 1; }
     .menu-row-label { font-size: 15px; font-weight: 600; color: #dde; }
-    .menu-row-sub { font-size: 12px; color: #5a7a5a; margin-top: 2px; }
-    .menu-row-indicator { width: 10px; height: 10px; border-radius: 50%; background: #1e3822; flex-shrink: 0; }
+    .menu-row-sub { font-size: 12px; color: #7a5a38; margin-top: 2px; }
+    .menu-row-indicator { width: 10px; height: 10px; border-radius: 50%; background: #2e1a0a; flex-shrink: 0; }
     .menu-row-indicator.on { background: #66bb6a; }
     #menuGridRow { opacity: 0.4; pointer-events: none; }
     #menuGridRow.enabled { opacity: 1; pointer-events: auto; }
@@ -564,14 +564,14 @@
       z-index: 1000;
       width: 48px; height: 48px;
       border-radius: 50%;
-      background: #162818;
-      border: 2px solid #4a7a5a;
-      color: #7aba7a; cursor: pointer;
+      background: #1c1008;
+      border: 2px solid #8a5020;
+      color: #c47a3a; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 2px 10px rgba(0,0,0,.45);
       -webkit-tap-highlight-color: transparent;
     }
-    #targetBtn.place-mode { background: #2d5a3d; color: #e8e4da; border-color: #2d5a3d; }
+    #targetBtn.place-mode { background: #8a3e18; color: #e8e4da; border-color: #8a3e18; }
     #targetBtn:active { opacity: .8; }
 
     /* ── North button — directly above FAB (radial fan) ── */
@@ -581,15 +581,15 @@
       z-index: 1000;
       width: 46px; height: 46px;
       border-radius: 50%;
-      background: #162818;
-      border: 2px solid #4a7a5a;
-      color: #7aba7a; cursor: pointer;
+      background: #1c1008;
+      border: 2px solid #8a5020;
+      color: #c47a3a; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 2px 10px rgba(0,0,0,.45);
       -webkit-tap-highlight-color: transparent;
     }
-    #northBtn:active { background: #2d5a3d; color: #e8e4da; }
-    #northBtn.rotated { border-color: #7aba7a; color: #7aba7a; }
+    #northBtn:active { background: #8a3e18; color: #e8e4da; }
+    #northBtn.rotated { border-color: #c47a3a; color: #c47a3a; }
 
     /* ══════════════════════════════════════
        MARKER PANEL (comments / updates)
@@ -598,7 +598,7 @@
       position: absolute;
       bottom: 0; left: 0; right: 0;
       z-index: 1600;
-      background: #0d1a0e;
+      background: #0d0b08;
       border-radius: 20px 20px 0 0;
       transform: translateY(100%);
       transition: transform .28s cubic-bezier(.33,1,.68,1);
@@ -611,7 +611,7 @@
     .mp-header {
       display: flex; align-items: center;
       padding: 14px 16px 10px; gap: 10px;
-      border-bottom: 1px solid #183520;
+      border-bottom: 1px solid #221408;
     }
     .mp-icon {
       width: 40px; height: 40px; border-radius: 12px;
@@ -620,10 +620,10 @@
     }
     .mp-title { flex: 1; min-width: 0; }
     .mp-type { font-size: 15px; font-weight: 700; color: #f0f0f8; }
-    .mp-sub  { font-size: 12px; color: #3a5a3a; margin-top: 2px; }
+    .mp-sub  { font-size: 12px; color: #5a3818; margin-top: 2px; }
     .mp-close-btn {
       width: 30px; height: 30px; border-radius: 50%;
-      background: #162818; border: none; color: #5a7a5a;
+      background: #1c1008; border: none; color: #7a5a38;
       font-size: 16px; cursor: pointer; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
       -webkit-tap-highlight-color: transparent;
@@ -631,8 +631,8 @@
 
     .mp-meta {
       padding: 8px 16px 10px;
-      font-size: 12px; color: #3a5a38;
-      border-bottom: 1px solid #183520;
+      font-size: 12px; color: #583618;
+      border-bottom: 1px solid #221408;
       display: flex; gap: 12px; flex-wrap: wrap;
     }
 
@@ -642,36 +642,36 @@
     .mp-note {
       padding: 10px 16px;
       font-size: 13px; color: #c0c8e0; line-height: 1.5;
-      border-bottom: 1px solid #183520;
+      border-bottom: 1px solid #221408;
     }
 
     .mp-comments-section { padding: 12px 16px 0; }
     .mp-comments-label {
       font-size: 11px; font-weight: 700;
       letter-spacing: .08em; text-transform: uppercase;
-      color: #2a3c28; margin-bottom: 10px;
+      color: #382614; margin-bottom: 10px;
     }
     .mp-comment-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
     .mp-comment {
-      background: #162818; border-radius: 10px; padding: 10px 12px;
+      background: #1c1008; border-radius: 10px; padding: 10px 12px;
     }
     .mp-comment-body { font-size: 13px; color: #c0c8e0; line-height: 1.45; }
-    .mp-comment-date { font-size: 11px; color: #2a3c28; margin-top: 4px; }
+    .mp-comment-date { font-size: 11px; color: #382614; margin-top: 4px; }
 
     .mp-add-row {
       display: flex; gap: 8px; align-items: flex-end; margin-bottom: 12px;
     }
     #mpCommentInput {
       flex: 1; padding: 10px 12px; border-radius: 10px;
-      border: 1.5px solid #1e3028; background: #162818;
+      border: 1.5px solid #201408; background: #1c1008;
       color: #d0d8ee; font-size: 13px; resize: none;
       font-family: inherit; line-height: 1.5; min-height: 42px;
     }
     #mpCommentInput::placeholder { color: #2e3c55; }
-    #mpCommentInput:focus { outline: none; border-color: #2a5038; }
+    #mpCommentInput:focus { outline: none; border-color: #3a2010; }
     #mpCommentBtn {
       padding: 10px 16px; border-radius: 10px;
-      border: none; background: #2d5a3d; color: #fff;
+      border: none; background: #8a3e18; color: #fff;
       font-size: 13px; font-weight: 700; cursor: pointer; flex-shrink: 0;
       -webkit-tap-highlight-color: transparent;
     }
@@ -680,17 +680,17 @@
 
     .mp-actions {
       padding: 8px 16px 28px;
-      border-top: 1px solid #183520;
+      border-top: 1px solid #221408;
     }
     .mp-delete-btn {
       padding: 10px 20px; border-radius: 10px;
-      border: 1px solid #2a3c28; background: transparent;
-      color: #2d5a3d; font-size: 13px; cursor: pointer;
+      border: 1px solid #382614; background: transparent;
+      color: #8a3e18; font-size: 13px; cursor: pointer;
       -webkit-tap-highlight-color: transparent;
     }
     .mp-edit-btn {
       padding: 10px 20px; border-radius: 10px;
-      border: 1.5px solid #1e3028; background: transparent;
+      border: 1.5px solid #201408; background: transparent;
       color: #c8d2e8; font-size: 13px; cursor: pointer;
       -webkit-tap-highlight-color: transparent;
     }
@@ -700,36 +700,36 @@
     .mp-edit-label {
       font-size: 11px; font-weight: 700;
       letter-spacing: .08em; text-transform: uppercase;
-      color: #2a3c28; margin-bottom: 8px; display: block;
+      color: #382614; margin-bottom: 8px; display: block;
     }
     .mp-edit-select {
       width: 100%; padding: 10px 12px; border-radius: 10px;
-      border: 1.5px solid #1e3028; background: #162818;
+      border: 1.5px solid #201408; background: #1c1008;
       color: #d0d8ee; font-size: 14px; margin-bottom: 14px;
       font-family: inherit; appearance: none;
     }
-    .mp-edit-select:focus { outline: none; border-color: #2a5038; }
+    .mp-edit-select:focus { outline: none; border-color: #3a2010; }
     .mp-edit-diff-row { display: flex; gap: 8px; margin-bottom: 14px; }
     .mp-edit-diff-btn {
       flex: 1; padding: 9px 4px;
-      border-radius: 10px; border: 1.5px solid #1e3028;
-      background: #162818; color: #4a6a4a;
+      border-radius: 10px; border: 1.5px solid #201408;
+      background: #1c1008; color: #7a4e28;
       font-size: 13px; font-weight: 500; cursor: pointer;
       -webkit-tap-highlight-color: transparent;
       transition: border-color .12s, color .12s, background .12s;
     }
-    .mp-edit-diff-btn.selected { border-color: #2d5a3d; color: #f0f0f8; background: #1e1530; }
+    .mp-edit-diff-btn.selected { border-color: #8a3e18; color: #f0f0f8; background: #1e1530; }
     .mp-edit-note {
       width: 100%; padding: 10px 12px; border-radius: 10px;
-      border: 1.5px solid #1e3028; background: #162818;
+      border: 1.5px solid #201408; background: #1c1008;
       color: #d0d8ee; font-size: 13px; resize: none;
       font-family: inherit; line-height: 1.5; margin-bottom: 14px;
     }
     .mp-edit-note::placeholder { color: #2e3c55; }
-    .mp-edit-note:focus { outline: none; border-color: #2a5038; }
+    .mp-edit-note:focus { outline: none; border-color: #3a2010; }
     .mp-edit-save-btn {
       width: 100%; padding: 13px; border-radius: 12px;
-      border: none; background: #2d5a3d; color: #fff;
+      border: none; background: #8a3e18; color: #fff;
       font-size: 15px; font-weight: 700; cursor: pointer;
       margin-bottom: 24px;
       -webkit-tap-highlight-color: transparent;
@@ -744,19 +744,19 @@
     }
     #helpOverlay.open { display: flex; }
     #helpSheet {
-      width: 100%; max-height: 88dvh; background: #0d1a0e;
+      width: 100%; max-height: 88dvh; background: #0d0b08;
       border-radius: 24px 24px 0 0; overflow-y: auto; padding: 0 0 32px;
     }
-    .help-handle { width: 40px; height: 4px; border-radius: 2px; background: #2a3c2a; margin: 12px auto 0; }
+    .help-handle { width: 40px; height: 4px; border-radius: 2px; background: #3a2814; margin: 12px auto 0; }
     .help-title { font-size: 18px; font-weight: 700; color: #eee; padding: 18px 20px 8px; }
     .help-section { padding: 4px 20px; }
-    .help-section-title { font-size: 13px; font-weight: 700; color: #2d5a3d; text-transform: uppercase; letter-spacing: .06em; margin: 16px 0 8px; }
+    .help-section-title { font-size: 13px; font-weight: 700; color: #8a3e18; text-transform: uppercase; letter-spacing: .06em; margin: 16px 0 8px; }
     .help-row { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; }
-    .help-icon { width: 36px; height: 36px; flex-shrink: 0; border-radius: 10px; background: #132018; border: 1.5px solid #1e3822; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    .help-icon { width: 36px; height: 36px; flex-shrink: 0; border-radius: 10px; background: #180e08; border: 1.5px solid #2e1a0a; display: flex; align-items: center; justify-content: center; font-size: 18px; }
     .help-text { flex: 1; }
     .help-text strong { display: block; font-size: 14px; color: #dde; margin-bottom: 2px; }
-    .help-text span { font-size: 13px; color: #6a8a6a; line-height: 1.4; }
-    .help-close-btn { display: block; width: calc(100% - 40px); margin: 20px 20px 0; padding: 14px; border-radius: 14px; border: none; background: #2d5a3d; color: #fff; font-size: 15px; font-weight: 700; cursor: pointer; }
+    .help-text span { font-size: 13px; color: #8a6038; line-height: 1.4; }
+    .help-close-btn { display: block; width: calc(100% - 40px); margin: 20px 20px 0; padding: 14px; border-radius: 14px; border: none; background: #8a3e18; color: #fff; font-size: 15px; font-weight: 700; cursor: pointer; }
 
     /* ── Search bar ── */
     #searchBar {
@@ -769,26 +769,26 @@
       flex: 1;
       padding: 11px 16px;
       border-radius: 24px;
-      border: 1.5px solid #1e3822;
-      background: #132018;
+      border: 1.5px solid #2e1a0a;
+      background: #180e08;
       color: #eee; font-size: 15px; font-family: inherit;
       outline: none;
       box-shadow: 0 2px 12px rgba(0,0,0,.5);
     }
-    #searchInput::placeholder { color: #3a5a3a; }
-    #searchInput:focus { border-color: #2d5a3d; }
+    #searchInput::placeholder { color: #5a3818; }
+    #searchInput:focus { border-color: #8a3e18; }
     #searchClearBtn {
       display: none;
       position: absolute; right: 58px; top: 50%; transform: translateY(-50%);
-      background: none; border: none; color: #5a7a5a; font-size: 18px; cursor: pointer;
+      background: none; border: none; color: #7a5a38; font-size: 18px; cursor: pointer;
       padding: 4px 8px;
     }
     #searchResults {
       position: absolute;
       top: 68px; left: 16px; right: 16px;
       z-index: 1002;
-      background: #132018;
-      border: 1.5px solid #1e3822;
+      background: #180e08;
+      border: 1.5px solid #2e1a0a;
       border-radius: 16px;
       overflow: hidden;
       box-shadow: 0 4px 20px rgba(0,0,0,.5);
@@ -796,20 +796,20 @@
     }
     .search-result-item {
       padding: 12px 16px;
-      border-bottom: 1px solid #182e1e;
+      border-bottom: 1px solid #1e1208;
       cursor: pointer; color: #ccc; font-size: 14px;
       -webkit-tap-highlight-color: transparent;
     }
     .search-result-item:last-child { border-bottom: none; }
-    .search-result-item:active { background: #182e1e; }
+    .search-result-item:active { background: #1e1208; }
     .search-result-name { font-weight: 600; color: #eee; margin-bottom: 2px; }
-    .search-result-detail { font-size: 12px; color: #5a7a5a; }
+    .search-result-detail { font-size: 12px; color: #7a5a38; }
     .search-result-tag {
       display: inline-block;
       padding: 1px 6px;
       border-radius: 8px;
-      background: #183520;
-      color: #5a8a6a;
+      background: #221408;
+      color: #7a5a30;
       font-size: 11px;
       font-weight: 600;
       margin-left: 4px;
@@ -826,7 +826,7 @@
 <!-- ── Search bar ── -->
 <div id="searchBar">
   <div style="position:relative;flex:1;display:flex;align-items:center;">
-    <svg style="position:absolute;left:14px;pointer-events:none;flex-shrink:0" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#4a7a5a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
+    <svg style="position:absolute;left:14px;pointer-events:none;flex-shrink:0" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8a5020" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
     <input id="searchInput" type="text" placeholder="Search for a place…" autocomplete="off" style="padding-left:40px!important" />
     <button id="searchClearBtn" title="Clear">✕</button>
   </div>
@@ -837,8 +837,8 @@
 <button id="fab" title="Drop marker at my location">＋</button>
 <button id="routeBtn" title="Plan a route"><svg width="28" height="28" viewBox="0 0 40 40" fill="none"><circle cx="8" cy="33" r="5" stroke="currentColor" stroke-width="3"/><path d="M13 33 H30 Q36 33 36 27 Q36 21 30 21 H12 Q6 21 6 15 Q6 9 12 9 H28" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/><polyline points="23,4 28,9 23,14" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 <button id="menuBtn" title="Menu">☰</button>
-<button id="targetBtn" title="Place marker on map"><svg width="20" height="26" viewBox="0 0 24 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 1C7.03 1 3 5.03 3 10c0 7.25 9 19 9 19s9-11.75 9-19c0-4.97-4.03-9-9-9z" fill="currentColor"/><circle cx="12" cy="10" r="3.5" fill="#132018"/></svg></button>
-<button id="northBtn" title="Map orientation"><span class="north-arrow" style="display:flex;flex-direction:column;align-items:center;line-height:1;gap:1px;transition:transform 0.3s ease"><span style="color:#7aba7a;font-size:11px">▲</span><span style="font-size:10px;font-weight:700;color:#c8d4c0">N</span></span></button>
+<button id="targetBtn" title="Place marker on map"><svg width="20" height="26" viewBox="0 0 24 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 1C7.03 1 3 5.03 3 10c0 7.25 9 19 9 19s9-11.75 9-19c0-4.97-4.03-9-9-9z" fill="currentColor"/><circle cx="12" cy="10" r="3.5" fill="#180e08"/></svg></button>
+<button id="northBtn" title="Map orientation"><span class="north-arrow" style="display:flex;flex-direction:column;align-items:center;line-height:1;gap:1px;transition:transform 0.3s ease"><span style="color:#c47a3a;font-size:11px">▲</span><span style="font-size:10px;font-weight:700;color:#d0c0a0">N</span></span></button>
 <input type="file" id="gpxFileInput" accept=".gpx,.xml" style="display:none" />
 <div id="routeBanner"></div>
 <div id="coverageStats"></div>
@@ -963,21 +963,21 @@
       <div class="menu-row-indicator" id="menuGridIndicator"></div>
     </div>
     <div class="menu-row" onclick="document.getElementById('gpxFileInput').click()">
-      <div class="menu-row-icon" style="background:#132013;border-color:#7aba7a55">📂</div>
+      <div class="menu-row-icon" style="background:#160e08;border-color:#c47a3a55">📂</div>
       <div class="menu-row-text">
         <div class="menu-row-label">Import GPX walk</div>
         <div class="menu-row-sub">Upload a recorded walk</div>
       </div>
     </div>
     <div class="menu-row" onclick="saveAreaOffline()">
-      <div class="menu-row-icon" style="background:#132013;border-color:#7aba7a55">📥</div>
+      <div class="menu-row-icon" style="background:#160e08;border-color:#c47a3a55">📥</div>
       <div class="menu-row-text">
         <div class="menu-row-label">Save area offline</div>
         <div class="menu-row-sub">Cache map tiles for offline use</div>
       </div>
     </div>
     <div class="menu-row" onclick="closeMenu();openHelp()">
-      <div class="menu-row-icon" style="background:#0e1810;border-color:#8aaa8a55">❓</div>
+      <div class="menu-row-icon" style="background:#0e0c08;border-color:#c0906055">❓</div>
       <div class="menu-row-text">
         <div class="menu-row-label">How to use</div>
         <div class="menu-row-sub">Guide to all buttons and features</div>
@@ -1054,6 +1054,7 @@ const ICONS = {
   rough_surface: `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Rough terrain icon"> <path d="M28 51L38 33C40 30 45 30 47 34L58 51H28Z" fill="#B8AA96"/> <path d="M13 59L22 45C24 42 28 42 30 46L39 59H13Z" fill="#D6C5A7"/> <path d="M44 61L54 49C57 46 61 47 63 51L70 61H44Z" fill="#C6B8A4"/> <ellipse cx="38" cy="65" rx="25" ry="4" fill="#8B8276" opacity="0.5"/> <circle cx="21" cy="66" r="3" fill="#D6C5A7"/><circle cx="58" cy="68" r="3" fill="#B8AA96"/><circle cx="67" cy="63" r="2" fill="#D6C5A7"/> </svg>`,
   other: `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Other icon"> <circle cx="40" cy="40" r="28" stroke="#B99BEA" stroke-width="5"/> <circle cx="28" cy="40" r="4" fill="#B99BEA"/> <circle cx="40" cy="40" r="4" fill="#B99BEA"/> <circle cx="52" cy="40" r="4" fill="#B99BEA"/> </svg>`,
   field: `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Field icon"> <path d="M14 62H66" stroke="#3d7a3d" stroke-width="4" stroke-linecap="round"/> <path d="M20 62C20 52 18 40 20 28C22 33 24 33 23 28" stroke="#68b26b" stroke-width="3" stroke-linecap="round" fill="none"/> <path d="M31 62C31 52 29 40 31 28C33 33 35 33 34 28" stroke="#5cb85c" stroke-width="3" stroke-linecap="round" fill="none"/> <path d="M42 62C42 52 40 40 42 28C44 33 46 33 45 28" stroke="#68b26b" stroke-width="3" stroke-linecap="round" fill="none"/> <path d="M53 62C53 52 51 40 53 28C55 33 57 33 56 28" stroke="#5cb85c" stroke-width="3" stroke-linecap="round" fill="none"/> <path d="M64 62C64 52 62 40 64 28C66 33 68 33 67 28" stroke="#68b26b" stroke-width="3" stroke-linecap="round" fill="none"/> </svg>`,
+  passage: `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Passage gap icon"><ellipse cx="18" cy="44" rx="13" ry="18" fill="#4a8a3a"/><ellipse cx="21" cy="30" rx="10" ry="11" fill="#5aa84a"/><ellipse cx="62" cy="44" rx="13" ry="18" fill="#4a8a3a"/><ellipse cx="59" cy="30" rx="10" ry="11" fill="#5aa84a"/><path d="M33 40H47" stroke="#c47a3a" stroke-width="3.5" stroke-linecap="round"/><path d="M43 36L48 40L43 44" stroke="#c47a3a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 64H70" stroke="#7a5a3a" stroke-width="3" stroke-linecap="round" opacity="0.7"/></svg>`,
 };
 
 const CATEGORIES = [
@@ -1064,6 +1065,7 @@ const CATEGORIES = [
   { id: "narrow",        label: "Narrow", iconBg: "#0e1e10", iconBorder: "#7DBB5A55" },
   { id: "rough_surface", label: "Rough",  iconBg: "#1e1810", iconBorder: "#B8AA9655" },
   { id: "field",         label: "Field",  iconBg: "#0d1e0d", iconBorder: "#68b26b55" },
+  { id: "passage", label: "Passage", iconBg: "#1a1008", iconBorder: "#c47a3a55" },
   { id: "other",         label: "Other",  iconBg: "#18142a", iconBorder: "#B99BEA55" },
 ];
 
@@ -1176,6 +1178,13 @@ const SUBTYPES = {
     { label: "Livestock present",         key: "field_livestock"               },
     { label: "Other",                     key: "field_other"                   },
   ],
+  passage: [
+    { label: "Hedge gap",        key: "passage_hedge_gap"         },
+    { label: "Field gap",        key: "passage_field_gap"         },
+    { label: "Fence gap",        key: "passage_fence_gap"         },
+    { label: "Shortcut path",    key: "passage_shortcut_path"     },
+    { label: "Other",            key: "passage_other"             },
+  ],
 };
 
 const TYPE_COLORS = {
@@ -1183,6 +1192,7 @@ const TYPE_COLORS = {
   stile: "#3a8f58", steep: "#4a6aaa",
   mud: "#2e7da0", narrow: "#3a9060",
   rough_surface: "#8a6040", field: "#3a7a3a",
+  passage: "#8a6030",
   other: "#4a5080",
 };
 
@@ -1253,7 +1263,7 @@ const clusterGroup = L.markerClusterGroup({
     const size = n < 10 ? 34 : n < 50 ? 40 : 46;
     return L.divIcon({
       html: `<div style="
-        background:#2d5a3dcc;
+        background:#8a3e18cc;
         border:2px solid rgba(255,255,255,.35);
         border-radius:50%;
         width:${size}px;height:${size}px;
@@ -1274,10 +1284,9 @@ const mapMarkers = {};
 
 // Route state
 let routeMode       = false;
-let routeStart      = null;
-let routeEnd        = null;
 let routeLayer      = null;
 let routePolyline   = null;   // kept for bounds-fitting (locate + auto-fit)
+let routeDashedLines = [];   // dashed amber straight-line gap crossings from the backend
 const avoidSeverities = new Set();  // "high" | "medium"
 
 // ── Build category grid ────────────────────────────────────────────────────────
@@ -1432,7 +1441,7 @@ function enterPlaceMarkerMode() {
   document.getElementById("targetBtn").classList.add("place-mode");
   showBanner(
     "Tap the map to place your marker " +
-    "<button onclick=\"exitPlaceMarkerMode()\" style=\"margin-left:6px;padding:3px 10px;border-radius:10px;border:none;background:#2d5a3d;color:#fff;font-size:12px;font-weight:700;cursor:pointer;\">Cancel</button>",
+    "<button onclick=\"exitPlaceMarkerMode()\" style=\"margin-left:6px;padding:3px 10px;border-radius:10px;border:none;background:#8a3e18;color:#fff;font-size:12px;font-weight:700;cursor:pointer;\">Cancel</button>",
     false
   );
   document.getElementById("routeBanner").style.pointerEvents = "auto";
@@ -1536,7 +1545,7 @@ locateBtn.addEventListener("click", () => {
       const { latitude: lat, longitude: lng } = pos.coords;
       if (locationMarker) locationMarker.setLatLng([lat, lng]);
       else locationMarker = L.circleMarker([lat, lng], {
-        radius: 8, fillColor: "#2d5a3d", color: "#fff", weight: 2, fillOpacity: 1,
+        radius: 8, fillColor: "#8a3e18", color: "#fff", weight: 2, fillOpacity: 1,
       }).addTo(map);
 
       if (routePolyline) {
@@ -1605,7 +1614,7 @@ function selectSearchResult(i) {
   window._searchPin = L.marker([lat, lng], {
     icon: L.divIcon({
       className: "",
-      html: `<div style="background:#2d5a3d;border:2px solid #fff;border-radius:50% 50% 50% 0;width:20px;height:20px;transform:rotate(-45deg);box-shadow:0 2px 6px rgba(0,0,0,.4)"></div>`,
+      html: `<div style="background:#8a3e18;border:2px solid #fff;border-radius:50% 50% 50% 0;width:20px;height:20px;transform:rotate(-45deg);box-shadow:0 2px 6px rgba(0,0,0,.4)"></div>`,
       iconSize: [20, 20], iconAnchor: [10, 20],
     })
   }).addTo(map);
@@ -1627,7 +1636,7 @@ function showSearchActions(lat, lng, name) {
   bar.id = "searchActionBar";
   bar.style.cssText = `
     position:absolute; bottom:110px; left:50%; transform:translateX(-50%);
-    z-index:1500; background:#132018; border:1.5px solid #1e3822;
+    z-index:1500; background:#180e08; border:1.5px solid #2e1a0a;
     border-radius:20px; padding:10px 16px; display:flex; gap:12px;
     align-items:center; box-shadow:0 4px 20px rgba(0,0,0,.5);
     white-space:nowrap; font-size:14px; color:#eee;
@@ -1635,8 +1644,8 @@ function showSearchActions(lat, lng, name) {
   `;
   bar.innerHTML = `
     <span style="max-width:140px;overflow:hidden;text-overflow:ellipsis;color:#aab">${name}</span>
-    <button onclick="navigateToSearchPin(${lat},${lng})" style="padding:7px 14px;border-radius:12px;border:none;background:#7aba7a;color:#132018;font-weight:700;font-size:13px;cursor:pointer;">↗ Route here</button>
-    <button onclick="document.getElementById('searchActionBar').remove();if(window._searchPin){window._searchPin.remove();window._searchPin=null;}" style="padding:7px 10px;border-radius:12px;border:none;background:#1e3822;color:#aaa;font-size:13px;cursor:pointer;">✕</button>
+    <button onclick="navigateToSearchPin(${lat},${lng})" style="padding:7px 14px;border-radius:12px;border:none;background:#c47a3a;color:#180e08;font-weight:700;font-size:13px;cursor:pointer;">↗ Route here</button>
+    <button onclick="document.getElementById('searchActionBar').remove();if(window._searchPin){window._searchPin.remove();window._searchPin=null;}" style="padding:7px 10px;border-radius:12px;border:none;background:#2e1a0a;color:#aaa;font-size:13px;cursor:pointer;">✕</button>
   `;
   document.body.appendChild(bar);
 }
@@ -1808,7 +1817,7 @@ function openMarkerPanel(m) {
     <div class="mp-comments-section">
       <div class="mp-comments-label">Updates &amp; comments</div>
       <div class="mp-comment-list" id="mpCommentList">
-        <div style="color:#3a5a38;font-size:13px">Loading…</div>
+        <div style="color:#583618;font-size:13px">Loading…</div>
       </div>
       <div class="mp-add-row">
         <textarea id="mpCommentInput" rows="1" placeholder="E.g. gate removed, path less muddy…"></textarea>
@@ -1838,7 +1847,7 @@ async function loadComments(markerId) {
     const listEl = document.getElementById("mpCommentList");
     if (!listEl) return;
     if (comments.length === 0) {
-      listEl.innerHTML = `<div style="color:#2a3c28;font-size:13px">No updates yet — be the first.</div>`;
+      listEl.innerHTML = `<div style="color:#382614;font-size:13px">No updates yet — be the first.</div>`;
       return;
     }
     listEl.innerHTML = comments.map(c => `
@@ -2001,7 +2010,7 @@ loadMarkers();
 
 // ── Route mode ────────────────────────────────────────────────────────────────
 
-let routeWaypoints = []; // replaces routeStart / routeEnd
+let routeWaypoints = []; // [start, end]
 
 document.getElementById("routeBtn").addEventListener("click", () => {
   routeMode ? exitRouteMode() : enterRouteMode();
@@ -2012,7 +2021,7 @@ function enterRouteMode() {
   routeMode = true; routeWaypoints = [];
   closeSheet();
   document.getElementById("routeBtn").classList.add("active");
-  showBanner("Tap to add waypoints · Done when ready", true);
+  showBanner("Tap your start point", true);
 }
 
 function exitRouteMode() {
@@ -2051,6 +2060,7 @@ function syncAvoidChips() {
 function clearRoute() {
   if (routeLayer) { map.removeLayer(routeLayer); routeLayer = null; }
   routePolyline = null;
+  routeDashedLines = [];
   avoidSeverities.clear();
   syncAvoidChips();
   Object.values(mapMarkers).forEach(({ marker, data }) => marker.setIcon(makeIcon(data.type)));
@@ -2060,7 +2070,7 @@ function clearRoute() {
 function showBanner(msg, showDoneBtn = false) {
   const el = document.getElementById("routeBanner");
   el.innerHTML = showDoneBtn
-    ? `${msg} <button onclick="finishRoute()" style="margin-left:10px;padding:3px 10px;border-radius:10px;border:none;background:#7aba7a;color:#132018;font-size:12px;font-weight:700;cursor:pointer;">Done</button>`
+    ? `${msg} <button onclick="finishRoute()" style="margin-left:10px;padding:3px 10px;border-radius:10px;border:none;background:#c47a3a;color:#180e08;font-size:12px;font-weight:700;cursor:pointer;">Done</button>`
     : msg;
   el.style.pointerEvents = showDoneBtn ? "auto" : "none";
   el.classList.add("show");
@@ -2071,17 +2081,26 @@ function hideBanner() {
 
 async function handleRouteClick(lat, lng) {
   if (!routeLayer) routeLayer = L.layerGroup().addTo(map);
+  // Only start + end: a third tap starts a fresh route.
+  if (routeWaypoints.length >= 2) {
+    clearRoute();
+    routeWaypoints = [];
+  }
   const n = routeWaypoints.length;
-  const color = n === 0 ? "#4caf50" : "#7aba7a";
-  const label = n === 0 ? "Start" : `Point ${n + 1}`;
+  const color = n === 0 ? "#4caf50" : "#e8903a";
+  const label = n === 0 ? "Start" : "End";
   L.circleMarker([lat, lng], { radius: 9, fillColor: color, color: "#fff", weight: 2.5, fillOpacity: 1 })
     .bindPopup(label).addTo(routeLayer);
   routeWaypoints.push({ lat, lng });
-  showBanner(`${routeWaypoints.length} point${routeWaypoints.length > 1 ? "s" : ""} · keep tapping or tap Done`, true);
+  if (routeWaypoints.length === 1) {
+    showBanner("Tap your destination", true);
+  } else {
+    showBanner("Start and end set · tap Done", true);
+  }
 }
 
 async function finishRoute() {
-  if (routeWaypoints.length < 2) { showToast("Add at least 2 points first"); return; }
+  if (routeWaypoints.length < 2) { showToast("Set a start and an end point first"); return; }
   hideBanner();
   routeMode = false;
   document.getElementById("routeBtn").classList.remove("active");
@@ -2092,85 +2111,77 @@ async function fetchAndDrawRoute(avoid = []) {
   const msg = avoid.length > 0 ? "Rerouting to avoid obstacles…" : "Finding route…";
   showToast(msg, 10000);
   try {
-    // Chain waypoints: A→B, B→C, etc., then merge geometries
-    const legs = [];
-    for (let i = 0; i < routeWaypoints.length - 1; i++) {
-      const res = await fetch(`${API}/routes/preview`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          start: routeWaypoints[i], end: routeWaypoints[i + 1],
-          buffer_m: 50,
-          avoid_severities: avoid,
-        }),
-      });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.detail || `HTTP ${res.status}`);
-      }
-      legs.push(await res.json());
+    const res = await fetch(`${API}/routes/preview`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        start: routeWaypoints[0],
+        end:   routeWaypoints[routeWaypoints.length - 1],
+        buffer_m: 50,
+        avoid_severities: avoid,
+      }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || `HTTP ${res.status}`);
     }
-    drawRouteResult(mergeLegs(legs), avoid);
+    drawRouteResult(await res.json(), avoid);
   } catch (err) {
     showToast("Route error: " + err.message);
     // Only re-enter pick mode if this was the first route (not a reroute)
     if (avoid.length === 0) {
       routeMode = true;
       document.getElementById("routeBtn").classList.add("active");
-      showBanner(`${routeWaypoints.length} point${routeWaypoints.length > 1 ? "s" : ""} · keep tapping or tap Done`, true);
+      showBanner("Start and end set · tap Done", true);
     }
   }
-}
-
-function mergeLegs(legs) {
-  // Combine all leg geometries into one LineString
-  const allCoords = [];
-  let totalDist = 0, totalDur = 0;
-  const seenIds = new Set();
-  const allNearby = [];
-  legs.forEach(leg => {
-    allCoords.push(...leg.geometry.coordinates);
-    totalDist += leg.distance_m;
-    totalDur  += leg.duration_s;
-    leg.nearby_markers.forEach(m => {
-      if (!seenIds.has(m.id)) { seenIds.add(m.id); allNearby.push(m); }
-    });
-  });
-  return {
-    geometry: { type: "LineString", coordinates: allCoords },
-    distance_m: totalDist,
-    duration_s: totalDur,
-    nearby_markers: allNearby,
-    avoidance_applied: legs.some(l => l.avoidance_applied),
-    avoidance_method:  legs[0]?.avoidance_method ?? null,
-  };
 }
 
 function drawRouteResult(data, avoid = []) {
   if (!routeLayer) routeLayer = L.layerGroup().addTo(map);
 
-  // Remove previous polyline when rerouting
+  // Remove previous route lines when rerouting (keep the start/end dots)
   if (routePolyline) { routeLayer.removeLayer(routePolyline); routePolyline = null; }
+  routeDashedLines.forEach(l => routeLayer.removeLayer(l));
+  routeDashedLines = [];
 
-  const routeColor = avoid.length > 0 ? "#66bb6a" : "#7aba7a";
-  const toastMsg   = data.avoidance_applied  ? "Rerouted ✓ avoiding obstacles"
-                   : avoid.length > 0        ? "Route found (best available)"
-                   :                           "Route found ✓";
-  showToast(toastMsg);
+  const routeColor = avoid.length > 0 ? "#a03828" : "#b84038";
+  const usedGap    = data.avoidance_method === "gap_bypass";
+  const boundsCoords = [];
 
   const coords = data.geometry.coordinates.map(([lng, lat]) => [lat, lng]);
   routePolyline = L.polyline(coords, { color: routeColor, weight: 5, opacity: 0.85 }).addTo(routeLayer);
-  // Fit map to show the full route; extra bottom padding leaves room for the info panel
-  map.fitBounds(routePolyline.getBounds(), { padding: [40, 40], paddingBottomRight: [40, 280] });
+  boundsCoords.push(...coords);
 
-  // Re-highlight only the markers on the new route
+  // Straight-line gap crossings (off-path bits) as dashed amber
+  (data.bypass_segments || []).forEach(seg => {
+    const segCoords = seg.map(([lng, lat]) => [lat, lng]);
+    const dashed = L.polyline(segCoords, {
+      color: "#e8903a", weight: 3.5, opacity: 0.95, dashArray: "7 5",
+    }).addTo(routeLayer);
+    routeDashedLines.push(dashed);
+    boundsCoords.push(...segCoords);
+  });
+
+  if (boundsCoords.length) {
+    map.fitBounds(L.latLngBounds(boundsCoords), { padding: [40, 40], paddingBottomRight: [40, 280] });
+  }
+
+  // Highlight markers on the route plus any suggested nearby gaps
   const nearbyIds = new Set(data.nearby_markers.map(m => m.id));
+  (data.suggested_gaps || []).forEach(g => nearbyIds.add(g.id));
   Object.entries(mapMarkers).forEach(([id, { marker, data: mData }]) => {
     marker.setIcon(nearbyIds.has(parseInt(id)) ? makeHighlightedIcon(mData.type) : makeIcon(mData.type));
   });
 
   renderRoutePanel(data, avoid);
   document.getElementById("routePanel").classList.add("open");
+
+  const toastMsg = usedGap                 ? "Rerouted ✓ through an accessible gap"
+                 : data.avoidance_applied  ? "Rerouted ✓ avoiding obstacles"
+                 : avoid.length > 0        ? "Route found (best available)"
+                 :                           "Route found ✓";
+  showToast(toastMsg);
 }
 
 function renderRoutePanel(data, avoid = []) {
@@ -2182,6 +2193,7 @@ function renderRoutePanel(data, avoid = []) {
     mins < 60 ? `${mins} min` : `${Math.floor(mins/60)}h ${mins%60}m`;
 
   const nearby = data.nearby_markers;
+  const usedGap = data.avoidance_method === "gap_bypass";
   const summaryEl = document.getElementById("routeFrictionSummary");
   if (nearby.length === 0) {
     summaryEl.innerHTML = `<span style="color:#4caf50">No friction points on this route</span>`;
@@ -2192,9 +2204,29 @@ function renderRoutePanel(data, avoid = []) {
       `<span style="color:#ffc800">${nearby.length} friction point${nearby.length > 1 ? "s" : ""} found</span>` +
       (high ? ` · <span style="color:#f44336">${high} hard</span>` : "") +
       (med  ? ` · <span style="color:#ff9800">${med} tricky</span>` : "");
-    if (data.avoidance_applied)  html += ` · <span style="color:#66bb6a">↺ Rerouted</span>`;
+    if (usedGap)                 html += ` · <span style="color:#e8903a">↺ Through accessible gap</span>`;
+    else if (data.avoidance_applied) html += ` · <span style="color:#66bb6a">↺ Rerouted</span>`;
     else if (avoid.length > 0)   html += ` · <span style="color:#ff9800">Best available</span>`;
     summaryEl.innerHTML = html;
+  }
+
+  // Nice-option hint: accessible gaps nearby (within suggest range) that weren't auto-used.
+  const gaps = data.suggested_gaps || [];
+  let gapHintEl = document.getElementById("routeGapHint");
+  if (!gapHintEl) {
+    gapHintEl = document.createElement("div");
+    gapHintEl.id = "routeGapHint";
+    gapHintEl.style.cssText = "margin-top:6px;font-size:13px;color:#e8903a;";
+    summaryEl.insertAdjacentElement("afterend", gapHintEl);
+  }
+  if (gaps.length > 0) {
+    const nearest = Math.round(gaps[0].distance_m);
+    gapHintEl.innerHTML =
+      `🌿 ${gaps.length} accessible gap${gaps.length > 1 ? "s" : ""} nearby ` +
+      `(closest ${nearest}m) — could make a nicer field-edge walk`;
+    gapHintEl.style.display = "";
+  } else {
+    gapHintEl.style.display = "none";
   }
 
   // Show avoid section when there are hard/medium markers to potentially avoid
