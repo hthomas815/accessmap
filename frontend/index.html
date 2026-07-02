@@ -870,7 +870,7 @@
     ══════════════════════════════════════ */
     #sheet, #menuPanel, #routePanel, #markerPanel, #helpSheet, .confirm-sheet,
     #searchResults, #stravaPanel {
-      background: #f2872e !important;
+      background: #c67e86 !important;
       color: #2e1a0b !important;
     }
     #stravaPanel {
@@ -928,7 +928,7 @@
     .menu-row, .mp-header, .mp-meta, .mp-note, .mp-comments-section,
     .route-panel-header, .route-friction-summary, .route-avoid-section,
     .route-marker-item, .menu-header, .search-result-item {
-      border-color: #d9772450 !important;
+      border-color: #9c5a6255 !important;
     }
     /* Selected / active states */
     .sub-btn.selected, .diff-btn.selected, .mp-edit-diff-btn.selected {
@@ -949,14 +949,14 @@
     .mp-edit-note::placeholder { color: #a06a38 !important; }
     /* Drag handles */
     .drag-handle, .menu-handle, .help-handle, .route-panel-handle {
-      background: #a8500f !important;
+      background: #8f4c54 !important;
     }
     /* Search results rows */
     .search-result-item { color: #2e1a0b !important; }
     .search-result-item:active { background: #f7a765 !important; }
     /* Leaflet popups */
     .leaflet-popup-content-wrapper, .leaflet-popup-tip {
-      background: #f2872e !important;
+      background: #c67e86 !important;
       border-color: #d6741f !important;
       color: #2e1a0b !important;
     }
@@ -973,11 +973,11 @@
     #authOverlay.show { display: flex; }
     #authCard {
       width: min(100%, 320px);
-      background: rgba(242,135,46,.34);
+      background: rgba(198,126,134,.5);
       -webkit-backdrop-filter: blur(6px);
       backdrop-filter: blur(6px);
       color: #ffffff;
-      border: 2px solid #a8480f;
+      border: 2px solid #9c5a62;
       border-radius: 22px;
       box-shadow: 0 12px 40px rgba(0,0,0,.4);
       padding: 20px 18px 18px;
@@ -1353,7 +1353,7 @@ let coverageMode = "me"; // me | all | both
 let coverageStatsModel = { km_me: 0, km_all: 0 };
 
 function isSignedIn() {
-  return !!authSession?.access_token;
+  return authDisabled || !!authSession?.access_token;
 }
 
 function getAccessToken() {
