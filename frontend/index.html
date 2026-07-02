@@ -1134,6 +1134,25 @@
       white-space: nowrap;
     }
 
+    /* ── Boot / cold-start splash ── */
+    #splash {
+      position: fixed; inset: 0; z-index: 9500;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 18px; text-align: center; padding: 24px;
+      background:
+        linear-gradient(180deg, rgba(20,12,7,.35) 0%, rgba(20,12,7,.68) 100%),
+        url('/static/background.jpg') center / cover no-repeat;
+      transition: opacity .5s ease;
+    }
+    #splash.hide { opacity: 0; pointer-events: none; }
+    #splashTitle { font-size: 40px; font-weight: 800; color: #fff; letter-spacing: -.02em; text-shadow: 0 2px 14px rgba(0,0,0,.55); }
+    #splashMsg { color: rgba(255,255,255,.9); font-size: 14px; max-width: 300px; line-height: 1.4; text-shadow: 0 1px 6px rgba(0,0,0,.6); }
+    #splashSpin {
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 3px solid rgba(255,255,255,.3); border-top-color: #f2872e;
+      animation: connSpin .8s linear infinite;
+    }
+
     /* ── Category burst (radial "what did you find?" buttons) ── */
     #catBurst {
       position: fixed; inset: 0; z-index: 1600;
@@ -1262,6 +1281,13 @@
   </style>
 </head>
 <body>
+
+<!-- ── Boot / cold-start splash ── -->
+<div id="splash">
+  <div id="splashSpin"></div>
+  <div id="splashTitle">Roamable</div>
+  <div id="splashMsg">Warming up your map…</div>
+</div>
 
 <div id="map"></div>
 
@@ -1569,6 +1595,19 @@ let authDisabled = false;   // set from /app-config when the server bypass is on
 let coverageMode = "me"; // me | all | both
 let coverageStatsModel = { km_me: 0, km_all: 0 };
 
+// ── Boot splash ───────────────────────────────────────────────────────────────
+// Covers the (sometimes ~30s) Render cold-start so the app never looks blank.
+let _splashTimers = [
+  setTimeout(() => { const e = document.getElementById("splashMsg"); if (e) e.textContent = "Waking the server — the first load can take ~30 seconds…"; }, 4500),
+  setTimeout(() => { const e = document.getElementById("splashMsg"); if (e) e.textContent = "Almost there…"; }, 18000),
+];
+let _splashSafety = setTimeout(hideSplash, 45000);
+function hideSplash() {
+  _splashTimers.forEach(clearTimeout);
+  clearTimeout(_splashSafety);
+  document.getElementById("splash")?.classList.add("hide");
+}
+
 function isSignedIn() {
   return authDisabled || !!authSession?.access_token;
 }
@@ -1605,6 +1644,7 @@ function updateUserBadge() {
 }
 
 function showAuthOverlay(customMsg = "") {
+  hideSplash();
   document.getElementById("authOverlay").classList.add("show");
   if (customMsg) setAuthStatus(customMsg);
 }
@@ -1643,6 +1683,7 @@ async function handleSignedIn(session, restoreDraft = false) {
   hideAuthOverlay();
   if (restoreDraft) restoreFormState();
   await refreshAppData();
+  hideSplash();
 }
 
 async function handleSignedOut(showOverlay = false) {
@@ -1712,6 +1753,7 @@ async function initAuth() {
     hideAuthOverlay();
     updateUserBadge();
     await refreshAppData();
+    hideSplash();
     return;
   }
 
