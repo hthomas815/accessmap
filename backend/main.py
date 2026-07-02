@@ -172,7 +172,7 @@ async def lifespan(app: FastAPI):
     await pool.close()
 
 
-app = FastAPI(title="AccessMap API", lifespan=lifespan)
+app = FastAPI(title="Roamable API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,

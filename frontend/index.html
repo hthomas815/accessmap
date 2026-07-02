@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>AccessMap</title>
+  <title>Roamable</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.css" />
@@ -870,8 +870,8 @@
     ══════════════════════════════════════ */
     #sheet, #menuPanel, #routePanel, #markerPanel, #helpSheet, .confirm-sheet,
     #searchResults, #stravaPanel {
-      background: #ffe8d3 !important;
-      color: #3f2812 !important;
+      background: #f2872e !important;
+      color: #2e1a0b !important;
     }
     #stravaPanel {
       position: absolute; bottom: 0; left: 0; right: 0; z-index: 1650;
@@ -895,58 +895,70 @@
       -webkit-tap-highlight-color: transparent;
     }
     .strava-btn.import  { background: #fc4c02; color: #fff; }
-    .strava-btn.dismiss { background: #fff4e6; color: #9a6a38; border: 1.5px solid #e8bd8e; }
-    /* Headings & primary text */
+    .strava-btn.dismiss { background: #fff3e2; color: #5a3410; border: 1.5px solid #d6741f; }
+    /* Headings & primary text — consistent dark brown, readable on orange */
     .sheet-title h2, .cat-hero-name, #selectedCatLabel, .menu-title, .mp-type,
     .help-title, .confirm-msg, .route-stat .val, .mp-comment-body, .mp-note,
     .search-result-name {
-      color: #3f2812 !important;
+      color: #2e1a0b !important;
     }
-    /* Secondary / muted text */
+    /* Secondary / muted text — still a dark brown so it stays readable */
     .sheet-title p, .cat-hero-sub, .menu-row-sub, .mp-sub, .mp-meta,
     .help-text span, .route-friction-summary, .mp-comment-date, .route-stat .lbl,
-    .search-result-detail, .cancel-text-btn, .cancel-outline-btn, .confirm-cancel {
-      color: #9a6a38 !important;
+    .search-result-detail, .cancel-text-btn, .cancel-outline-btn, .confirm-cancel,
+    .rmi-sub, .route-marker-dist, .strava-row-meta {
+      color: #5a3410 !important;
     }
     /* Section labels */
     .sec-label, .mp-edit-label, .mp-comments-label, .route-avoid-label,
-    .help-section-title, .menu-row-label, .help-text strong, .rmi-type, .cat-label {
-      color: #6e4420 !important;
+    .help-section-title, .menu-row-label, .help-text strong, .rmi-type, .cat-label,
+    .strava-row-name {
+      color: #2e1a0b !important;
     }
-    /* Cards, buttons, inputs, icon wraps */
+    /* Cards, buttons, inputs, icon wraps — warm off-white so they pop on the orange */
     .cat-btn, .sub-btn, .diff-btn, #noteInput, .photo-opt-btn, .mp-edit-select,
     .mp-edit-note, .mp-edit-diff-btn, #mpCommentInput, .mp-comment, .menu-row-icon,
     .avoid-chip, .mp-edit-btn, .cat-icon-wrap, .mp-close-btn, .back-btn,
     #clearRouteBtn, .menu-close-btn {
-      background: #fff4e6 !important;
-      border-color: #e8bd8e !important;
-      color: #4a2e15 !important;
+      background: #fff3e2 !important;
+      border-color: #d6741f !important;
+      color: #2e1a0b !important;
     }
     /* Divider borders */
     .menu-row, .mp-header, .mp-meta, .mp-note, .mp-comments-section,
     .route-panel-header, .route-friction-summary, .route-avoid-section,
     .route-marker-item, .menu-header, .search-result-item {
-      border-color: #f0cfa8 !important;
+      border-color: #d9772450 !important;
     }
     /* Selected / active states */
     .sub-btn.selected, .diff-btn.selected, .mp-edit-diff-btn.selected {
-      background: #ffd9b0 !important; border-color: #b5521d !important; color: #3f2812 !important;
+      background: #fff3e2 !important; border-color: #8a3410 !important; color: #2e1a0b !important;
+    }
+    .avoid-chip.active-high {
+      background: #f8d7d5 !important; border-color: #a01d17 !important; color: #a01d17 !important;
+    }
+    .avoid-chip.active-medium {
+      background: #f7e4c4 !important; border-color: #8a4b00 !important; color: #8a4b00 !important;
+    }
+    /* Primary action buttons keep the deep accent so they stand out on the orange */
+    #saveBtn, #mpCommentBtn, .mp-edit-save-btn, .confirm-ok, #rerouteBtn, .help-close-btn {
+      background: #8a3410 !important; color: #fff !important;
     }
     /* Placeholders */
     #noteInput::placeholder, #mpCommentInput::placeholder,
-    .mp-edit-note::placeholder { color: #bb8a5c !important; }
+    .mp-edit-note::placeholder { color: #a06a38 !important; }
     /* Drag handles */
     .drag-handle, .menu-handle, .help-handle, .route-panel-handle {
-      background: #dcac78 !important;
+      background: #a8500f !important;
     }
     /* Search results rows */
-    .search-result-item { color: #4a2e15 !important; }
-    .search-result-item:active { background: #ffdcba !important; }
+    .search-result-item { color: #2e1a0b !important; }
+    .search-result-item:active { background: #f7a765 !important; }
     /* Leaflet popups */
     .leaflet-popup-content-wrapper, .leaflet-popup-tip {
-      background: #ffe8d3 !important;
-      border-color: #e8bd8e !important;
-      color: #3f2812 !important;
+      background: #f2872e !important;
+      border-color: #d6741f !important;
+      color: #2e1a0b !important;
     }
 
     /* ── Auth overlay ── */
@@ -955,15 +967,15 @@
       display: none; align-items: center; justify-content: center;
       padding: 24px;
       background:
-        radial-gradient(circle at top, rgba(242,135,46,.18), transparent 36%),
-        linear-gradient(180deg, #1c120b 0%, #120b07 100%);
+        linear-gradient(180deg, rgba(20,12,7,.45) 0%, rgba(20,12,7,.72) 100%),
+        url('/static/background.jpg') center / cover no-repeat;
     }
     #authOverlay.show { display: flex; }
     #authCard {
       width: min(100%, 420px);
-      background: #ffe8d3;
-      color: #3f2812;
-      border: 1px solid #e8bd8e;
+      background: #fff3e2;
+      color: #2e1a0b;
+      border: 1px solid #d6741f;
       border-radius: 28px;
       box-shadow: 0 18px 60px rgba(0,0,0,.35);
       padding: 28px 24px 24px;
@@ -1071,8 +1083,8 @@
 
 <div id="authOverlay">
   <div id="authCard">
-    <h1>AccessMap</h1>
-    <p id="authIntro">Sign in to keep your own explored area, link Strava safely, and contribute to the shared map with friends.</p>
+    <h1>Roamable</h1>
+    <p id="authIntro">Sign in to keep your own explored area, and link to Strava.</p>
     <div class="auth-stack">
       <button class="auth-btn" id="authGoogleBtn" type="button">Continue with Google</button>
     </div>
@@ -1266,7 +1278,7 @@
 <div id="helpOverlay">
   <div id="helpSheet">
     <div class="help-handle"></div>
-    <div class="help-title">How to use AccessMap</div>
+    <div class="help-title">How to use Roamable</div>
     <div class="help-section">
 
       <div class="help-section-title">Map controls</div>
@@ -2602,7 +2614,7 @@ async function loadComments(markerId) {
     }
     listEl.innerHTML = comments.map(c => `
       <div class="mp-comment">
-        <div class="mp-comment-date" style="margin-bottom:4px;font-weight:600;">${c.author_name || "AccessMap user"}${c.created_by_me ? " · You" : ""}</div>
+        <div class="mp-comment-date" style="margin-bottom:4px;font-weight:600;">${c.author_name || "Roamable user"}${c.created_by_me ? " · You" : ""}</div>
         <div class="mp-comment-body">${c.body.replace(/</g,"&lt;")}</div>
         <div class="mp-comment-date">${fmt(c.created_at)}</div>
       </div>
@@ -3068,17 +3080,17 @@ function renderRoutePanel(data, avoid = []) {
   const usedGap = data.avoidance_method === "gap_bypass";
   const summaryEl = document.getElementById("routeFrictionSummary");
   if (nearby.length === 0) {
-    summaryEl.innerHTML = `<span style="color:#4caf50">No friction points on this route</span>`;
+    summaryEl.innerHTML = `<span style="color:#1b5e20;font-weight:600">No friction points on this route</span>`;
   } else {
     const high = nearby.filter(m => m.severity === "high").length;
     const med  = nearby.filter(m => m.severity === "medium").length;
     let html =
-      `<span style="color:#ffc800">${nearby.length} friction point${nearby.length > 1 ? "s" : ""} found</span>` +
-      (high ? ` · <span style="color:#f44336">${high} hard</span>` : "") +
-      (med  ? ` · <span style="color:#ff9800">${med} tricky</span>` : "");
-    if (usedGap)                 html += ` · <span style="color:#e8903a">↺ Through accessible gap</span>`;
-    else if (data.avoidance_applied) html += ` · <span style="color:#66bb6a">↺ Rerouted</span>`;
-    else if (avoid.length > 0)   html += ` · <span style="color:#ff9800">Best available</span>`;
+      `<span style="color:#2e1a0b;font-weight:700">${nearby.length} friction point${nearby.length > 1 ? "s" : ""} found</span>` +
+      (high ? ` · <span style="color:#a01d17;font-weight:700">${high} hard</span>` : "") +
+      (med  ? ` · <span style="color:#8a4b00;font-weight:700">${med} tricky</span>` : "");
+    if (usedGap)                 html += ` · <span style="color:#1b5e20;font-weight:600">↺ Through accessible gap</span>`;
+    else if (data.avoidance_applied) html += ` · <span style="color:#1b5e20;font-weight:600">↺ Rerouted</span>`;
+    else if (avoid.length > 0)   html += ` · <span style="color:#8a4b00;font-weight:600">Best available</span>`;
     summaryEl.innerHTML = html;
   }
 
@@ -3094,8 +3106,8 @@ function renderRoutePanel(data, avoid = []) {
   if (gaps.length > 0) {
     gapHintEl.innerHTML = gaps.map(g =>
       `<div style="display:flex;align-items:center;gap:8px;margin-top:6px;">
-         <span style="flex:1;color:#f2872e;font-size:13px;">🌿 Accessible gap ${Math.round(g.distance_m)}m away</span>
-         <button onclick="applyGapAndReroute(${g.id})" style="padding:5px 12px;border-radius:10px;border:none;background:#f2872e;color:#180e08;font-weight:700;font-size:12px;cursor:pointer;">Use gap</button>
+         <span style="flex:1;color:#2e1a0b;font-weight:600;font-size:13px;">🌿 Accessible gap ${Math.round(g.distance_m)}m away</span>
+         <button onclick="applyGapAndReroute(${g.id})" style="padding:5px 12px;border-radius:10px;border:none;background:#8a3410;color:#fff;font-weight:700;font-size:12px;cursor:pointer;">Use gap</button>
        </div>`
     ).join("");
     gapHintEl.style.display = "";
@@ -3110,14 +3122,23 @@ function renderRoutePanel(data, avoid = []) {
 
   const listEl = document.getElementById("routeMarkerList");
   listEl.innerHTML = "";
-  nearby.forEach(m => {
-    const cat  = getCat(m.type);
-    const item = document.createElement("div");
+  // Order obstacles by difficulty: hard → tricky → easy → unrated
+  const sevRank = { high: 0, medium: 1, low: 2 };
+  const sorted = [...nearby].sort((a, b) =>
+    ((sevRank[a.severity] ?? 3) - (sevRank[b.severity] ?? 3)) ||
+    (a.distance_from_route_m - b.distance_from_route_m)
+  );
+  sorted.forEach(m => {
+    const cat   = getCat(m.type);
+    const tags  = mpTags(m);
+    // Show only the subtype(s); fall back to the category if there are none
+    const title = tags.length ? tags.map(x => x.label).join(", ") : cat.label;
+    const item  = document.createElement("div");
     item.className = "route-marker-item";
     item.innerHTML = `
-      <span class="route-marker-icon" style="font-size:13px;font-weight:600;color:#c8d2e8">${cat.label.split(" ")[0]}</span>
+      <span class="route-marker-icon" style="font-size:13px;font-weight:700;color:#2e1a0b">${cat.label.split(" ")[0]}</span>
       <div class="route-marker-info">
-        <div class="rmi-type">${cat.label}${(() => { const t = mpTags(m); return t.length ? ` <span style="font-weight:400;color:#889">· ${t.map(x => x.label).join(", ")}</span>` : ""; })()}</div>
+        <div class="rmi-type">${title}</div>
         ${m.note ? `<div class="rmi-sub">${m.note}</div>` : ""}
       </div>
       <div class="sev-dot ${m.severity || "none"}"></div>

@@ -1,6 +1,6 @@
 {
-  "name": "AccessMap",
-  "short_name": "AccessMap",
+  "name": "Roamable",
+  "short_name": "Roamable",
   "description": "Mark and share accessibility hazards on walking paths",
   "start_url": "/",
   "display": "standalone",
