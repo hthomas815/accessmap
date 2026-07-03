@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Explored tab — mockup</title>
+<style>
+  :root {
+    --orange: #f2872e;
+    --aubergine: #9b6dd6;
+    --aub-dk: #5a3d8a;
+    --ink: #2b1634;
+    --paper: #f6f2f8;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0; min-height: 100vh; display: flex; gap: 44px; flex-wrap: wrap;
+    align-items: flex-start; justify-content: center; padding: 34px 16px;
+    background: #d9d2df; font-family: -apple-system, system-ui, "Segoe UI", sans-serif;
+  }
+  .caption { text-align: center; font-size: 12px; color: #4a3a55; margin-top: 10px; font-weight: 600; max-width: 390px; }
+
+  .phone {
+    width: 390px; height: 800px; background: #1b1020; border-radius: 44px;
+    box-shadow: 0 20px 50px rgba(40,20,55,.35); overflow: hidden; position: relative;
+    border: 10px solid #1b1020;
+  }
+  .screen { position: absolute; inset: 0; border-radius: 34px; overflow: hidden; }
+  .scroll { position: absolute; inset: 0; overflow-y: auto; scroll-behavior: smooth; }
+
+  .status { height: 44px; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 24px; font-size: 13px; font-weight: 700; color: #fff; position: absolute;
+    top: 0; left: 0; right: 0; z-index: 20; text-shadow: 0 1px 4px rgba(0,0,0,.4); }
+
+  /* ── Full-screen hero ── */
+  .hero { position: relative; height: 780px;
+    background: linear-gradient(180deg, rgba(20,12,7,.30) 0%, rgba(30,16,40,.10) 35%, rgba(30,16,40,.55) 78%, rgba(27,16,32,.92) 100%),
+      url('frontend/icon-512.png') center 42% / 118% no-repeat, #cdb48f; }
+  /* swap the icon-512 line above for background.jpg in the app — icon shown so the mock is self-contained */
+  .hero.photo { background: linear-gradient(180deg, rgba(20,12,7,.30) 0%, rgba(30,16,40,.10) 35%, rgba(30,16,40,.55) 78%, rgba(27,16,32,.92) 100%),
+      url('frontend/background.jpg') center 30% / cover no-repeat; }
+
+  .brand { position: absolute; top: 54px; left: 22px; display: flex; align-items: center; gap: 10px; z-index: 10; }
+  .brand img { width: 34px; height: 34px; border-radius: 9px; box-shadow: 0 2px 8px rgba(0,0,0,.4); }
+  .brand span { color: #fff; font-size: 18px; font-weight: 800; letter-spacing: -.01em; text-shadow: 0 2px 10px rgba(0,0,0,.55); }
+
+  .heroStats { position: absolute; left: 22px; right: 22px; bottom: 150px; color: #fff; }
+  .kicker { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .09em; opacity: .92; text-shadow: 0 1px 6px rgba(0,0,0,.6); }
+  .bignum { display: flex; align-items: baseline; gap: 10px; margin-top: 4px; }
+  .bignum b { font-size: 60px; font-weight: 800; line-height: .9; text-shadow: 0 2px 16px rgba(0,0,0,.55); }
+  .bignum span { font-size: 20px; font-weight: 700; text-shadow: 0 1px 8px rgba(0,0,0,.6); }
+  .heroSub { font-size: 14px; margin-top: 8px; opacity: .96; text-shadow: 0 1px 6px rgba(0,0,0,.6); }
+  .heroSub b { color: #ffd7ac; font-weight: 700; }
+
+  .swipe { position: absolute; left: 0; right: 0; bottom: 92px; text-align: center; color: #fff; z-index: 10; }
+  .swipe .ch { font-size: 22px; animation: bob 1.4s ease-in-out infinite; }
+  .swipe .tx { font-size: 12px; font-weight: 600; opacity: .9; text-shadow: 0 1px 5px rgba(0,0,0,.6); letter-spacing: .02em; }
+  @keyframes bob { 0%,100% { transform: translateY(0); opacity: .55; } 50% { transform: translateY(6px); opacity: 1; } }
+
+  /* ── Sheet that slides up over the image ── */
+  .sheet { background: var(--paper); border-radius: 26px 26px 0 0; margin-top: -30px; position: relative;
+    box-shadow: 0 -10px 30px rgba(20,10,30,.35); padding: 10px 16px 100px; min-height: 560px; }
+  .grabber { width: 42px; height: 5px; border-radius: 3px; background: #d5c8e2; margin: 4px auto 14px; }
+
+  .card { background: #fff; border-radius: 18px; padding: 15px 16px; margin-bottom: 14px;
+    box-shadow: 0 2px 10px rgba(60,35,80,.07); }
+  .card h3 { margin: 0 0 12px; font-size: 13px; font-weight: 700; color: var(--ink); text-transform: uppercase; letter-spacing: .05em; }
+
+  .strip { display: flex; }
+  .strip .cell { flex: 1; text-align: center; }
+  .strip .cell + .cell { border-left: 1px solid #eee5f0; }
+  .strip .v { font-size: 24px; font-weight: 800; color: var(--aub-dk); line-height: 1; }
+  .strip .v .u { font-size: 13px; font-weight: 700; color: #8a76a0; }
+  .strip .l { font-size: 10px; text-transform: uppercase; letter-spacing: .05em; color: #8a7d97; margin-top: 5px; }
+
+  .tilewrap { display: flex; gap: 14px; align-items: center; }
+  .tiles { display: grid; grid-template-columns: repeat(8, 1fr); gap: 3px; flex: 1; }
+  .t { aspect-ratio: 1; border-radius: 3px; background: #ece5f2; }
+  .t.v { background: rgba(155,109,214,.42); }
+  .t.c { background: var(--aubergine); }
+  .legend { font-size: 11px; color: #6a5c78; display: flex; flex-direction: column; gap: 8px; width: 92px; }
+  .legend div { display: flex; align-items: center; gap: 7px; }
+  .sw { width: 13px; height: 13px; border-radius: 3px; }
+  .sw.e { background: #ece5f2; } .sw.v { background: rgba(155,109,214,.42); } .sw.c { background: var(--aubergine); }
+
+  .area { display: flex; align-items: center; gap: 12px; padding: 9px 0; }
+  .area + .area { border-top: 1px solid #f1ebf5; }
+  .area-ic { width: 34px; height: 34px; border-radius: 10px; background: #f0e9f7; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+  .area-name { font-size: 14px; font-weight: 600; color: var(--ink); }
+  .area-meta { font-size: 11.5px; color: #8a7d97; margin-top: 1px; }
+  .chip { margin-left: auto; font-size: 10.5px; font-weight: 700; padding: 4px 9px; border-radius: 20px; }
+  .chip.done { background: var(--aubergine); color: #fff; }
+  .chip.part { background: #f0e9f7; color: var(--aub-dk); }
+
+  .actions { display: flex; gap: 10px; }
+  .btn { flex: 1; border: none; border-radius: 14px; padding: 14px; font-size: 14px; font-weight: 700; cursor: pointer; }
+  .btn.primary { background: var(--orange); color: #180e08; }
+  .btn.ghost { background: #fff; color: var(--aub-dk); border: 1.5px solid #e2d6ee; }
+
+  /* frosted tab bar floats over everything */
+  .tabbar { position: absolute; bottom: 0; left: 0; right: 0; height: 74px; z-index: 30;
+    background: rgba(27,16,32,.72); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border-top: 1px solid rgba(255,255,255,.08); display: flex; padding-bottom: 8px; }
+  .tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: 11px; font-weight: 700; color: rgba(255,255,255,.55); }
+  .tab.active { color: var(--orange); }
+  .tab svg { width: 24px; height: 24px; }
+</style>
+</head>
+<body>
+
+<div>
+<div class="phone">
+  <div class="screen">
+    <div class="status"><span>9:41</span><span>●●● 📶 93</span></div>
+    <div class="scroll">
+
+      <!-- FULL-SCREEN HERO (swap .hero for class="hero photo" to preview with the forest photo) -->
+      <div class="hero photo">
+        <div class="brand"><img src="frontend/icon-512.png" alt=""><span>Roamable</span></div>
+
+        <div class="heroStats">
+          <div class="kicker">You've explored</div>
+          <div class="bignum"><b>23</b><span>tiles</span></div>
+          <div class="heroSub"><b>5</b> fully explored · <b>47.2 km</b> on foot · <b>3.1 km²</b></div>
+        </div>
+
+        <div class="swipe">
+          <div class="ch">⌃</div>
+          <div class="tx">Swipe up for stats &amp; areas</div>
+        </div>
+      </div>
+
+      <!-- SLIDE-UP SHEET -->
+      <div class="sheet">
+        <div class="grabber"></div>
+
+        <div class="card">
+          <div class="strip">
+            <div class="cell"><div class="v">23</div><div class="l">Tiles visited</div></div>
+            <div class="cell"><div class="v">5</div><div class="l">Completed</div></div>
+            <div class="cell"><div class="v">3.1<span class="u"> km²</span></div><div class="l">Area explored</div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Your tiles</h3>
+          <div class="tilewrap">
+            <div class="tiles" id="tiles"></div>
+            <div class="legend">
+              <div><span class="sw c"></span> Completed</div>
+              <div><span class="sw v"></span> Visited</div>
+              <div><span class="sw e"></span> Not yet</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Places you've been</h3>
+          <div class="area">
+            <div class="area-ic">🌳</div>
+            <div><div class="area-name">Monken Hadley Common</div><div class="area-meta">Every corner explored</div></div>
+            <span class="chip done">Complete</span>
+          </div>
+          <div class="area">
+            <div class="area-ic">⚽</div>
+            <div><div class="area-name">Grange Playing Fields</div><div class="area-meta">Claimed area · 0.14 km²</div></div>
+            <span class="chip done">Complete</span>
+          </div>
+          <div class="area">
+            <div class="area-ic">🏞️</div>
+            <div><div class="area-name">Whitings Hill Open Space</div><div class="area-meta">6 of 9 tiles</div></div>
+            <span class="chip part">67%</span>
+          </div>
+          <div class="area">
+            <div class="area-ic">🌲</div>
+            <div><div class="area-name">Coppett's Wood</div><div class="area-meta">Path coverage only</div></div>
+            <span class="chip part">28%</span>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn primary">View on map</button>
+          <button class="btn ghost">Claim an area</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TAB BAR -->
+    <div class="tabbar">
+      <div class="tab">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 8 3 16 6 23 3 23 18 16 21 8 18 1 21"/><line x1="8" y1="3" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="21"/></svg>
+        Map
+      </div>
+      <div class="tab active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.2 7.8 13.4 13.4 7.8 16.2 10.6 10.6 16.2 7.8"/></svg>
+        Explored
+      </div>
+    </div>
+
+  </div>
+</div>
+<div class="caption">Full-screen image + stats on launch · swipe up to reveal the dashboard · tabs to reach the Map</div>
+</div>
+
+<script>
+  const pattern = [
+    0,0,1,1,2,0,0,0,
+    0,1,2,2,2,1,0,0,
+    0,1,2,2,2,2,1,0,
+    0,0,1,2,2,1,1,0,
+    0,0,1,1,1,0,0,0,
+    0,0,0,1,0,0,0,0
+  ];
+  const wrap = document.getElementById('tiles');
+  pattern.forEach(s => {
+    const d = document.createElement('div');
+    d.className = 't' + (s === 2 ? ' c' : s === 1 ? ' v' : '');
+    wrap.appendChild(d);
+  });
+</script>
+</body>
+</html>

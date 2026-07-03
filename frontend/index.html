@@ -25,7 +25,48 @@
       overflow: hidden;
     }
 
-    #map { flex: 1; width: 100%; }
+    #map { position: absolute; inset: 0; }
+
+    /* ── Map / Explored tab shell ── */
+    #mapView { position: absolute; inset: 0; bottom: 74px; overflow: hidden; }
+    #exploredView { position: absolute; inset: 0; bottom: 74px; overflow-y: auto;
+      background: #f6f2f8; display: none; z-index: 1050; -webkit-overflow-scrolling: touch; }
+    #exploredView.show { display: block; }
+    #tabbar { position: absolute; bottom: 0; left: 0; right: 0; height: 74px; z-index: 1100;
+      display: flex; padding-bottom: 6px; background: rgba(27,16,32,.9);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      border-top: 1px solid rgba(255,255,255,.08); }
+    .tab-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 3px; font-size: 11px; font-weight: 700; color: rgba(255,255,255,.55); cursor: pointer;
+      background: none; border: none; font-family: inherit; }
+    .tab-btn.active { color: #f2872e; }
+    .tab-btn svg { width: 24px; height: 24px; }
+
+    /* Explored dashboard */
+    .exp-hero { position: relative; height: 210px; color: #fff;
+      background: linear-gradient(180deg, rgba(20,12,7,.25) 0%, rgba(30,16,40,.30) 50%, rgba(30,16,40,.9) 100%),
+        url('/static/background.jpg') center 30% / cover no-repeat; }
+    .exp-hero .eb { position: absolute; top: 16px; left: 18px; display: flex; align-items: center; gap: 9px; }
+    .exp-hero .eb img { width: 30px; height: 30px; border-radius: 8px; }
+    .exp-hero .eb span { font-size: 17px; font-weight: 800; text-shadow: 0 2px 8px rgba(0,0,0,.5); }
+    .exp-hero .eh-stats { position: absolute; left: 18px; right: 18px; bottom: 16px; }
+    .exp-kicker { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; opacity: .9; }
+    .exp-big { display: flex; align-items: baseline; gap: 9px; margin-top: 3px; }
+    .exp-big b { font-size: 44px; font-weight: 800; line-height: .9; text-shadow: 0 2px 12px rgba(0,0,0,.5); }
+    .exp-big span { font-size: 16px; font-weight: 700; }
+    .exp-sub { font-size: 13px; margin-top: 6px; opacity: .95; }
+    .exp-body { padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+    .exp-card { background: #fff; border-radius: 16px; padding: 14px 15px; box-shadow: 0 2px 10px rgba(60,35,80,.07); }
+    .exp-card h3 { margin: 0 0 10px; font-size: 12px; font-weight: 700; color: #2b1634; text-transform: uppercase; letter-spacing: .05em; }
+    .exp-strip { display: flex; }
+    .exp-strip .c { flex: 1; text-align: center; }
+    .exp-strip .c + .c { border-left: 1px solid #eee5f0; }
+    .exp-strip .v { font-size: 22px; font-weight: 800; color: #5a3d8a; }
+    .exp-strip .l { font-size: 9.5px; text-transform: uppercase; letter-spacing: .04em; color: #8a7d97; margin-top: 4px; }
+    .exp-actions { display: flex; gap: 10px; }
+    .exp-btn { flex: 1; border: none; border-radius: 13px; padding: 13px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; }
+    .exp-btn.primary { background: #f2872e; color: #180e08; }
+    .exp-btn.ghost { background: #fff; color: #5a3d8a; border: 1.5px solid #e2d6ee; }
 
     /* ── FAB — drop marker at current location ── */
     #fab {
@@ -1247,6 +1288,20 @@
       transition: opacity .5s ease;
     }
     #splash.hide { opacity: 0; pointer-events: none; }
+    #splash { touch-action: none; transition: opacity .5s ease, transform .35s cubic-bezier(.4,0,.2,1); }
+    #splash .splash-brand { position: absolute; top: 54px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; }
+    #splash .splash-brand img { width: 34px; height: 34px; border-radius: 9px; box-shadow: 0 2px 8px rgba(0,0,0,.4); }
+    #splash .splash-brand span { font-size: 18px; font-weight: 800; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,.55); }
+    #splashReady { display: none; flex-direction: column; align-items: center; gap: 5px; }
+    #splashReady .cover-kick { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: rgba(255,255,255,.92); text-shadow: 0 1px 6px rgba(0,0,0,.6); }
+    #splashReady .cover-big { display: flex; align-items: baseline; gap: 9px; color: #fff; }
+    #splashReady .cover-big b { font-size: 56px; font-weight: 800; line-height: .9; text-shadow: 0 2px 16px rgba(0,0,0,.55); }
+    #splashReady .cover-big span { font-size: 20px; font-weight: 700; }
+    #splashReady .cover-sub { font-size: 13px; color: rgba(255,255,255,.92); text-shadow: 0 1px 6px rgba(0,0,0,.6); }
+    #splashReady .swipe { margin-top: 24px; text-align: center; color: #fff; }
+    #splashReady .swipe .ch { font-size: 26px; animation: bob 1.4s ease-in-out infinite; }
+    #splashReady .swipe .tx { font-size: 12px; font-weight: 600; opacity: .9; text-shadow: 0 1px 5px rgba(0,0,0,.6); }
+    @keyframes bob { 0%,100% { transform: translateY(0); opacity: .55; } 50% { transform: translateY(6px); opacity: 1; } }
     #splashTitle { font-size: 40px; font-weight: 800; color: #fff; letter-spacing: -.02em; text-shadow: 0 2px 14px rgba(0,0,0,.55); }
     #splashMsg { color: rgba(255,255,255,.9); font-size: 14px; max-width: 300px; line-height: 1.4; text-shadow: 0 1px 6px rgba(0,0,0,.6); }
     #splashSpin {
@@ -1510,13 +1565,22 @@
 </head>
 <body>
 
-<!-- ── Boot / cold-start splash ── -->
+<!-- ── Boot / cold-start splash → launch cover ── -->
 <div id="splash">
-  <div id="splashSpin"></div>
-  <div id="splashTitle">Roamable</div>
-  <div id="splashMsg">Warming up your map…</div>
+  <div class="splash-brand"><img src="/static/icon-512.png" alt="" /><span>Roamable</span></div>
+  <div id="splashLoading" style="display:flex;flex-direction:column;align-items:center;gap:18px;">
+    <div id="splashSpin"></div>
+    <div id="splashMsg">Warming up your map…</div>
+  </div>
+  <div id="splashReady">
+    <div class="cover-kick">Welcome back — you've explored</div>
+    <div class="cover-big"><b id="coverBig">0.0</b><span>km</span></div>
+    <div class="cover-sub">on foot · keep roaming</div>
+    <div class="swipe"><div class="ch">⌃</div><div class="tx">Swipe up for the map</div></div>
+  </div>
 </div>
 
+<div id="mapView">
 <div id="map"></div>
 
 <!-- ── Search bar ── -->
@@ -1546,6 +1610,48 @@
   <span id="recStats">0.0 km · 0:00</span>
   <button id="recFinishBtn" onclick="stopRecording(true)">Finish</button>
   <button id="recDiscardBtn" onclick="stopRecording(false)" title="Discard">✕</button>
+</div>
+</div><!-- /#mapView -->
+
+<!-- ── Explored tab ── -->
+<div id="exploredView">
+  <div class="exp-hero">
+    <div class="eb"><img src="/static/icon-512.png" alt="" /><span>Roamable</span></div>
+    <div class="eh-stats">
+      <div class="exp-kicker">You've explored</div>
+      <div class="exp-big"><b id="expBigNum">0.0</b><span>km</span></div>
+      <div class="exp-sub">Distance explored on foot</div>
+    </div>
+  </div>
+  <div class="exp-body">
+    <div class="exp-card">
+      <div class="exp-strip">
+        <div class="c"><div class="v" id="expKm">0.0</div><div class="l">km walked</div></div>
+        <div class="c"><div class="v" id="expTilesV">—</div><div class="l">tiles visited</div></div>
+        <div class="c"><div class="v" id="expTilesC">—</div><div class="l">completed</div></div>
+      </div>
+    </div>
+    <div class="exp-card">
+      <h3>Explored areas</h3>
+      <p style="margin:0 0 12px;font-size:13px;color:#6a5c78;line-height:1.4;">See the ground you've covered on the map, or claim open areas like parks and fields you've roamed.</p>
+      <div class="exp-actions">
+        <button class="exp-btn primary" onclick="exploredShowOnMap()">Show on map</button>
+        <button class="exp-btn ghost" onclick="startAreaClaim()">Claim an area</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Bottom tab bar ── -->
+<div id="tabbar">
+  <button class="tab-btn active" id="tabMapBtn" onclick="switchTab('map')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 8 3 16 6 23 3 23 18 16 21 8 18 1 21"/><line x1="8" y1="3" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="21"/></svg>
+    Map
+  </button>
+  <button class="tab-btn" id="tabExpBtn" onclick="switchTab('explored')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.2 7.8 13.4 13.4 7.8 16.2 10.6 10.6 16.2 7.8"/></svg>
+    Explored
+  </button>
 </div>
 
 <div id="authOverlay">
@@ -1837,6 +1943,101 @@ function hideSplash() {
   document.getElementById("splash")?.classList.add("hide");
 }
 
+// ── Launch cover: after a successful boot, turn the splash into a swipe-up
+// welcome (image + stats) instead of just hiding it. Swipe up → the map.
+function armLaunchCover() {
+  _splashTimers.forEach(clearTimeout);
+  clearTimeout(_splashSafety);
+  const s = document.getElementById("splash");
+  if (!s || s.classList.contains("hide")) return;
+  const load = document.getElementById("splashLoading");
+  const ready = document.getElementById("splashReady");
+  if (load) load.style.display = "none";
+  if (ready) ready.style.display = "flex";
+  updateCoverStats();
+  enableCoverSwipe();
+}
+
+async function updateCoverStats() {
+  try {
+    const res = await apiFetch(`${API}/tracks/stats`);
+    if (res.ok) {
+      const m = await res.json();
+      const km = m.km_me || 0;
+      const b = document.getElementById("coverBig");
+      if (b) b.textContent = km.toFixed(1);
+    }
+  } catch (_) {}
+}
+
+let _coverSwipeOn = false;
+function enableCoverSwipe() {
+  if (_coverSwipeOn) return;
+  _coverSwipeOn = true;
+  const s = document.getElementById("splash");
+  if (!s) return;
+  let startY = null, dy = 0;
+  const dismiss = () => {
+    s.style.transform = "translateY(-110%)";
+    setTimeout(() => { hideSplash(); switchTab("map"); }, 320);
+  };
+  s.addEventListener("click", e => { if (e.target.closest(".swipe")) dismiss(); });
+  s.addEventListener("pointerdown", e => { startY = e.clientY; dy = 0; s.style.transition = "none"; });
+  s.addEventListener("pointermove", e => {
+    if (startY === null) return;
+    dy = e.clientY - startY;
+    if (dy < 0) s.style.transform = `translateY(${dy}px)`;
+  });
+  s.addEventListener("pointerup", () => {
+    if (startY === null) return;
+    s.style.transition = "";
+    if (dy < -70) dismiss(); else s.style.transform = "";
+    startY = null;
+  });
+}
+
+// ── Map / Explored tab switching ──
+let activeTab = "map";
+function switchTab(t) {
+  activeTab = t;
+  document.getElementById("exploredView")?.classList.toggle("show", t === "explored");
+  document.getElementById("tabMapBtn")?.classList.toggle("active", t === "map");
+  document.getElementById("tabExpBtn")?.classList.toggle("active", t === "explored");
+  if (t === "explored") {
+    refreshExploredDashboard();
+  } else {
+    setTimeout(() => { try { map.invalidateSize(); } catch (_) {} }, 60);
+  }
+}
+
+async function refreshExploredDashboard() {
+  try {
+    const res = await apiFetch(`${API}/tracks/stats`);
+    if (res.ok) {
+      const m = await res.json();
+      const km = (m.km_me || 0).toFixed(1);
+      const big = document.getElementById("expBigNum");
+      const strip = document.getElementById("expKm");
+      if (big) big.textContent = km;
+      if (strip) strip.textContent = km;
+    }
+  } catch (_) {}
+}
+
+// Turn coverage on and jump to the map to view it.
+function exploredShowOnMap() {
+  if (typeof coverageVisible !== "undefined" && !coverageVisible && typeof toggleCoverage === "function") {
+    toggleCoverage();
+  }
+  switchTab("map");
+}
+
+// Placeholder until Phase 2 wires real polygon claiming.
+function startAreaClaim() {
+  switchTab("map");
+  if (typeof showToast === "function") showToast("Area claiming is coming next", 2600);
+}
+
 function isSignedIn() {
   return authDisabled || !!authSession?.access_token;
 }
@@ -1932,7 +2133,7 @@ async function handleSignedIn(session, restoreDraft = false) {
   hideAuthOverlay();
   if (restoreDraft) restoreFormState();
   await refreshAppData();
-  hideSplash();
+  armLaunchCover();
   centerOnCurrentLocation();
 }
 
@@ -2000,7 +2201,7 @@ async function initAuth() {
     hideAuthOverlay();
     updateUserBadge();
     await refreshAppData();
-    hideSplash();
+    armLaunchCover();
     centerOnCurrentLocation();
     return;
   }
@@ -2115,6 +2316,7 @@ const SUBTYPE_ICONS = {
   "rough_ruts": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ruts icon"> <path d="M21 18C24 30 24 44 21 62" stroke="#AF9A84" stroke-width="8" stroke-linecap="round"/> <path d="M43 18C46 30 46 44 43 62" stroke="#AF9A84" stroke-width="8" stroke-linecap="round"/> <path d="M60 18C63 30 63 44 60 62" stroke="#AF9A84" stroke-width="8" stroke-linecap="round"/> <path d="M14 24C26 22 38 22 68 24" stroke="#75685D" stroke-width="3" stroke-linecap="round" opacity="0.7"/> </svg>`,
   "rough_tree_roots": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Tree roots icon"> <path d="M38 14V32" stroke="#75685D" stroke-width="6" stroke-linecap="round"/> <path d="M38 32C32 35 28 42 24 50" stroke="#75685D" stroke-width="4.5" stroke-linecap="round" fill="none"/> <path d="M38 32C42 35 48 42 55 50" stroke="#75685D" stroke-width="4.5" stroke-linecap="round" fill="none"/> <path d="M28 49C24 51 20 55 17 60" stroke="#AF9A84" stroke-width="4" stroke-linecap="round"/> <path d="M49 48C54 50 59 54 63 60" stroke="#AF9A84" stroke-width="4" stroke-linecap="round"/> <path d="M14 61H66" stroke="#CBB8A3" stroke-width="4" stroke-linecap="round"/> </svg>`,
   "rough_uneven_ground": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Rough icon"> <path d="M14 60L24 44L31 54L40 36L49 50L58 40L66 60H14Z" fill="#CBB8A3"/> <path d="M22 51L29 57L40 39L49 50L58 42" stroke="#75685D" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/> <circle cx="27" cy="42" r="5" fill="#AF9A84"/> <circle cx="54" cy="34" r="4" fill="#AF9A84"/> </svg>`,
+  "rough_big_curb": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Big curb or step icon"> <path d="M12 60H36V40H60V22" fill="none" stroke="#75685D" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/> <path d="M12 60H36V40H60V22H68" fill="#CBB8A3" opacity="0.5"/> <path d="M60 22H68" stroke="#AF9A84" stroke-width="6" stroke-linecap="round"/> </svg>`,
   "steep_long_climb": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Steep icon"> <path d="M12 57C22 55 28 51 35 43C43 34 49 26 68 22" stroke="#7568A9" stroke-width="6" stroke-linecap="round" fill="none"/> <path d="M12 57L12 64H68V22C56 26 49 33 42 41C35 49 25 56 12 57Z" fill="#C9C0E4" opacity="0.95"/> <path d="M22 54C26 52 31 49 36 44C42 39 46 34 53 29" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.75"/> <path d="M62 58V40" stroke="#7568A9" stroke-width="3.5" stroke-linecap="round"/> <path d="M56 46L62 40L68 46" stroke="#7568A9" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/> </svg>`,
   "steep_long_descent": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Steep icon"> <path d="M12 57C22 55 28 51 35 43C43 34 49 26 68 22" stroke="#7568A9" stroke-width="6" stroke-linecap="round" fill="none"/> <path d="M12 57L12 64H68V22C56 26 49 33 42 41C35 49 25 56 12 57Z" fill="#C9C0E4" opacity="0.95"/> <path d="M22 54C26 52 31 49 36 44C42 39 46 34 53 29" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.75"/> <path d="M62 22V40" stroke="#7568A9" stroke-width="3.5" stroke-linecap="round"/> <path d="M56 34L62 40L68 34" stroke="#7568A9" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/> </svg>`,
   "steep_other_steep_section": `<svg style="width:100%;height:100%;display:block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Steep icon"> <path d="M12 57C22 55 28 51 35 43C43 34 49 26 68 22" stroke="#7568A9" stroke-width="6" stroke-linecap="round" fill="none"/> <path d="M12 57L12 64H68V22C56 26 49 33 42 41C35 49 25 56 12 57Z" fill="#C9C0E4" opacity="0.95"/> <path d="M22 54C26 52 31 49 36 44C42 39 46 34 53 29" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.75"/> <circle cx="62" cy="18" r="11" fill="#6F60A9"/> <circle cx="58" cy="18" r="1.8" fill="#FFFFFF"/> <circle cx="62" cy="18" r="1.8" fill="#FFFFFF"/> <circle cx="66" cy="18" r="1.8" fill="#FFFFFF"/> </svg>`,
@@ -2158,6 +2360,7 @@ const SUBTYPES = {
     { label: "Mud",            key: "mud_light_mud"       },
     { label: "Flooding",       key: "mud_standing_water"  },
     { label: "Tree roots",     key: "rough_tree_roots"    },
+    { label: "Big curb/step",  key: "rough_big_curb"      },
   ],
   passage: [
     { label: "Hedge gap",  key: "passage_hedge_gap" },
@@ -4391,9 +4594,9 @@ async function loadTracks() {
     if (!res.ok) return;
     coverageLayer.clearLayers();
     allTrackPoints = [];
-    // ~20 m wide corridor (≈10 m either side of the path), with a thinner core line.
-    const bandPx = Math.max(4, metersToPixels(20));
-    const corePx = Math.max(2, metersToPixels(8));
+    // ~10 m wide corridor (5 m either side of the path), with a thinner core line.
+    const bandPx = Math.max(3, metersToPixels(10));
+    const corePx = Math.max(2, metersToPixels(4));
     (await res.json()).forEach(track => {
       if (!track.geojson) return;
       const geo = JSON.parse(track.geojson);

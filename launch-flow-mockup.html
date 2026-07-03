@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Launch flow — interactive mockup</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  :root { --orange:#f2872e; --aubergine:#9b6dd6; --aub-dk:#5a3d8a; --ink:#2b1634; --paper:#f6f2f8; }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body { margin:0; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:14px; padding:30px 16px; background:#d9d2df; font-family:-apple-system,system-ui,"Segoe UI",sans-serif; }
+  .caption { font-size:12px; color:#4a3a55; font-weight:600; text-align:center; max-width:390px; }
+  .caption b { color:#2b1634; }
+
+  .phone { width:390px; height:800px; background:#1b1020; border-radius:44px; border:10px solid #1b1020;
+    box-shadow:0 20px 50px rgba(40,20,55,.35); position:relative; overflow:hidden; }
+  .screen { position:absolute; inset:0; border-radius:34px; overflow:hidden; }
+  .view { position:absolute; inset:0; }
+  .hidden { display:none; }
+
+  #map { position:absolute; inset:0; background:#cdb48f; }
+
+  .status { height:44px; display:flex; align-items:center; justify-content:space-between; padding:0 24px;
+    font-size:13px; font-weight:700; position:absolute; top:0; left:0; right:0; z-index:25; }
+  .status.light { color:#fff; text-shadow:0 1px 4px rgba(0,0,0,.4); }
+  .status.dark { color:#2b1634; }
+
+  /* replay + map float buttons */
+  .repl { position:absolute; top:52px; right:16px; z-index:24; background:rgba(27,16,32,.6); color:#fff;
+    border:none; border-radius:20px; padding:7px 12px; font-size:11px; font-weight:700; cursor:pointer; backdrop-filter:blur(8px); }
+
+  /* ── Launch cover ── */
+  #cover { position:absolute; inset:0; z-index:40; color:#fff; touch-action:none; cursor:grab;
+    transition:transform .5s cubic-bezier(.4,0,.2,1);
+    background:linear-gradient(180deg, rgba(20,12,7,.30) 0%, rgba(30,16,40,.08) 35%, rgba(30,16,40,.55) 76%, rgba(27,16,32,.94) 100%),
+      url('frontend/background.jpg') center 30% / cover no-repeat; }
+  #cover.up { transform:translateY(-106%); }
+  .brand { position:absolute; top:54px; left:22px; display:flex; align-items:center; gap:10px; }
+  .brand img { width:34px; height:34px; border-radius:9px; box-shadow:0 2px 8px rgba(0,0,0,.4); }
+  .brand span { font-size:18px; font-weight:800; letter-spacing:-.01em; text-shadow:0 2px 10px rgba(0,0,0,.55); }
+  .cover-stats { position:absolute; left:22px; right:22px; bottom:150px; }
+  .kicker { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.09em; opacity:.92; text-shadow:0 1px 6px rgba(0,0,0,.6); }
+  .bignum { display:flex; align-items:baseline; gap:10px; margin-top:4px; }
+  .bignum b { font-size:60px; font-weight:800; line-height:.9; text-shadow:0 2px 16px rgba(0,0,0,.55); }
+  .bignum span { font-size:20px; font-weight:700; text-shadow:0 1px 8px rgba(0,0,0,.6); }
+  .cover-sub { font-size:14px; margin-top:8px; opacity:.96; text-shadow:0 1px 6px rgba(0,0,0,.6); }
+  .cover-sub b { color:#ffd7ac; }
+  .swipe { position:absolute; left:0; right:0; bottom:92px; text-align:center; }
+  .swipe .ch { font-size:24px; animation:bob 1.4s ease-in-out infinite; }
+  .swipe .tx { font-size:12px; font-weight:600; opacity:.9; text-shadow:0 1px 5px rgba(0,0,0,.6); }
+  @keyframes bob { 0%,100%{transform:translateY(0);opacity:.55;} 50%{transform:translateY(6px);opacity:1;} }
+
+  /* ── Stats tab (scroll page) ── */
+  #statsView { overflow-y:auto; background:var(--paper); }
+  .s-hero { position:relative; height:220px; color:#fff;
+    background:linear-gradient(180deg, rgba(20,12,7,.25) 0%, rgba(30,16,40,.30) 50%, rgba(30,16,40,.88) 100%),
+      url('frontend/background.jpg') center 30% / cover no-repeat; }
+  .s-hero .brand { top:52px; }
+  .s-hero .cover-stats { bottom:18px; }
+  .s-hero .bignum b { font-size:46px; }
+  .body { padding:16px 16px 100px; }
+  .card { background:#fff; border-radius:18px; padding:15px 16px; margin-bottom:14px; box-shadow:0 2px 10px rgba(60,35,80,.07); }
+  .card h3 { margin:0 0 12px; font-size:13px; font-weight:700; color:var(--ink); text-transform:uppercase; letter-spacing:.05em; }
+  .strip { display:flex; }
+  .strip .cell { flex:1; text-align:center; }
+  .strip .cell + .cell { border-left:1px solid #eee5f0; }
+  .strip .v { font-size:24px; font-weight:800; color:var(--aub-dk); line-height:1; }
+  .strip .v .u { font-size:13px; font-weight:700; color:#8a76a0; }
+  .strip .l { font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:#8a7d97; margin-top:5px; }
+  .tilewrap { display:flex; gap:14px; align-items:center; }
+  .tiles { display:grid; grid-template-columns:repeat(8,1fr); gap:3px; flex:1; }
+  .t { aspect-ratio:1; border-radius:3px; background:#ece5f2; }
+  .t.v { background:rgba(155,109,214,.42); } .t.c { background:var(--aubergine); }
+  .legend { font-size:11px; color:#6a5c78; display:flex; flex-direction:column; gap:8px; width:92px; }
+  .legend div { display:flex; align-items:center; gap:7px; }
+  .sw { width:13px; height:13px; border-radius:3px; }
+  .sw.e{background:#ece5f2;} .sw.v{background:rgba(155,109,214,.42);} .sw.c{background:var(--aubergine);}
+  .area { display:flex; align-items:center; gap:12px; padding:9px 0; }
+  .area + .area { border-top:1px solid #f1ebf5; }
+  .area-ic { width:34px; height:34px; border-radius:10px; background:#f0e9f7; display:flex; align-items:center; justify-content:center; font-size:17px; }
+  .area-name { font-size:14px; font-weight:600; color:var(--ink); }
+  .area-meta { font-size:11.5px; color:#8a7d97; margin-top:1px; }
+  .chip { margin-left:auto; font-size:10.5px; font-weight:700; padding:4px 9px; border-radius:20px; }
+  .chip.done{background:var(--aubergine);color:#fff;} .chip.part{background:#f0e9f7;color:var(--aub-dk);}
+  .actions { display:flex; gap:10px; }
+  .btn { flex:1; border:none; border-radius:14px; padding:14px; font-size:14px; font-weight:700; cursor:pointer; }
+  .btn.primary{background:var(--orange);color:#180e08;} .btn.ghost{background:#fff;color:var(--aub-dk);border:1.5px solid #e2d6ee;}
+
+  /* ── Tab bar ── */
+  .tabbar { position:absolute; bottom:0; left:0; right:0; height:74px; z-index:50; display:flex; padding-bottom:8px;
+    background:rgba(27,16,32,.72); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border-top:1px solid rgba(255,255,255,.08); }
+  .tab { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; font-size:11px; font-weight:700; color:rgba(255,255,255,.55); cursor:pointer; }
+  .tab.active { color:var(--orange); }
+  .tab svg { width:24px; height:24px; }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="screen">
+    <div class="status light" id="statusBar"><span>9:41</span><span>●●● 📶 93</span></div>
+
+    <!-- MAP TAB -->
+    <div id="mapView" class="view">
+      <div id="map"></div>
+      <button class="repl" onclick="replay()">↺ Replay launch</button>
+    </div>
+
+    <!-- STATS TAB -->
+    <div id="statsView" class="view hidden">
+      <div class="s-hero">
+        <div class="brand"><img src="frontend/icon-512.png" alt=""><span>Roamable</span></div>
+        <div class="cover-stats">
+          <div class="kicker">You've explored</div>
+          <div class="bignum"><b>23</b><span>tiles</span></div>
+          <div class="cover-sub"><b>5</b> fully explored · <b>47 km</b> walked · <b>3.1 km²</b></div>
+        </div>
+      </div>
+      <div class="body">
+        <div class="card">
+          <div class="strip">
+            <div class="cell"><div class="v">23</div><div class="l">Tiles visited</div></div>
+            <div class="cell"><div class="v">5</div><div class="l">Completed</div></div>
+            <div class="cell"><div class="v">3.1<span class="u"> km²</span></div><div class="l">Area explored</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Your tiles</h3>
+          <div class="tilewrap">
+            <div class="tiles" id="tiles"></div>
+            <div class="legend">
+              <div><span class="sw c"></span> Completed</div>
+              <div><span class="sw v"></span> Visited</div>
+              <div><span class="sw e"></span> Not yet</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Places you've been</h3>
+          <div class="area"><div class="area-ic">🌳</div><div><div class="area-name">Monken Hadley Common</div><div class="area-meta">Every corner explored</div></div><span class="chip done">Complete</span></div>
+          <div class="area"><div class="area-ic">⚽</div><div><div class="area-name">Grange Playing Fields</div><div class="area-meta">Claimed area · 0.14 km²</div></div><span class="chip done">Complete</span></div>
+          <div class="area"><div class="area-ic">🏞️</div><div><div class="area-name">Whitings Hill Open Space</div><div class="area-meta">6 of 9 tiles</div></div><span class="chip part">67%</span></div>
+          <div class="area"><div class="area-ic">🌲</div><div><div class="area-name">Coppett's Wood</div><div class="area-meta">Path coverage only</div></div><span class="chip part">28%</span></div>
+        </div>
+        <div class="actions">
+          <button class="btn primary" onclick="showTab('map')">View on map</button>
+          <button class="btn ghost">Claim an area</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- LAUNCH COVER -->
+    <div id="cover">
+      <div class="brand"><img src="frontend/icon-512.png" alt=""><span>Roamable</span></div>
+      <div class="cover-stats">
+        <div class="kicker">Welcome back — you've explored</div>
+        <div class="bignum"><b>23</b><span>tiles</span></div>
+        <div class="cover-sub"><b>5</b> fully explored · <b>47 km</b> walked · <b>3.1 km²</b></div>
+      </div>
+      <div class="swipe"><div class="ch">⌃</div><div class="tx">Swipe up for the map</div></div>
+    </div>
+
+    <!-- TAB BAR -->
+    <div class="tabbar">
+      <div class="tab active" id="tabMap" onclick="showTab('map')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 8 3 16 6 23 3 23 18 16 21 8 18 1 21"/><line x1="8" y1="3" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="21"/></svg>
+        Map
+      </div>
+      <div class="tab" id="tabStats" onclick="showTab('stats')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.2 7.8 13.4 13.4 7.8 16.2 10.6 10.6 16.2 7.8"/></svg>
+        Explored
+      </div>
+    </div>
+
+  </div>
+</div>
+<div class="caption"><b>Swipe up</b> on the photo (drag it upward) to reveal the map · use the bottom tabs to switch · "Replay launch" to see the cover again</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  // Tile grid
+  const pattern=[0,0,1,1,2,0,0,0, 0,1,2,2,2,1,0,0, 0,1,2,2,2,2,1,0, 0,0,1,2,2,1,1,0, 0,0,1,1,1,0,0,0, 0,0,0,1,0,0,0,0];
+  const tw=document.getElementById('tiles');
+  pattern.forEach(s=>{const d=document.createElement('div');d.className='t'+(s===2?' c':s===1?' v':'');tw.appendChild(d);});
+
+  // Leaflet map
+  const map=L.map('map',{zoomControl:false,attributionControl:false}).setView([51.638,-0.203],15);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
+  // a sample claimed area (pale aubergine, below) + orange known route (top)
+  L.polygon([[51.6405,-0.2065],[51.6408,-0.1995],[51.6375,-0.1985],[51.6372,-0.2060]],
+    {color:'#5a3d8a',weight:1.5,fillColor:'#9b6dd6',fillOpacity:0.42}).addTo(map);
+  L.polyline([[51.6335,-0.2075],[51.6360,-0.2050],[51.6388,-0.2028],[51.6408,-0.1995]],
+    {color:'#fff',weight:8,opacity:0.8}).addTo(map);
+  L.polyline([[51.6335,-0.2075],[51.6360,-0.2050],[51.6388,-0.2028],[51.6408,-0.1995]],
+    {color:'#f2872e',weight:5,opacity:0.95}).addTo(map);
+
+  // Tab switching
+  const cover=document.getElementById('cover');
+  const statusBar=document.getElementById('statusBar');
+  function showTab(t){
+    document.getElementById('mapView').classList.toggle('hidden',t!=='map');
+    document.getElementById('statsView').classList.toggle('hidden',t!=='stats');
+    document.getElementById('tabMap').classList.toggle('active',t==='map');
+    document.getElementById('tabStats').classList.toggle('active',t==='stats');
+    statusBar.className='status '+(t==='map'?'dark':'light');
+    if(t==='map') setTimeout(()=>map.invalidateSize(),60);
+  }
+  function replay(){ cover.classList.remove('up'); statusBar.className='status light'; }
+
+  // Swipe-up-to-dismiss on the cover
+  let startY=null, dy=0;
+  cover.addEventListener('pointerdown',e=>{startY=e.clientY;dy=0;cover.style.transition='none';cover.setPointerCapture(e.pointerId);});
+  cover.addEventListener('pointermove',e=>{ if(startY===null)return; dy=e.clientY-startY; if(dy<0) cover.style.transform=`translateY(${dy}px)`; });
+  cover.addEventListener('pointerup',()=>{ if(startY===null)return; cover.style.transition=''; cover.style.transform='';
+    if(dy<-70){ cover.classList.add('up'); statusBar.className='status dark'; setTimeout(()=>map.invalidateSize(),60); } startY=null; });
+  cover.querySelector('.swipe').addEventListener('click',()=>{ cover.classList.add('up'); statusBar.className='status dark'; setTimeout(()=>map.invalidateSize(),60); });
+
+  showTab('map');
+</script>
+</body>
+</html>

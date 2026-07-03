@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>Explored Areas — tap-to-claim prototype</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  html, body { margin: 0; height: 100%; font-family: -apple-system, system-ui, sans-serif; }
+  #map { position: absolute; inset: 0; }
+
+  /* ── Palette (matches the app) ───────────────────────────── */
+  :root {
+    --orange: #f2872e;      /* known routes */
+    --aubergine: #9b6dd6;   /* explored fill */
+    --aubergine-dk: #5a3d8a;
+  }
+
+  /* Info / control panel */
+  #panel {
+    position: absolute; z-index: 1000; top: 10px; left: 10px; right: 10px;
+    background: rgba(43, 22, 52, 0.92); color: #fff; border-radius: 14px;
+    padding: 12px 14px; box-shadow: 0 4px 18px rgba(0,0,0,.35);
+    max-width: 420px;
+  }
+  #panel h1 { font-size: 15px; margin: 0 0 4px; }
+  #panel p  { font-size: 12px; margin: 0 0 8px; opacity: .85; line-height: 1.35; }
+  .stats { display: flex; gap: 14px; margin: 8px 0 10px; }
+  .stat .v { font-size: 20px; font-weight: 700; color: var(--orange); line-height: 1; }
+  .stat .l { font-size: 10px; text-transform: uppercase; letter-spacing: .05em; opacity: .7; margin-top: 3px; }
+  .btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btns button {
+    font-size: 12px; font-weight: 600; border: none; border-radius: 10px;
+    padding: 7px 12px; cursor: pointer; background: #6a4a8a; color: #fff;
+  }
+  .btns button.off { background: #3a2547; color: #cbb8d8; }
+  #loading { font-size: 11px; opacity: .8; margin-top: 6px; min-height: 14px; }
+
+  .leaflet-popup-content { font-size: 12px; line-height: 1.4; }
+  .leaflet-popup-content b { color: var(--aubergine-dk); }
+  .lbl { color: var(--aubergine-dk); font-size: 10px; font-weight: 700;
+         text-shadow: 0 0 3px rgba(255,255,255,.9); white-space: nowrap; text-align: center; }
+</style>
+</head>
+<body>
+<div id="panel">
+  <h1>Explored areas — tap-to-claim prototype</h1>
+  <p>Dashed shapes are open/roamable polygons pulled live from OpenStreetMap. <b>Tap one</b> to mark it explored (pale aubergine). The orange line is a mock known route — notice it always stays on top. Tap an explored field again to un-claim it.</p>
+  <div class="stats">
+    <div class="stat"><div class="v" id="sAvail">0</div><div class="l">Polygons found</div></div>
+    <div class="stat"><div class="v" id="sClaimed">0</div><div class="l">Claimed</div></div>
+    <div class="stat"><div class="v" id="sArea">0</div><div class="l">km² explored</div></div>
+  </div>
+  <div class="btns">
+    <button id="btnOutlines" onclick="toggleOutlines()">Hide available outlines</button>
+    <button id="btnRoute" onclick="toggleRoute()">Hide mock route</button>
+    <button id="btnClip" class="off" onclick="toggleClip()">Clip to route (120m): OFF</button>
+    <button onclick="clearClaims()">Clear claims</button>
+  </div>
+  <div id="loading"></div>
+</div>
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+<script>
+// ── Map ──────────────────────────────────────────────────────
+const map = L.map('map', { zoomControl: true }).setView([51.6385, -0.2035], 16);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19, attribution: '© OpenStreetMap contributors'
+}).addTo(map);
+
+// Panes fix the z-order:  explored fill  <  available outlines  <  known route (top)
+map.createPane('exploredPane').style.zIndex = 410;   // below
+map.createPane('availPane').style.zIndex    = 420;
+map.createPane('labelPane').style.zIndex    = 430;
+map.createPane('routePane').style.zIndex    = 650;   // always on top
+
+const availLayer     = L.layerGroup().addTo(map);
+const exploredLayer  = L.layerGroup().addTo(map);
+const labelLayer     = L.layerGroup().addTo(map);
+const routeLayer     = L.layerGroup().addTo(map);
+
+// ── State ────────────────────────────────────────────────────
+const features = new Map();   // key -> { poly, label, claimed, tags, rings }
+let showOutlines = true;
+let showRoute = true;
+let clipToRoute = false;
+let routeBufferPoly = null;   // turf 120 m buffer around the mock route
+
+// Which OSM values we treat as roamable / worth showing
+const OK_LEISURE = /^(park|pitch|recreation_ground|common|garden|nature_reserve|dog_park|playground|golf_course|track|greenspace)$/;
+const OK_LANDUSE = /^(recreation_ground|grass|meadow|village_green|forest|greenfield|allotments|farmland)$/;
+const OK_NATURAL = /^(heath|grassland|scrub|wood|fell)$/;
+
+// ── Overpass fetch (debounced on move) ───────────────────────
+let fetchTimer = null;
+function scheduleFetch() {
+  clearTimeout(fetchTimer);
+  fetchTimer = setTimeout(fetchPolygons, 350);
+}
+map.on('moveend', scheduleFetch);
+
+const OVERPASS_MIRRORS = [
+  'https://overpass-api.de/api/interpreter',
+  'https://overpass.kumi.systems/api/interpreter',
+  'https://overpass.private.coffee/api/interpreter',
+  'https://maps.mail.ru/osm/tools/overpass/api/interpreter'
+];
+
+async function fetchPolygons() {
+  if (map.getZoom() < 14) { setLoading('Zoom in to load polygons…'); return; }
+  const b = map.getBounds();
+  const bbox = `${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()}`;
+  const q = `[out:json][timeout:25];(` +
+    `way["leisure"](${bbox});` +
+    `way["landuse"~"recreation_ground|grass|meadow|village_green|forest|greenfield|allotments|farmland"](${bbox});` +
+    `way["natural"~"heath|grassland|scrub|wood|fell"](${bbox});` +
+    `relation["leisure"~"park|recreation_ground|common|nature_reserve|golf_course"](${bbox});` +
+    `relation["landuse"~"recreation_ground|meadow|forest|village_green"](${bbox});` +
+    `);out geom;`;
+  setLoading('Loading polygons from OpenStreetMap…');
+  let lastErr = '';
+  for (let i = 0; i < OVERPASS_MIRRORS.length; i++) {
+    const url = OVERPASS_MIRRORS[i];
+    try {
+      const ctrl = new AbortController();
+      const to = setTimeout(() => ctrl.abort(), 12000);   // don't let a slow mirror hang forever
+      setLoading('Loading polygons… (mirror ' + (i + 1) + ' of ' + OVERPASS_MIRRORS.length + ')');
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'data=' + encodeURIComponent(q),
+        signal: ctrl.signal
+      });
+      clearTimeout(to);
+      if (!res.ok) { lastErr = 'HTTP ' + res.status; continue; }
+      const data = await res.json();
+      addElements(data.elements || []);
+      setLoading(i === 0 ? '' : 'Loaded via mirror ' + (i + 1));
+      return;
+    } catch (e) {
+      lastErr = e.message;   // network/CORS — try the next mirror
+    }
+  }
+  setLoading('Could not reach Overpass (' + lastErr + '). If you opened this inside the Claude preview, open the file in Chrome or Safari instead — the preview blocks external requests.');
+}
+
+function classify(tags) {
+  if (!tags) return null;
+  if (tags.leisure && OK_LEISURE.test(tags.leisure)) return tags.leisure;
+  if (tags.landuse && OK_LANDUSE.test(tags.landuse)) return tags.landuse;
+  if (tags.natural && OK_NATURAL.test(tags.natural)) return tags.natural;
+  return null;
+}
+
+function addElements(els) {
+  for (const el of els) {
+    const key = el.type + '/' + el.id;
+    if (features.has(key)) continue;
+    const cat = classify(el.tags);
+    if (!cat) continue;
+
+    // Build ring(s) of [lat,lng]
+    let rings = [];
+    if (el.type === 'way' && el.geometry) {
+      rings = [el.geometry.map(p => [p.lat, p.lon])];
+    } else if (el.type === 'relation' && el.members) {
+      rings = el.members
+        .filter(m => m.role === 'outer' && m.geometry)
+        .map(m => m.geometry.map(p => [p.lat, p.lon]));
+    }
+    rings = rings.filter(r => r && r.length >= 3);
+    if (!rings.length) continue;
+
+    const poly = L.polygon(rings, {
+      pane: 'availPane',
+      color: '#5a3d8a', weight: 1.2, opacity: showOutlines ? 0.8 : 0,
+      dashArray: '4 4',
+      fillColor: '#9b6dd6', fillOpacity: showOutlines ? 0.06 : 0,
+    }).addTo(availLayer);
+
+    const name = (el.tags && el.tags.name) || '(unnamed)';
+    const rec = { poly, claimed: false, tags: el.tags || {}, rings, cat, name, label: null };
+    poly.on('click', () => toggleClaim(key));
+    poly.bindTooltip(name + ' · ' + cat, { sticky: true });
+    features.set(key, rec);
+  }
+  refreshStats();
+}
+
+// ── Clip helpers (Turf) ──────────────────────────────────────
+function buildRouteBuffer() {
+  try {
+    const line = turf.lineString(mockRoute.map(([la, ln]) => [ln, la]));
+    routeBufferPoly = turf.buffer(line, 120, { units: 'meters' });
+  } catch (e) { routeBufferPoly = null; }
+}
+function turfToLatLngs(feat) {
+  const g = feat.geometry, out = [];
+  const polys = g.type === 'MultiPolygon' ? g.coordinates : [g.coordinates];
+  for (const poly of polys) for (const ring of poly) out.push(ring.map(([ln, la]) => [la, ln]));
+  return out;
+}
+// Intersect a field's rings with the route buffer → the part actually "reached".
+function clipRingsToRoute(rings) {
+  if (!routeBufferPoly) return null;
+  const out = [];
+  for (const r of rings) {
+    try {
+      const c = r.map(([la, ln]) => [ln, la]);
+      if (c.length < 3) continue;
+      if (c[0][0] !== c[c.length - 1][0] || c[0][1] !== c[c.length - 1][1]) c.push(c[0]);
+      const clipped = turf.intersect(turf.polygon([c]), routeBufferPoly);
+      if (clipped) out.push(...turfToLatLngs(clipped));
+    } catch (e) { /* skip bad ring */ }
+  }
+  return out.length ? out : null;
+}
+function drawFill(f, rings) {
+  f.fill = L.polygon(rings, {
+    pane: 'exploredPane',
+    color: '#5a3d8a', weight: 1.5, opacity: 0.9,
+    fillColor: '#9b6dd6', fillOpacity: 0.42,
+  }).addTo(exploredLayer);
+  const t = f.tags;
+  const rows = Object.entries(t).slice(0, 8).map(([k, v]) => `${k}=<b>${v}</b>`).join('<br>');
+  f.fill.bindPopup(`<b>${f.name}</b><br>${rows || '(no tags)'}<br>` +
+    `<i>${(f.claimedArea / 1e6).toFixed(2)} km²${f.clipped ? ' (clipped to route)' : ''}</i>`);
+}
+
+// ── Claim / un-claim ─────────────────────────────────────────
+function toggleClaim(key) {
+  const f = features.get(key);
+  if (!f) return;
+  f.claimed = !f.claimed;
+  if (f.claimed) {
+    let rings = f.rings; f.clipped = false;
+    if (clipToRoute) {
+      const c = clipRingsToRoute(f.rings);
+      if (!c) { f.claimed = false; flash('No walked paths within 120 m — nothing to claim here'); refreshStats(); return; }
+      rings = c; f.clipped = true;
+    }
+    f.claimedArea = area(rings);
+    drawFill(f, rings);
+  } else if (f.fill) {
+    exploredLayer.removeLayer(f.fill);
+    f.fill = null; f.claimedArea = 0;
+  }
+  refreshStats();
+}
+
+// Re-render existing claims when the clip toggle changes.
+function reclaimAll() {
+  for (const f of features.values()) {
+    if (!f.claimed) continue;
+    if (f.fill) { exploredLayer.removeLayer(f.fill); f.fill = null; }
+    let rings = f.rings; f.clipped = false;
+    if (clipToRoute) {
+      const c = clipRingsToRoute(f.rings);
+      if (!c) { f.claimed = false; f.claimedArea = 0; continue; }
+      rings = c; f.clipped = true;
+    }
+    f.claimedArea = area(rings);
+    drawFill(f, rings);
+  }
+  refreshStats();
+}
+
+function clearClaims() {
+  for (const f of features.values()) {
+    if (f.fill) { exploredLayer.removeLayer(f.fill); f.fill = null; }
+    f.claimed = false;
+  }
+  refreshStats();
+}
+
+// ── Mock known route (always top layer) ──────────────────────
+// A rough orange path threading the fields — stands in for real walked routes.
+const mockRoute = [
+  [51.6335, -0.2075], [51.6350, -0.2060], [51.6365, -0.2050],
+  [51.6378, -0.2040], [51.6388, -0.2028], [51.6398, -0.2010],
+  [51.6408, -0.1995], [51.6418, -0.1980]
+];
+let routeCasing, routeLine;
+function drawRoute() {
+  routeCasing = L.polyline(mockRoute, { pane: 'routePane', color: '#fff', weight: 8, opacity: 0.75, lineCap: 'round', lineJoin: 'round' }).addTo(routeLayer);
+  routeLine   = L.polyline(mockRoute, { pane: 'routePane', color: '#f2872e', weight: 5, opacity: 0.95, lineCap: 'round', lineJoin: 'round' })
+    .bindPopup('✓ Known route (mock)').addTo(routeLayer);
+}
+drawRoute();
+buildRouteBuffer();
+
+// ── Controls ─────────────────────────────────────────────────
+function toggleClip() {
+  clipToRoute = !clipToRoute;
+  const btn = document.getElementById('btnClip');
+  btn.textContent = 'Clip to route (120m): ' + (clipToRoute ? 'ON' : 'OFF');
+  btn.classList.toggle('off', !clipToRoute);
+  reclaimAll();
+}
+function toggleOutlines() {
+  showOutlines = !showOutlines;
+  for (const f of features.values()) {
+    f.poly.setStyle({ opacity: showOutlines ? 0.8 : 0, fillOpacity: showOutlines ? 0.06 : 0 });
+  }
+  const btn = document.getElementById('btnOutlines');
+  btn.textContent = showOutlines ? 'Hide available outlines' : 'Show available outlines';
+  btn.classList.toggle('off', !showOutlines);
+}
+function toggleRoute() {
+  showRoute = !showRoute;
+  if (showRoute) { drawRoute(); }
+  else { routeLayer.clearLayers(); }
+  const btn = document.getElementById('btnRoute');
+  btn.textContent = showRoute ? 'Hide mock route' : 'Show mock route';
+  btn.classList.toggle('off', !showRoute);
+}
+
+// ── Stats + helpers ──────────────────────────────────────────
+function refreshStats() {
+  let claimed = 0, m2 = 0;
+  for (const f of features.values()) if (f.claimed) { claimed++; m2 += f.claimedArea || 0; }
+  document.getElementById('sAvail').textContent   = features.size;
+  document.getElementById('sClaimed').textContent = claimed;
+  document.getElementById('sArea').textContent    = (m2 / 1e6).toFixed(2);
+}
+function setLoading(t) { document.getElementById('loading').textContent = t; }
+function flash(msg) { setLoading(msg); setTimeout(() => { if (document.getElementById('loading').textContent === msg) setLoading(''); }, 2600); }
+
+// Approx polygon area in m² (shoelace on an equirectangular projection).
+function area(rings) {
+  let total = 0;
+  for (const ring of rings) {
+    if (!ring || ring.length < 3) continue;
+    const lat0 = ring[0][0] * Math.PI / 180;
+    const mPerDegLat = 111320;
+    const mPerDegLng = 111320 * Math.cos(lat0);
+    let a = 0;
+    for (let i = 0; i < ring.length; i++) {
+      const [y1, x1] = ring[i];
+      const [y2, x2] = ring[(i + 1) % ring.length];
+      a += (x1 * mPerDegLng) * (y2 * mPerDegLat) - (x2 * mPerDegLng) * (y1 * mPerDegLat);
+    }
+    total += Math.abs(a) / 2;
+  }
+  return total;
+}
+
+// initial load
+fetchPolygons();
+</script>
+</body>
+</html>
