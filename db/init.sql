@@ -112,6 +112,22 @@ CREATE TABLE strava_oauth_states (
     expires_at  TIMESTAMPTZ NOT NULL
 );
 
+CREATE TABLE claimed_areas (
+    id          SERIAL PRIMARY KEY,
+    user_id     TEXT,
+    osm_type    TEXT,
+    osm_id      BIGINT,
+    name        TEXT,
+    kind        TEXT,
+    area        GEOMETRY(MultiPolygon, 4326) NOT NULL,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_claimed_areas_geom ON claimed_areas USING GIST (area);
+CREATE INDEX idx_claimed_areas_user ON claimed_areas (user_id);
+CREATE UNIQUE INDEX idx_claimed_areas_user_osm
+    ON claimed_areas (user_id, osm_type, osm_id) WHERE osm_id IS NOT NULL;
+
 CREATE OR REPLACE FUNCTION update_updated_at()
 RETURNS TRIGGER AS $$
 BEGIN

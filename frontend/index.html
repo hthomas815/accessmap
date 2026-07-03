@@ -68,6 +68,17 @@
     .exp-btn.primary { background: #f2872e; color: #180e08; }
     .exp-btn.ghost { background: #fff; color: #5a3d8a; border: 1.5px solid #e2d6ee; }
 
+    /* Focused explored-map sub-view */
+    #exploredMapBanner { display: none; position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
+      z-index: 1600; align-items: center; gap: 6px; background: rgba(43,22,52,.94); color: #fff;
+      padding: 7px 16px 7px 8px; border-radius: 22px; box-shadow: 0 4px 14px rgba(0,0,0,.32); }
+    #exploredMapBanner.show { display: flex; }
+    #exploredMapBanner .emb-back { background: none; border: none; color: #fff; font-size: 24px;
+      line-height: 1; cursor: pointer; padding: 0 4px; font-family: inherit; }
+    #exploredMapBanner span { font-size: 14px; font-weight: 700; }
+    body.exploring #searchBar, body.exploring #searchResults, body.exploring #fab,
+    body.exploring #routeBtn, body.exploring #targetBtn { display: none !important; }
+
     /* ── FAB — drop marker at current location ── */
     #fab {
       position: absolute;
@@ -1574,8 +1585,8 @@
   </div>
   <div id="splashReady">
     <div class="cover-kick">Welcome back — you've explored</div>
-    <div class="cover-big"><b id="coverBig">0.0</b><span>km</span></div>
-    <div class="cover-sub">on foot · keep roaming</div>
+    <div class="cover-big"><b id="coverBig">—</b><span>tiles</span></div>
+    <div class="cover-sub" id="coverSub">keep roaming</div>
     <div class="swipe"><div class="ch">⌃</div><div class="tx">Swipe up for the map</div></div>
   </div>
 </div>
@@ -1619,8 +1630,8 @@
     <div class="eb"><img src="/static/icon-512.png" alt="" /><span>Roamable</span></div>
     <div class="eh-stats">
       <div class="exp-kicker">You've explored</div>
-      <div class="exp-big"><b id="expBigNum">0.0</b><span>km</span></div>
-      <div class="exp-sub">Distance explored on foot</div>
+      <div class="exp-big"><b id="expBigNum">—</b><span>tiles</span></div>
+      <div class="exp-sub" id="expSub">Areas you've set foot in</div>
     </div>
   </div>
   <div class="exp-body">
@@ -1652,6 +1663,12 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.2 7.8 13.4 13.4 7.8 16.2 10.6 10.6 16.2 7.8"/></svg>
     Explored
   </button>
+</div>
+
+<!-- Focused explored-map banner (shown only in the "Show on map" sub-view) -->
+<div id="exploredMapBanner">
+  <button class="emb-back" onclick="switchTab('explored')" title="Back to progress">‹</button>
+  <span>Tap an area to claim it</span>
 </div>
 
 <div id="authOverlay">
@@ -1958,14 +1975,15 @@ function armLaunchCover() {
   enableCoverSwipe();
 }
 
+function setText(id, v) { const e = document.getElementById(id); if (e) e.textContent = v; }
+
 async function updateCoverStats() {
   try {
-    const res = await apiFetch(`${API}/tracks/stats`);
+    const res = await apiFetch(`${API}/tracks/tiles`);
     if (res.ok) {
-      const m = await res.json();
-      const km = m.km_me || 0;
-      const b = document.getElementById("coverBig");
-      if (b) b.textContent = km.toFixed(1);
+      const t = await res.json();
+      setText("coverBig", t.visited);
+      setText("coverSub", `${t.completed} fully explored · keep roaming`);
     }
   } catch (_) {}
 }
@@ -1997,9 +2015,26 @@ function enableCoverSwipe() {
 }
 
 // ── Map / Explored tab switching ──
+// Views: "map" (normal map tab) · "explored" (dashboard) · "exploredmap"
+// (a focused map that always highlights explored areas, reached from the
+// dashboard's "Show on map"). The Explored tab stays highlighted for both
+// "explored" and "exploredmap".
 let activeTab = "map";
+let _coverageForced = false;   // did we auto-enable coverage for the explored map?
+
+function clearForcedCoverage() {
+  if (_coverageForced && typeof coverageVisible !== "undefined" && coverageVisible
+      && typeof toggleCoverage === "function") {
+    toggleCoverage();
+  }
+  _coverageForced = false;
+}
+
 function switchTab(t) {
   activeTab = t;
+  clearForcedCoverage();
+  document.body.classList.remove("exploring");
+  document.getElementById("exploredMapBanner")?.classList.remove("show");
   document.getElementById("exploredView")?.classList.toggle("show", t === "explored");
   document.getElementById("tabMapBtn")?.classList.toggle("active", t === "map");
   document.getElementById("tabExpBtn")?.classList.toggle("active", t === "explored");
@@ -2010,32 +2045,48 @@ function switchTab(t) {
   }
 }
 
+// Enter the focused explored-map from the dashboard.
+function enterExploredMap() {
+  activeTab = "exploredmap";
+  document.body.classList.add("exploring");
+  document.getElementById("exploredView")?.classList.remove("show");
+  document.getElementById("exploredMapBanner")?.classList.add("show");
+  document.getElementById("tabExpBtn")?.classList.add("active");
+  document.getElementById("tabMapBtn")?.classList.remove("active");
+  if (typeof coverageVisible !== "undefined" && !coverageVisible
+      && typeof toggleCoverage === "function") {
+    toggleCoverage();
+    _coverageForced = true;
+  }
+  setTimeout(() => { try { map.invalidateSize(); } catch (_) {} }, 60);
+}
+
 async function refreshExploredDashboard() {
   try {
-    const res = await apiFetch(`${API}/tracks/stats`);
-    if (res.ok) {
-      const m = await res.json();
-      const km = (m.km_me || 0).toFixed(1);
-      const big = document.getElementById("expBigNum");
-      const strip = document.getElementById("expKm");
-      if (big) big.textContent = km;
-      if (strip) strip.textContent = km;
-    }
+    const [tilesRes, statsRes] = await Promise.all([
+      apiFetch(`${API}/tracks/tiles`),
+      apiFetch(`${API}/tracks/stats`),
+    ]);
+    let visited = "—", completed = "—", km = "0.0";
+    if (tilesRes.ok) { const t = await tilesRes.json(); visited = t.visited; completed = t.completed; }
+    if (statsRes.ok) { const m = await statsRes.json(); km = (m.km_me || 0).toFixed(1); }
+    setText("expBigNum", visited);
+    setText("expTilesV", visited);
+    setText("expTilesC", completed);
+    setText("expKm", km);
+    setText("expSub", `${completed} fully explored · ${km} km on foot`);
   } catch (_) {}
 }
 
-// Turn coverage on and jump to the map to view it.
+// "Show on map" → the focused explored-map (coverage always highlighted).
 function exploredShowOnMap() {
-  if (typeof coverageVisible !== "undefined" && !coverageVisible && typeof toggleCoverage === "function") {
-    toggleCoverage();
-  }
-  switchTab("map");
+  enterExploredMap();
 }
 
-// Placeholder until Phase 2 wires real polygon claiming.
+// "Claim an area" → open the explored-map and prompt the tap-to-claim gesture.
 function startAreaClaim() {
-  switchTab("map");
-  if (typeof showToast === "function") showToast("Area claiming is coming next", 2600);
+  enterExploredMap();
+  if (typeof showToast === "function") showToast("Tap any park or field to claim it as explored", 3200);
 }
 
 function isSignedIn() {
@@ -2109,6 +2160,8 @@ function clearMapData() {
   Object.keys(mapMarkers).forEach(id => delete mapMarkers[id]);
   coverageLayer.clearLayers();
   gridLayer.clearLayers();
+  claimedAreasLayer.clearLayers();
+  claimedFeatures = [];
   allTrackPoints = [];
   totalExploredKm = 0;
   coverageStatsModel = { km_me: 0, km_all: 0 };
@@ -3017,6 +3070,7 @@ map.on("mouseup touchend mousemove touchmove", () => clearTimeout(pressTimer));
 // ── Map click (route mode / place-marker mode) ────────────────────────────────
 
 map.on("click", e => {
+  if (activeTab === "exploredmap") { handleAreaClaimTap(e.latlng.lat, e.latlng.lng); return; }
   if (addingStop) { insertRouteStop(e.latlng.lat, e.latlng.lng); return; }
   if (routeMode) { handleRouteClick(e.latlng.lat, e.latlng.lng); return; }
   if (placeMarkerMode) {
@@ -4280,6 +4334,12 @@ async function deleteMarker(id) {
 let coverageVisible = false;
 const coverageLayer = L.layerGroup(); // not added to map until toggled on
 
+// Manually-claimed explored areas — pale aubergine, on a pane BELOW the orange routes.
+map.createPane("claimedPane");
+map.getPane("claimedPane").style.zIndex = 350;
+const claimedAreasLayer = L.layerGroup();
+let claimedFeatures = [];   // [{id, osm_type, osm_id, name, rings, layer}]
+
 // ── Coverage grid state ───────────────────────────────────────────────────────
 let gridVisible    = false;
 const gridLayer    = L.layerGroup();
@@ -4325,10 +4385,15 @@ function toggleCoverage() {
   coverageVisible = !coverageVisible;
   if (coverageVisible) {
     coverageLayer.addTo(map);
+    claimedAreasLayer.addTo(map);
     loadTracks();
     loadDistanceStats();
+    loadClaimedAreas();
   } else {
     map.removeLayer(coverageLayer);
+    map.removeLayer(claimedAreasLayer);
+    claimedAreasLayer.clearLayers();
+    claimedFeatures = [];
     hideCoverageStats();
     if (gridVisible) {
       gridVisible = false;
@@ -4610,7 +4675,158 @@ async function loadTracks() {
       });
     });
     if (gridVisible) drawGrid();
+    loadClaimedAreas();
   } catch (_) {}
+}
+
+// ── Claimed areas (manual tap-to-claim of open spaces) ──────────────────────
+const AREA_OVERPASS_MIRRORS = [
+  "https://overpass-api.de/api/interpreter",
+  "https://overpass.kumi.systems/api/interpreter",
+  "https://overpass.private.coffee/api/interpreter",
+];
+const AREA_OK_LEISURE = /^(park|pitch|recreation_ground|common|garden|nature_reserve|dog_park|playground|golf_course|track|greenspace)$/;
+const AREA_OK_LANDUSE = /^(recreation_ground|grass|meadow|village_green|forest|greenfield|allotments|farmland)$/;
+const AREA_OK_NATURAL = /^(heath|grassland|scrub|wood|fell)$/;
+
+function areaClassify(tags) {
+  if (!tags) return null;
+  if (tags.leisure && AREA_OK_LEISURE.test(tags.leisure)) return tags.leisure;
+  if (tags.landuse && AREA_OK_LANDUSE.test(tags.landuse)) return tags.landuse;
+  if (tags.natural && AREA_OK_NATURAL.test(tags.natural)) return tags.natural;
+  return null;
+}
+
+async function areaOverpass(q) {
+  for (const url of AREA_OVERPASS_MIRRORS) {
+    try {
+      const ctrl = new AbortController();
+      const to = setTimeout(() => ctrl.abort(), 12000);
+      const res = await fetch(url, { method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "data=" + encodeURIComponent(q), signal: ctrl.signal });
+      clearTimeout(to);
+      if (res.ok) return await res.json();
+    } catch (_) {}
+  }
+  return null;
+}
+
+// outer rings as [[lat,lng],...] for containment + area estimation
+function areaElementRings(el) {
+  if (el.type === "way" && el.geometry)
+    return [el.geometry.map(p => [p.lat, p.lon])];
+  if (el.type === "relation" && el.members)
+    return el.members.filter(m => m.role === "outer" && m.geometry)
+      .map(m => m.geometry.map(p => [p.lat, p.lon]));
+  return [];
+}
+function areaElementGeoJSON(el) {
+  const close = r => {
+    if (r.length && (r[0][0] !== r[r.length-1][0] || r[0][1] !== r[r.length-1][1])) r.push(r[0]);
+    return r;
+  };
+  if (el.type === "way" && el.geometry)
+    return { type: "Polygon", coordinates: [close(el.geometry.map(p => [p.lon, p.lat]))] };
+  const outers = (el.members || []).filter(m => m.role === "outer" && m.geometry)
+    .map(m => [close(m.geometry.map(p => [p.lon, p.lat]))]);
+  return { type: "MultiPolygon", coordinates: outers };
+}
+function geojsonOuterRings(geo) {
+  const out = [];
+  if (geo.type === "Polygon") out.push(geo.coordinates[0].map(([ln, la]) => [la, ln]));
+  else if (geo.type === "MultiPolygon") geo.coordinates.forEach(poly => out.push(poly[0].map(([ln, la]) => [la, ln])));
+  return out;
+}
+function ringArea(ring) {
+  if (!ring || ring.length < 3) return 0;
+  const mLat = 111320, mLng = 111320 * Math.cos(ring[0][0] * Math.PI / 180);
+  let a = 0;
+  for (let i = 0; i < ring.length; i++) {
+    const [y1, x1] = ring[i], [y2, x2] = ring[(i + 1) % ring.length];
+    a += (x1 * mLng) * (y2 * mLat) - (x2 * mLng) * (y1 * mLat);
+  }
+  return Math.abs(a) / 2;
+}
+function ringsArea(rings) { return rings.reduce((s, r) => s + ringArea(r), 0); }
+function pointInRing(lat, lng, ring) {
+  let inside = false;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const yi = ring[i][0], xi = ring[i][1], yj = ring[j][0], xj = ring[j][1];
+    if (((yi > lat) !== (yj > lat)) && (lng < (xj - xi) * (lat - yi) / (yj - yi) + xi)) inside = !inside;
+  }
+  return inside;
+}
+function pointInRings(lat, lng, rings) { return rings.some(r => pointInRing(lat, lng, r)); }
+
+async function loadClaimedAreas() {
+  if (!coverageVisible || !isSignedIn()) return;
+  const b = map.getBounds();
+  try {
+    const res = await apiFetch(`${API}/areas?min_lat=${b.getSouth()}&min_lng=${b.getWest()}&max_lat=${b.getNorth()}&max_lng=${b.getEast()}`);
+    if (!res.ok) return;
+    claimedAreasLayer.clearLayers();
+    claimedFeatures = [];
+    (await res.json()).forEach(addClaimedFeature);
+  } catch (_) {}
+}
+function addClaimedFeature(a) {
+  let geo;
+  try { geo = JSON.parse(a.geojson); } catch (_) { return; }
+  const layer = L.geoJSON(geo, { pane: "claimedPane", interactive: false,
+    style: { color: "#5a3d8a", weight: 1.4, opacity: 0.85, fillColor: "#9b6dd6", fillOpacity: 0.40 } })
+    .addTo(claimedAreasLayer);
+  claimedFeatures.push({ id: a.id, osm_type: a.osm_type, osm_id: a.osm_id, name: a.name,
+    rings: geojsonOuterRings(geo), layer });
+}
+
+// Tap handler used while in the focused explored-map: claim the open area under
+// the finger, or un-claim it if it's already claimed.
+async function handleAreaClaimTap(lat, lng) {
+  const hit = claimedFeatures.find(f => pointInRings(lat, lng, f.rings));
+  if (hit) {
+    try {
+      if (hit.osm_id != null) await apiFetch(`${API}/areas/by-osm/${hit.osm_type}/${hit.osm_id}`, { method: "DELETE" });
+      else await apiFetch(`${API}/areas/${hit.id}`, { method: "DELETE" });
+    } catch (_) {}
+    claimedAreasLayer.removeLayer(hit.layer);
+    claimedFeatures = claimedFeatures.filter(f => f !== hit);
+    showToast(`Removed ${hit.name || "area"}`, 1800);
+    return;
+  }
+  showToast("Finding the area…", 1400);
+  const d = 0.0009;
+  const bbox = `${lat - d},${lng - d},${lat + d},${lng + d}`;
+  const q = `[out:json][timeout:25];(` +
+    `way["leisure"](${bbox});` +
+    `way["landuse"~"recreation_ground|grass|meadow|village_green|forest|greenfield|allotments|farmland"](${bbox});` +
+    `way["natural"~"heath|grassland|scrub|wood|fell"](${bbox});` +
+    `relation["leisure"~"park|recreation_ground|common|nature_reserve|golf_course"](${bbox});` +
+    `relation["landuse"~"recreation_ground|meadow|forest|village_green"](${bbox});` +
+    `);out geom;`;
+  const data = await areaOverpass(q);
+  if (!data) { showToast("Couldn't reach the map database — try again", 2400); return; }
+  let best = null, bestA = Infinity;
+  for (const el of (data.elements || [])) {
+    const kind = areaClassify(el.tags);
+    if (!kind) continue;
+    const rings = areaElementRings(el);
+    if (!rings.length || !pointInRings(lat, lng, rings)) continue;
+    const ar = ringsArea(rings);
+    if (ar < bestA) { bestA = ar; best = { el, kind }; }
+  }
+  if (!best) { showToast("No open area found right here", 2200); return; }
+  const payload = { osm_type: best.el.type, osm_id: best.el.id,
+    name: (best.el.tags && best.el.tags.name) || null, kind: best.kind,
+    geojson: JSON.stringify(areaElementGeoJSON(best.el)) };
+  try {
+    const res = await apiFetch(`${API}/areas`, { method: "POST",
+      headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+    if (!res.ok) { showToast("Couldn't save that area", 2200); return; }
+    const saved = await res.json();
+    addClaimedFeature(saved);
+    showToast(`Claimed ${saved.name || payload.name || "area"}`, 2200);
+  } catch (_) { showToast("Couldn't save that area", 2200); }
 }
 
 // ── Coverage grid ─────────────────────────────────────────────────────────────

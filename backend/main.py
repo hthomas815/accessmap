@@ -12,6 +12,7 @@ from routers.markers import router as markers_router
 from routers.routes import router as routes_router
 from routers.tracks import router as tracks_router
 from routers.strava import router as strava_router
+from routers.areas import router as areas_router
 
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://access:access@localhost:5432/accessmap")
 SUPABASE_URL = os.getenv("SUPABASE_URL", "").rstrip("/")
@@ -155,6 +156,30 @@ async def migrate_db(pool: asyncpg.Pool) -> None:
                 expires_at  TIMESTAMPTZ NOT NULL
             );
         """)
+        # v11: manually-claimed explored areas (open spaces/fields the user has roamed).
+        # Stored as MultiPolygon so both single OSM ways and multipolygon relations fit.
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS claimed_areas (
+                id          SERIAL PRIMARY KEY,
+                user_id     TEXT,
+                osm_type    TEXT,
+                osm_id      BIGINT,
+                name        TEXT,
+                kind        TEXT,
+                area        GEOMETRY(MultiPolygon, 4326) NOT NULL,
+                created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+            );
+        """)
+        await conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_claimed_areas_geom ON claimed_areas USING GIST (area);"
+        )
+        await conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_claimed_areas_user ON claimed_areas (user_id);"
+        )
+        await conn.execute(
+            "CREATE UNIQUE INDEX IF NOT EXISTS idx_claimed_areas_user_osm "
+            "ON claimed_areas (user_id, osm_type, osm_id) WHERE osm_id IS NOT NULL;"
+        )
 
 
 async def create_pool_with_retry(url: str, retries: int = 10, delay: float = 3.0):
@@ -194,6 +219,7 @@ app.include_router(markers_router, prefix="/api")
 app.include_router(routes_router, prefix="/api")
 app.include_router(tracks_router, prefix="/api")
 app.include_router(strava_router, prefix="/api")
+app.include_router(areas_router, prefix="/api")
 
 if FRONTEND_DIR.exists():
     app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")

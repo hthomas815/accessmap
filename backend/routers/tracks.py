@@ -204,13 +204,61 @@ async def track_stats(
     return {"km_me": round(float(km_me), 2), "km_all": round(float(km_all), 2)}
 
 
+@router.get("/tiles")
+async def tile_stats(
+    db: Connection = Depends(get_db),
+    user: AuthUser = Depends(get_current_user),
+):
+    """Explorer-tile progress. A tile is a grid cell (matches the frontend:
+    0.01° x 0.016°, ~1 km, split 5x5 into ~220 m sub-cells). 'visited' = at
+    least one sub-cell covered; 'completed' = all 25 covered. Coverage is the
+    union of the user's path buffers (5 m either side) and claimed areas."""
+    row = await db.fetchrow(
+        """
+        WITH cov AS (
+            SELECT ST_Union(g) AS geom FROM (
+                SELECT ST_Buffer(path::geography, 5)::geometry AS g
+                  FROM tracks WHERE user_id = $1 AND path IS NOT NULL
+                UNION ALL
+                SELECT area FROM claimed_areas WHERE user_id = $1
+            ) s
+        ),
+        env AS (SELECT geom, ST_Envelope(geom) AS e FROM cov WHERE geom IS NOT NULL),
+        grid AS (
+            SELECT sr, sc
+            FROM env,
+                 generate_series(floor((ST_YMin(e) - $2) / $4)::int,
+                                 floor((ST_YMax(e) - $2) / $4)::int) AS sr,
+                 generate_series(floor((ST_XMin(e) - $3) / $5)::int,
+                                 floor((ST_XMax(e) - $3) / $5)::int) AS sc
+        ),
+        covered AS (
+            SELECT (g.sr / 5) AS crow, (g.sc / 5) AS ccol
+            FROM grid g, env
+            WHERE ST_Intersects(env.geom, ST_MakeEnvelope(
+                $3 + g.sc * $5, $2 + g.sr * $4,
+                $3 + (g.sc + 1) * $5, $2 + (g.sr + 1) * $4, 4326))
+        ),
+        cells AS (SELECT crow, ccol, COUNT(*) AS subs FROM covered GROUP BY crow, ccol)
+        SELECT
+            COALESCE((SELECT COUNT(*) FROM cells), 0) AS visited,
+            COALESCE((SELECT COUNT(*) FROM cells WHERE subs >= 25), 0) AS completed
+        """,
+        user.id, 49.0, -11.0, 0.002, 0.0032,
+    )
+    return {
+        "visited": int(row["visited"] or 0),
+        "completed": int(row["completed"] or 0),
+    }
+
+
 @router.get("/coverage-grid")
 async def coverage_grid(
     min_lat: float, min_lng: float, max_lat: float, max_lng: float,
     origin_lat: float, origin_lng: float, cell_lat: float, cell_lng: float,
     db: Connection = Depends(get_db),
     user: AuthUser = Depends(get_current_user),
-    buffer_m: float = Query(10.0, ge=1, le=100),
+    buffer_m: float = Query(5.0, ge=1, le=100),
 ):
     """Per-cell coverage as the fraction of each grid cell's area that lies within
     `buffer_m` metres of one of the user's paths (a true area measure, not a
