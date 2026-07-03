@@ -262,10 +262,11 @@ async def coverage_grid(
     user: AuthUser = Depends(get_current_user),
     buffer_m: float = Query(5.0, ge=1, le=100),
 ):
-    """Per-cell coverage as the fraction of each grid cell's area that lies within
-    `buffer_m` metres of one of the user's paths (a true area measure, not a
-    point-in-cell guess). Cells are aligned to the same origin/size the frontend
-    uses so labels line up. Only cells with >0 coverage are returned."""
+    """Per-cell coverage as the fraction of each cell's 25 sub-cells (~220 m) that
+    contain any of the user's coverage — path buffers (`buffer_m` either side) OR
+    claimed areas. This matches the tile 'visited/completed' model, so a path
+    crossing a cell reads as a meaningful %, not ~0% (a thin line covers almost
+    no *area* of a 1 km cell). Cells align to the frontend origin/size."""
     # Safety: don't attempt huge grids (frontend only asks when zoomed in anyway)
     n_rows = int((max_lat - origin_lat) // cell_lat) - int((min_lat - origin_lat) // cell_lat) + 1
     n_cols = int((max_lng - origin_lng) // cell_lng) - int((min_lng - origin_lng) // cell_lng) + 1
@@ -279,29 +280,37 @@ async def coverage_grid(
                  $7::float8 AS c_lat, $8::float8 AS c_lng
         ),
         cov AS (
-          SELECT ST_Buffer(ST_Union(path)::geography, $9)::geometry AS g
-          FROM tracks WHERE user_id = $10
+          SELECT ST_Union(g) AS g FROM (
+            SELECT ST_Buffer(path::geography, $9)::geometry AS g
+              FROM tracks WHERE user_id = $10 AND path IS NOT NULL
+            UNION ALL
+            SELECT area FROM claimed_areas WHERE user_id = $10
+          ) s
         ),
         b AS (
           SELECT floor(($1 - o_lat)/c_lat)::int AS row_min,
-                 floor(($2 - o_lat)/c_lat)::int AS row_max,
-                 floor(($3 - o_lng)/c_lng)::int AS col_min,
+                 floor(($3 - o_lat)/c_lat)::int AS row_max,
+                 floor(($2 - o_lng)/c_lng)::int AS col_min,
                  floor(($4 - o_lng)/c_lng)::int AS col_max
           FROM p
         ),
-        cells AS (
+        subs AS (
           SELECT r AS row_idx, c AS col_idx,
-                 ST_MakeEnvelope(p.o_lng + c*p.c_lng, p.o_lat + r*p.c_lat,
-                                 p.o_lng + (c+1)*p.c_lng, p.o_lat + (r+1)*p.c_lat, 4326) AS cell
+                 ST_MakeEnvelope(
+                   p.o_lng + c*p.c_lng + sc*(p.c_lng/5),
+                   p.o_lat + r*p.c_lat + sr*(p.c_lat/5),
+                   p.o_lng + c*p.c_lng + (sc+1)*(p.c_lng/5),
+                   p.o_lat + r*p.c_lat + (sr+1)*(p.c_lat/5), 4326) AS scell
           FROM p, b
           CROSS JOIN LATERAL generate_series(b.row_min, b.row_max) AS r
           CROSS JOIN LATERAL generate_series(b.col_min, b.col_max) AS c
+          CROSS JOIN generate_series(0, 4) AS sr
+          CROSS JOIN generate_series(0, 4) AS sc
         )
-        SELECT cells.row_idx, cells.col_idx,
-               ST_Area(ST_Intersection(cov.g, cells.cell)::geography)
-                 / NULLIF(ST_Area(cells.cell::geography), 0) AS frac
-        FROM cells, cov
-        WHERE cov.g IS NOT NULL AND ST_Intersects(cov.g, cells.cell)
+        SELECT subs.row_idx, subs.col_idx, COUNT(*) / 25.0 AS frac
+        FROM subs, cov
+        WHERE cov.g IS NOT NULL AND ST_Intersects(cov.g, subs.scell)
+        GROUP BY subs.row_idx, subs.col_idx
         """,
         min_lat, min_lng, max_lat, max_lng,
         origin_lat, origin_lng, cell_lat, cell_lng, buffer_m, user.id,
