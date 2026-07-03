@@ -242,13 +242,15 @@ async def tile_stats(
         cells AS (SELECT crow, ccol, COUNT(*) AS subs FROM covered GROUP BY crow, ccol)
         SELECT
             COALESCE((SELECT COUNT(*) FROM cells), 0) AS visited,
-            COALESCE((SELECT COUNT(*) FROM cells WHERE subs >= 25), 0) AS completed
+            COALESCE((SELECT COUNT(*) FROM cells WHERE subs >= 25), 0) AS completed,
+            COALESCE((SELECT ST_Area(geom::geography) FROM cov WHERE geom IS NOT NULL), 0) / 1e6 AS km2
         """,
         user.id, 49.0, -11.0, 0.002, 0.0032,
     )
     return {
         "visited": int(row["visited"] or 0),
         "completed": int(row["completed"] or 0),
+        "km2": round(float(row["km2"] or 0), 2),
     }
 
 

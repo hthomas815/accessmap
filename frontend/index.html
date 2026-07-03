@@ -43,7 +43,7 @@
     .tab-btn svg { width: 24px; height: 24px; }
 
     /* Explored dashboard */
-    .exp-hero { position: relative; height: 210px; color: #fff;
+    .exp-hero { position: relative; height: 340px; color: #fff;
       background: linear-gradient(180deg, rgba(20,12,7,.25) 0%, rgba(30,16,40,.30) 50%, rgba(30,16,40,.9) 100%),
         url('/static/background.jpg') center 30% / cover no-repeat; }
     .exp-hero .eb { position: absolute; top: 16px; left: 18px; display: flex; align-items: center; gap: 9px; }
@@ -63,6 +63,10 @@
     .exp-strip .c + .c { border-left: 1px solid #eee5f0; }
     .exp-strip .v { font-size: 22px; font-weight: 800; color: #5a3d8a; }
     .exp-strip .l { font-size: 9.5px; text-transform: uppercase; letter-spacing: .04em; color: #8a7d97; margin-top: 4px; }
+    .exp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 8px; }
+    .exp-grid .c { text-align: center; }
+    .exp-grid .v { font-size: 26px; font-weight: 800; color: #5a3d8a; line-height: 1; }
+    .exp-grid .l { font-size: 10px; text-transform: uppercase; letter-spacing: .04em; color: #8a7d97; margin-top: 5px; }
     .exp-actions { display: flex; gap: 10px; }
     .exp-btn { flex: 1; border: none; border-radius: 13px; padding: 13px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; }
     .exp-btn.primary { background: #f2872e; color: #180e08; }
@@ -82,9 +86,19 @@
       z-index: 1600; align-items: center; gap: 6px; background: rgba(43,22,52,.94); color: #fff;
       padding: 7px 16px 7px 8px; border-radius: 22px; box-shadow: 0 4px 14px rgba(0,0,0,.32); }
     #exploredMapBanner.show { display: flex; }
-    #exploredMapBanner .emb-back { background: none; border: none; color: #fff; font-size: 24px;
-      line-height: 1; cursor: pointer; padding: 0 4px; font-family: inherit; }
-    #exploredMapBanner span { font-size: 14px; font-weight: 700; }
+    #exploredMapBanner .emb-back { background: rgba(255,255,255,.16); border: none; color: #fff;
+      font-size: 13px; font-weight: 700; line-height: 1; cursor: pointer; padding: 7px 12px 7px 9px;
+      border-radius: 14px; font-family: inherit; }
+    #exploredMapBanner .emb-back:active { background: rgba(255,255,255,.3); }
+    #exploredMapBanner span { font-size: 13px; font-weight: 600; opacity: .92; }
+    /* In the explored-map, the menu only offers Help. */
+    body.exploring #menuPanel .menu-rows .menu-row:not(.menu-help) { display: none; }
+    #tilesToggleBtn { display: none; position: absolute; bottom: 96px; right: 20px; z-index: 1000;
+      align-items: center; gap: 6px; background: rgba(43,22,52,.94); color: #fff; border: none;
+      border-radius: 22px; padding: 10px 16px; font-size: 13px; font-weight: 700; cursor: pointer;
+      font-family: inherit; box-shadow: 0 4px 14px rgba(0,0,0,.32); }
+    body.exploring #tilesToggleBtn { display: flex; }
+    #tilesToggleBtn.on { background: #f2872e; color: #180e08; }
     body.exploring #searchBar, body.exploring #searchResults, body.exploring #fab,
     body.exploring #routeBtn, body.exploring #targetBtn { display: none !important; }
     /* In the explored-map only, stack the remaining controls low on the left. */
@@ -1312,7 +1326,7 @@
       transition: opacity .5s ease;
     }
     #splash.hide { opacity: 0; pointer-events: none; }
-    #splash { touch-action: none; transition: opacity .5s ease, transform .35s cubic-bezier(.4,0,.2,1); }
+    #splash { touch-action: none; background-color: #181026; transition: opacity .5s ease, transform .35s cubic-bezier(.4,0,.2,1); }
     #splash .splash-brand { position: absolute; top: 54px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; }
     #splash .splash-brand img { width: 34px; height: 34px; border-radius: 9px; box-shadow: 0 2px 8px rgba(0,0,0,.4); }
     #splash .splash-brand span { font-size: 18px; font-weight: 800; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,.55); }
@@ -1649,23 +1663,18 @@
   </div>
   <div class="exp-body">
     <div class="exp-card">
-      <div class="exp-strip">
+      <div class="exp-grid">
         <div class="c"><div class="v" id="expKm">0.0</div><div class="l">km walked</div></div>
+        <div class="c"><div class="v" id="expKm2">0.0</div><div class="l">km² covered</div></div>
         <div class="c"><div class="v" id="expTilesV">—</div><div class="l">tiles visited</div></div>
-        <div class="c"><div class="v" id="expTilesC">—</div><div class="l">completed</div></div>
+        <div class="c"><div class="v" id="expTilesC">—</div><div class="l">tiles complete</div></div>
       </div>
     </div>
     <div class="exp-card">
-      <h3>Explored areas</h3>
-      <p style="margin:0 0 12px;font-size:13px;color:#6a5c78;line-height:1.4;">See the ground you've covered on the map, or claim open areas like parks and fields you've roamed.</p>
       <div class="exp-actions">
         <button class="exp-btn primary" onclick="exploredShowOnMap()">Show on map</button>
         <button class="exp-btn ghost" onclick="startAreaClaim()">Claim an area</button>
       </div>
-    </div>
-    <div class="exp-card">
-      <h3>Places you've been</h3>
-      <div id="expPlacesList"><div class="exp-empty">Loading…</div></div>
     </div>
   </div>
 </div>
@@ -1684,9 +1693,12 @@
 
 <!-- Focused explored-map banner (shown only in the "Show on map" sub-view) -->
 <div id="exploredMapBanner">
-  <button class="emb-back" onclick="switchTab('explored')" title="Back to progress">‹</button>
+  <button class="emb-back" onclick="switchTab('explored')" title="Back to progress">‹ Back</button>
   <span>Tap an area to claim it</span>
 </div>
+
+<!-- Tiles overlay toggle (explored-map only) -->
+<button id="tilesToggleBtn" onclick="toggleTiles()" title="Show explored tiles">⊞ Tiles</button>
 
 <div id="authOverlay">
   <div id="authCard">
@@ -1837,7 +1849,7 @@
         <div class="menu-row-sub">Cache map tiles for offline use</div>
       </div>
     </div>
-    <div class="menu-row" onclick="closeMenu();openHelp()">
+    <div class="menu-row menu-help" onclick="closeMenu();openHelp()">
       <div class="menu-row-icon help">❓</div>
       <div class="menu-row-text">
         <div class="menu-row-label">How to use</div>
@@ -2035,6 +2047,10 @@ function switchTab(t) {
   availableAreasLayer.clearLayers();
   availableFeatures = [];
   _roamLoadedBounds = null;
+  gridVisible = false;
+  map.removeLayer(gridLayer);
+  gridLayer.clearLayers();
+  document.getElementById("tilesToggleBtn")?.classList.remove("on");
   document.getElementById("exploredMapBanner")?.classList.remove("show");
   document.getElementById("exploredView")?.classList.toggle("show", t === "explored");
   document.getElementById("tabMapBtn")?.classList.toggle("active", t === "map");
@@ -2065,22 +2081,30 @@ function enterExploredMap() {
   setTimeout(() => { try { map.invalidateSize(); } catch (_) {} }, 60);
 }
 
+// Toggle the explorer-tile grid overlay on the explored-map.
+function toggleTiles() {
+  gridVisible = !gridVisible;
+  if (gridVisible) { gridLayer.addTo(map); drawGrid(); }
+  else { map.removeLayer(gridLayer); gridLayer.clearLayers(); }
+  document.getElementById("tilesToggleBtn")?.classList.toggle("on", gridVisible);
+}
+
 async function refreshExploredDashboard() {
   try {
     const [tilesRes, statsRes] = await Promise.all([
       apiFetch(`${API}/tracks/tiles`),
       apiFetch(`${API}/tracks/stats`),
     ]);
-    let visited = "—", completed = "—", km = "0.0";
-    if (tilesRes.ok) { const t = await tilesRes.json(); visited = t.visited; completed = t.completed; }
+    let visited = "—", completed = "—", km = "0.0", km2 = "0.0";
+    if (tilesRes.ok) { const t = await tilesRes.json(); visited = t.visited; completed = t.completed; km2 = (t.km2 || 0).toFixed(1); }
     if (statsRes.ok) { const m = await statsRes.json(); km = (m.km_me || 0).toFixed(1); }
     setText("expBigNum", visited);
     setText("expTilesV", visited);
     setText("expTilesC", completed);
     setText("expKm", km);
+    setText("expKm2", km2);
     setText("expSub", `${completed} fully explored · ${km} km on foot`);
   } catch (_) {}
-  loadPlaces();
 }
 
 function escapeHtml(s) {
