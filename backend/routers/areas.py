@@ -52,6 +52,33 @@ async def list_areas(
     ]
 
 
+@router.get("/list")
+async def list_all_areas(
+    db: Connection = Depends(get_db),
+    user: AuthUser = Depends(get_current_user),
+):
+    """Every area the user has claimed (for the Explored dashboard list)."""
+    rows = await db.fetch(
+        """
+        SELECT id, name, kind, osm_type, osm_id,
+               ST_Area(area::geography) / 1e6 AS km2
+        FROM claimed_areas
+        WHERE user_id = $1
+        ORDER BY created_at DESC
+        """,
+        user.id,
+    )
+    return [
+        {
+            "id": r["id"],
+            "name": r["name"],
+            "kind": r["kind"],
+            "km2": float(r["km2"] or 0),
+        }
+        for r in rows
+    ]
+
+
 @router.post("", status_code=201)
 async def create_area(
     body: AreaCreate,

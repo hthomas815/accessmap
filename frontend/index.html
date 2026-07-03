@@ -67,6 +67,15 @@
     .exp-btn { flex: 1; border: none; border-radius: 13px; padding: 13px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; }
     .exp-btn.primary { background: #f2872e; color: #180e08; }
     .exp-btn.ghost { background: #fff; color: #5a3d8a; border: 1.5px solid #e2d6ee; }
+    .exp-place { display: flex; align-items: center; gap: 12px; padding: 9px 0; }
+    .exp-place + .exp-place { border-top: 1px solid #f1ebf5; }
+    .exp-place-ic { width: 34px; height: 34px; border-radius: 10px; background: #f0e9f7;
+      display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+    .exp-place-name { font-size: 14px; font-weight: 600; color: #2b1634; }
+    .exp-place-meta { font-size: 11.5px; color: #8a7d97; margin-top: 1px; }
+    .exp-place-chip { margin-left: auto; font-size: 10.5px; font-weight: 700; padding: 4px 9px;
+      border-radius: 20px; background: #9b6dd6; color: #fff; }
+    .exp-empty { font-size: 13px; color: #8a7d97; line-height: 1.4; padding: 4px 0; }
 
     /* Focused explored-map sub-view */
     #exploredMapBanner { display: none; position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
@@ -99,7 +108,7 @@
     /* ── Locate — west of FAB (radial fan) ── */
     #locateBtn {
       position: absolute;
-      bottom: 40px; right: 124px;
+      bottom: 178px; left: 20px;
       z-index: 1000;
       width: 54px; height: 54px;
       border-radius: 50%;
@@ -640,7 +649,7 @@
     /* ── Show-my-routes button (home screen) ── */
     #showRoutesBtn {
       position: absolute;
-      bottom: 108px; left: 20px;
+      bottom: 110px; left: 20px;
       z-index: 1000;
       width: 56px; height: 56px;
       border-radius: 50%;
@@ -791,7 +800,7 @@
     /* ── North button — directly above FAB (radial fan) ── */
     #northBtn {
       position: absolute;
-      bottom: 131px; right: 39px;
+      bottom: 246px; left: 20px;
       z-index: 1000;
       width: 46px; height: 46px;
       border-radius: 50%;
@@ -1650,6 +1659,10 @@
         <button class="exp-btn ghost" onclick="startAreaClaim()">Claim an area</button>
       </div>
     </div>
+    <div class="exp-card">
+      <h3>Places you've been</h3>
+      <div id="expPlacesList"><div class="exp-empty">Loading…</div></div>
+    </div>
   </div>
 </div>
 
@@ -1798,27 +1811,7 @@
     <div class="menu-title">Layers &amp; tools</div>
     <button class="menu-close-btn" onclick="closeMenu()">✕</button>
   </div>
-  <div id="menuUserBadge">
-    <div id="menuUserName">Signed out</div>
-    <div id="menuUserEmail">Sign in to sync your routes and markers.</div>
-  </div>
   <div class="menu-rows">
-    <div class="menu-row" onclick="toggleCoverage()">
-      <div class="menu-row-icon coverage">◉</div>
-      <div class="menu-row-text">
-        <div class="menu-row-label">Explored paths</div>
-        <div class="menu-row-sub" id="menuCoverageSub">Show your explored areas on the map</div>
-      </div>
-      <div class="menu-switch" id="menuCoverageToggle" role="switch" aria-checked="false"></div>
-    </div>
-    <div class="menu-row" id="menuGridRow" onclick="toggleGridFromMenu()">
-      <div class="menu-row-icon coverage">⊞</div>
-      <div class="menu-row-text">
-        <div class="menu-row-label">Coverage grid</div>
-        <div class="menu-row-sub" id="menuGridSub">Turn on explored paths first</div>
-      </div>
-      <div class="menu-switch disabled" id="menuGridToggle" role="switch" aria-checked="false" aria-disabled="true"></div>
-    </div>
     <div class="menu-row" onclick="startRecording()">
       <div class="menu-row-icon record">⏺</div>
       <div class="menu-row-text">
@@ -2034,6 +2027,9 @@ function switchTab(t) {
   activeTab = t;
   clearForcedCoverage();
   document.body.classList.remove("exploring");
+  map.removeLayer(availableAreasLayer);
+  availableAreasLayer.clearLayers();
+  availableFeatures = [];
   document.getElementById("exploredMapBanner")?.classList.remove("show");
   document.getElementById("exploredView")?.classList.toggle("show", t === "explored");
   document.getElementById("tabMapBtn")?.classList.toggle("active", t === "map");
@@ -2058,6 +2054,8 @@ function enterExploredMap() {
     toggleCoverage();
     _coverageForced = true;
   }
+  availableAreasLayer.addTo(map);
+  loadRoamableForView();
   setTimeout(() => { try { map.invalidateSize(); } catch (_) {} }, 60);
 }
 
@@ -2075,6 +2073,39 @@ async function refreshExploredDashboard() {
     setText("expTilesC", completed);
     setText("expKm", km);
     setText("expSub", `${completed} fully explored · ${km} km on foot`);
+  } catch (_) {}
+  loadPlaces();
+}
+
+function escapeHtml(s) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g, c =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+function placeIcon(kind) {
+  if (/pitch|playground|dog_park|track/.test(kind || "")) return "⚽";
+  if (/wood|forest|scrub/.test(kind || "")) return "🌲";
+  if (/grass|meadow|grassland|heath|fell|greenfield|farmland|allotments/.test(kind || "")) return "🌾";
+  if (/park|recreation_ground|common|village_green|nature_reserve|garden|greenspace/.test(kind || "")) return "🌳";
+  return "📍";
+}
+async function loadPlaces() {
+  const list = document.getElementById("expPlacesList");
+  if (!list) return;
+  try {
+    const res = await apiFetch(`${API}/areas/list`);
+    if (!res.ok) return;
+    const areas = await res.json();
+    if (!areas.length) {
+      list.innerHTML = '<div class="exp-empty">No areas claimed yet. Open the map and tap a park or field to claim it as explored.</div>';
+      return;
+    }
+    list.innerHTML = areas.map(a => {
+      const size = a.km2 >= 0.01 ? `${a.km2.toFixed(2)} km²` : "small area";
+      return `<div class="exp-place"><div class="exp-place-ic">${placeIcon(a.kind)}</div>` +
+        `<div><div class="exp-place-name">${escapeHtml(a.name || "Unnamed area")}</div>` +
+        `<div class="exp-place-meta">${size}</div></div>` +
+        `<span class="exp-place-chip">Claimed</span></div>`;
+    }).join("");
   } catch (_) {}
 }
 
@@ -2138,10 +2169,12 @@ function setAuthStatus(msg, isError = false) {
 }
 
 function updateUserBadge() {
-  document.getElementById("menuUserName").textContent =
+  // User badge was removed from the menu; keep this null-safe for any callers.
+  const n = document.getElementById("menuUserName");
+  const e = document.getElementById("menuUserEmail");
+  if (n) n.textContent =
     currentUser?.user_metadata?.full_name || currentUser?.user_metadata?.name || currentUser?.email || "Signed out";
-  document.getElementById("menuUserEmail").textContent =
-    currentUser?.email || "Sign in to sync your routes and markers.";
+  if (e) e.textContent = currentUser?.email || "Sign in to sync your routes and markers.";
 }
 
 function showAuthOverlay(customMsg = "") {
@@ -4340,6 +4373,15 @@ map.getPane("claimedPane").style.zIndex = 350;
 const claimedAreasLayer = L.layerGroup();
 let claimedFeatures = [];   // [{id, osm_type, osm_id, name, rings, layer}]
 
+// Roamable polygons available to claim — faint dashed outlines, shown in the
+// focused explored-map so you can see (and instantly claim) what's tappable.
+map.createPane("availPane");
+map.getPane("availPane").style.zIndex = 340;
+const availableAreasLayer = L.layerGroup();
+let availableFeatures = [];  // [{osm_type, osm_id, name, kind, geojson, rings, area, layer}]
+let _roamLoadToken = 0;
+let _roamMoveTimer = null;
+
 // ── Coverage grid state ───────────────────────────────────────────────────────
 let gridVisible    = false;
 const gridLayer    = L.layerGroup();
@@ -4358,24 +4400,28 @@ function hideCoverageStats() {
 }
 
 function updateCoverageModeUI() {
+  // The coverage/grid menu rows were removed (coverage now lives in the
+  // Explored tab), so this only updates them if they still exist.
   const coverageToggle = document.getElementById("menuCoverageToggle");
+  if (coverageToggle) {
+    coverageToggle.classList.toggle("on", coverageVisible);
+    coverageToggle.setAttribute("aria-checked", coverageVisible ? "true" : "false");
+  }
   const coverageSub = document.getElementById("menuCoverageSub");
-  const gridRow = document.getElementById("menuGridRow");
-  const gridToggle = document.getElementById("menuGridToggle");
-  const gridSub = document.getElementById("menuGridSub");
-
-  coverageToggle.classList.toggle("on", coverageVisible);
-  coverageToggle.setAttribute("aria-checked", coverageVisible ? "true" : "false");
-  coverageSub.textContent = coverageVisible
+  if (coverageSub) coverageSub.textContent = coverageVisible
     ? (totalExploredKm > 0 ? `Showing ${coverageSummaryText()}` : "Showing your explored areas")
     : "Show your explored areas on the map";
-
-  gridRow.classList.toggle("enabled", coverageVisible);
-  gridToggle.classList.toggle("on", gridVisible);
-  gridToggle.classList.toggle("disabled", !coverageVisible);
-  gridToggle.setAttribute("aria-checked", gridVisible ? "true" : "false");
-  gridToggle.setAttribute("aria-disabled", coverageVisible ? "false" : "true");
-  gridSub.textContent = coverageVisible
+  const gridRow = document.getElementById("menuGridRow");
+  if (gridRow) gridRow.classList.toggle("enabled", coverageVisible);
+  const gridToggle = document.getElementById("menuGridToggle");
+  if (gridToggle) {
+    gridToggle.classList.toggle("on", gridVisible);
+    gridToggle.classList.toggle("disabled", !coverageVisible);
+    gridToggle.setAttribute("aria-checked", gridVisible ? "true" : "false");
+    gridToggle.setAttribute("aria-disabled", coverageVisible ? "false" : "true");
+  }
+  const gridSub = document.getElementById("menuGridSub");
+  if (gridSub) gridSub.textContent = coverageVisible
     ? "Overlay a grid on your explored areas"
     : "Turn on explored paths first";
 }
@@ -4770,33 +4816,53 @@ async function loadClaimedAreas() {
     (await res.json()).forEach(addClaimedFeature);
   } catch (_) {}
 }
+function addClaimedFeatureGeo(geo, meta) {
+  const layer = L.geoJSON(geo, { pane: "claimedPane", interactive: false,
+    style: { color: "#5a3d8a", weight: 1.6, opacity: 0.95, fillColor: "#9b6dd6", fillOpacity: 0.45 } })
+    .addTo(claimedAreasLayer);
+  const feat = { id: meta.id ?? null, osm_type: meta.osm_type ?? null, osm_id: meta.osm_id ?? null,
+    name: meta.name ?? null, rings: geojsonOuterRings(geo), layer };
+  claimedFeatures.push(feat);
+  return feat;
+}
 function addClaimedFeature(a) {
   let geo;
-  try { geo = JSON.parse(a.geojson); } catch (_) { return; }
-  const layer = L.geoJSON(geo, { pane: "claimedPane", interactive: false,
-    style: { color: "#5a3d8a", weight: 1.4, opacity: 0.85, fillColor: "#9b6dd6", fillOpacity: 0.40 } })
-    .addTo(claimedAreasLayer);
-  claimedFeatures.push({ id: a.id, osm_type: a.osm_type, osm_id: a.osm_id, name: a.name,
-    rings: geojsonOuterRings(geo), layer });
+  try { geo = JSON.parse(a.geojson); } catch (_) { return null; }
+  return addClaimedFeatureGeo(geo, a);
+}
+function removeClaimedFeature(feat) {
+  if (!feat) return;
+  claimedAreasLayer.removeLayer(feat.layer);
+  claimedFeatures = claimedFeatures.filter(f => f !== feat);
 }
 
-// Tap handler used while in the focused explored-map: claim the open area under
-// the finger, or un-claim it if it's already claimed.
-async function handleAreaClaimTap(lat, lng) {
-  const hit = claimedFeatures.find(f => pointInRings(lat, lng, f.rings));
-  if (hit) {
-    try {
-      if (hit.osm_id != null) await apiFetch(`${API}/areas/by-osm/${hit.osm_type}/${hit.osm_id}`, { method: "DELETE" });
-      else await apiFetch(`${API}/areas/${hit.id}`, { method: "DELETE" });
-    } catch (_) {}
-    claimedAreasLayer.removeLayer(hit.layer);
-    claimedFeatures = claimedFeatures.filter(f => f !== hit);
-    showToast(`Removed ${hit.name || "area"}`, 1800);
+// Faint outline of a roamable polygon you could claim.
+function addAvailableFeature(el) {
+  const kind = areaClassify(el.tags);
+  if (!kind) return;
+  const rings = areaElementRings(el);
+  if (!rings.length) return;
+  const geo = areaElementGeoJSON(el);
+  const layer = L.geoJSON(geo, { pane: "availPane", interactive: false,
+    style: { color: "#7a4b8f", weight: 1.2, opacity: 0.7, dashArray: "4 4",
+             fillColor: "#9b6dd6", fillOpacity: 0.06 } }).addTo(availableAreasLayer);
+  availableFeatures.push({ osm_type: el.type, osm_id: el.id,
+    name: (el.tags && el.tags.name) || null, kind, geojson: geo,
+    rings, area: ringsArea(rings), layer });
+}
+
+// Preload every roamable polygon in the current viewport (once per pan), so
+// tapping is an instant local hit-test instead of a slow per-tap Overpass call.
+async function loadRoamableForView() {
+  if (activeTab !== "exploredmap") return;
+  if (map.getZoom() < 14) {
+    availableAreasLayer.clearLayers(); availableFeatures = [];
+    showToast("Zoom in to load areas to claim", 1800);
     return;
   }
-  showToast("Finding the area…", 1400);
-  const d = 0.0009;
-  const bbox = `${lat - d},${lng - d},${lat + d},${lng + d}`;
+  const token = ++_roamLoadToken;
+  const b = map.getBounds();
+  const bbox = `${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()}`;
   const q = `[out:json][timeout:25];(` +
     `way["leisure"](${bbox});` +
     `way["landuse"~"recreation_ground|grass|meadow|village_green|forest|greenfield|allotments|farmland"](${bbox});` +
@@ -4804,29 +4870,48 @@ async function handleAreaClaimTap(lat, lng) {
     `relation["leisure"~"park|recreation_ground|common|nature_reserve|golf_course"](${bbox});` +
     `relation["landuse"~"recreation_ground|meadow|forest|village_green"](${bbox});` +
     `);out geom;`;
+  showToast("Loading areas…", 1000);
   const data = await areaOverpass(q);
-  if (!data) { showToast("Couldn't reach the map database — try again", 2400); return; }
-  let best = null, bestA = Infinity;
-  for (const el of (data.elements || [])) {
-    const kind = areaClassify(el.tags);
-    if (!kind) continue;
-    const rings = areaElementRings(el);
-    if (!rings.length || !pointInRings(lat, lng, rings)) continue;
-    const ar = ringsArea(rings);
-    if (ar < bestA) { bestA = ar; best = { el, kind }; }
+  if (token !== _roamLoadToken) return;   // a newer pan superseded this load
+  if (!data) { showToast("Couldn't load areas — pan or zoom to retry", 2400); return; }
+  availableAreasLayer.clearLayers();
+  availableFeatures = [];
+  (data.elements || []).forEach(addAvailableFeature);
+}
+
+// Tap handler for the focused explored-map. Instant: hit-tests the preloaded
+// polygons locally, highlights immediately, then saves in the background.
+async function handleAreaClaimTap(lat, lng) {
+  // Tap an existing claim → un-claim it.
+  const claimed = claimedFeatures.find(f => pointInRings(lat, lng, f.rings));
+  if (claimed) {
+    removeClaimedFeature(claimed);
+    showToast(`Removed ${claimed.name || "area"}`, 1600);
+    try {
+      if (claimed.osm_id != null) await apiFetch(`${API}/areas/by-osm/${claimed.osm_type}/${claimed.osm_id}`, { method: "DELETE" });
+      else if (claimed.id != null) await apiFetch(`${API}/areas/${claimed.id}`, { method: "DELETE" });
+    } catch (_) {}
+    refreshExploredDashboard();
+    return;
   }
-  if (!best) { showToast("No open area found right here", 2200); return; }
-  const payload = { osm_type: best.el.type, osm_id: best.el.id,
-    name: (best.el.tags && best.el.tags.name) || null, kind: best.kind,
-    geojson: JSON.stringify(areaElementGeoJSON(best.el)) };
+  // Otherwise claim the smallest available polygon under the finger.
+  const cands = availableFeatures.filter(f => pointInRings(lat, lng, f.rings));
+  if (!cands.length) {
+    showToast("No open area here — pan so it's on screen, then tap", 2400);
+    return;
+  }
+  const chosen = cands.reduce((a, b) => (a.area <= b.area ? a : b));
+  const feat = addClaimedFeatureGeo(chosen.geojson, { osm_type: chosen.osm_type, osm_id: chosen.osm_id, name: chosen.name });
+  showToast(`Claimed ${chosen.name || "area"}`, 1800);
   try {
     const res = await apiFetch(`${API}/areas`, { method: "POST",
-      headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
-    if (!res.ok) { showToast("Couldn't save that area", 2200); return; }
-    const saved = await res.json();
-    addClaimedFeature(saved);
-    showToast(`Claimed ${saved.name || payload.name || "area"}`, 2200);
-  } catch (_) { showToast("Couldn't save that area", 2200); }
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ osm_type: chosen.osm_type, osm_id: chosen.osm_id,
+        name: chosen.name, kind: chosen.kind, geojson: JSON.stringify(chosen.geojson) }) });
+    if (res.ok) { const saved = await res.json(); feat.id = saved.id; }
+    else { removeClaimedFeature(feat); showToast("Couldn't save that area", 2200); }
+  } catch (_) { removeClaimedFeature(feat); showToast("Couldn't save that area", 2200); }
+  refreshExploredDashboard();
 }
 
 // ── Coverage grid ─────────────────────────────────────────────────────────────
@@ -4987,6 +5072,10 @@ map.on("moveend", () => {
   if (coverageVisible) loadTracks();
   if (gridVisible) drawGrid();
   if (accessibleVisible) loadAccessibleRoutes();
+  if (activeTab === "exploredmap") {
+    clearTimeout(_roamMoveTimer);
+    _roamMoveTimer = setTimeout(loadRoamableForView, 400);
+  }
 });
 
 // ── Toast ─────────────────────────────────────────────────────────────────────
