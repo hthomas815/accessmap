@@ -593,14 +593,14 @@
       width: 56px; height: 56px;
       border-radius: 50%;
       background: #180e08;
-      border: 2px solid #2e9e5b;
-      color: #2e9e5b; cursor: pointer;
+      border: 2px solid #f2872e;
+      color: #f2872e; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 4px 16px rgba(0,0,0,.4);
       transition: background .15s, color .15s, transform .1s;
       -webkit-tap-highlight-color: transparent;
     }
-    #showRoutesBtn.active { background: #2e9e5b; color: #fff; }
+    #showRoutesBtn.active { background: #f2872e; color: #fff; }
     #showRoutesBtn:active { transform: scale(.93); }
 
     /* ── Track-type chooser (exploration vs accessible) ── */
@@ -627,14 +627,14 @@
       z-index: 1003;
       width: 44px; height: 44px;
       border-radius: 50%;
-      background: #fff3e2;
-      border: 2px solid #d6741f;
-      color: #8a3410; font-size: 18px; cursor: pointer;
+      background: #42204a;
+      border: 2px solid #7d4a75;
+      color: #f2872e; font-size: 18px; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 8px 22px rgba(90,52,16,.24);
+      box-shadow: 0 8px 22px rgba(42,19,42,.32);
       -webkit-tap-highlight-color: transparent;
     }
-    #menuBtn:active { background: #f7a765; color: #2e1a0b; }
+    #menuBtn:active { background: #7d4a75; color: #fff; }
     #menuPanel {
       position: absolute;
       bottom: 0; left: 0; right: 0;
@@ -654,9 +654,9 @@
     .menu-close-btn {
       width: 34px; height: 34px;
       border-radius: 50%;
-      background: #fff3e2;
-      border: 1.5px solid #d6741f;
-      color: #8a3410;
+      background: #42204a;
+      border: 1.5px solid #7d4a75;
+      color: #f2872e;
       font-size: 18px; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       padding: 0;
@@ -1120,6 +1120,15 @@
       border-color: #d6741f !important;
       color: #2e1a0b !important;
     }
+    #menuPanel {
+      background: #fff6e6 !important;
+      color: #2e1a0b !important;
+      border-top-color: #efd7ab !important;
+      box-shadow: 0 -14px 40px rgba(42,19,42,.18) !important;
+    }
+    .menu-handle {
+      background: #7d4a75 !important;
+    }
 
     /* ── Auth overlay ── */
     #authOverlay {
@@ -1257,6 +1266,15 @@
       -webkit-tap-highlight-color: transparent;
     }
     .burst-item:active { transform: translate(-50%, -50%) scale(.94); }
+    .burst-item.selected .burst-circle {
+      background: rgba(255,240,210,.92);
+      border-color: rgba(199,90,28,.95);
+      color: #C75A1C;
+      box-shadow: 0 0 0 4px rgba(255,240,210,.16), 0 10px 30px rgba(42,19,42,.42);
+    }
+    .burst-item.selected .burst-cap {
+      color: #fff6e6;
+    }
     .burst-circle {
       width: 116px; height: 116px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
@@ -1270,6 +1288,43 @@
     .burst-cap {
       font-size: 14px; font-weight: 700; color: #fff;
       text-shadow: 0 1px 6px rgba(0,0,0,.8); white-space: nowrap;
+    }
+    .burst-add-wrap {
+      position: absolute;
+      left: 50%;
+      bottom: max(120px, env(safe-area-inset-bottom, 0px) + 108px);
+      transform: translateX(-50%);
+      z-index: 1701;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      width: min(calc(100vw - 40px), 360px);
+    }
+    .burst-add-label {
+      color: #fff6e6;
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+      text-shadow: 0 1px 8px rgba(0,0,0,.55);
+    }
+    .burst-add-btn {
+      width: 100%;
+      padding: 15px 18px;
+      border-radius: 18px;
+      border: none;
+      background: #FFF0D2;
+      color: #2A132A;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 10px 28px rgba(42,19,42,.34);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .burst-add-btn:disabled {
+      opacity: .45;
+      cursor: default;
+      box-shadow: none;
     }
 
     /* ── In-burst marker detail (subtypes / difficulty / note / photo) ── */
@@ -1341,12 +1396,6 @@
     .bd-save {
       width: 100%; margin-top: 18px; padding: 16px; border-radius: 16px; border: none;
       background: #C75A1C; color: #FFF6E6; font-size: 16px; font-weight: 800; cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .bd-add-cat {
-      width: 100%; margin-top: 12px; padding: 13px 14px; border-radius: 14px;
-      border: 1.5px dashed #C75A1C; background: transparent; color: #7A4A2A;
-      font-size: 14px; font-weight: 800; cursor: pointer;
       -webkit-tap-highlight-color: transparent;
     }
     .bd-save:disabled { opacity: .6; }
@@ -1737,7 +1786,7 @@
     <div class="confirm-msg">How should this walk be saved?</div>
     <div style="display:flex;flex-direction:column;gap:10px;">
       <button class="tt-choice" style="background:#8a3410;" onclick="_resolveTrackType('exploration')">🧭 Exploration<br><span style="font-weight:500;font-size:13px;opacity:.85;">Add new ground to my explored areas</span></button>
-      <button class="tt-choice" style="background:#2e9e5b;" onclick="_resolveTrackType('accessible')">✓ Accessible route<br><span style="font-weight:500;font-size:13px;opacity:.85;">A route I know works — save the whole path</span></button>
+      <button class="tt-choice" style="background:#f2872e;" onclick="_resolveTrackType('accessible')">✓ Accessible route<br><span style="font-weight:500;font-size:13px;opacity:.85;">A route I know works — save the whole path</span></button>
       <button class="confirm-cancel" onclick="_resolveTrackType(null)">Cancel</button>
     </div>
   </div>
@@ -1856,7 +1905,7 @@ function clearMapData() {
   allTrackPoints = [];
   totalExploredKm = 0;
   coverageStatsModel = { km_me: 0, km_all: 0 };
-  document.getElementById("coverageStats").style.display = "none";
+  hideCoverageStats();
 }
 
 async function refreshAppData() {
@@ -2187,6 +2236,23 @@ function ensureSelectedCategory(catId) {
   if (catId && !selectedCategories.includes(catId)) selectedCategories.push(catId);
 }
 
+function toggleSelectedCategory(catId) {
+  if (!catId) return;
+  if (selectedCategories.includes(catId)) {
+    selectedCategories = selectedCategories.filter(id => id !== catId);
+    selectedTags = selectedTags.filter(tag => tag.type !== catId);
+    if (selectedCategory?.id === catId) {
+      const nextId = selectedCategories[0] || null;
+      selectedCategory = nextId ? CATEGORIES.find(c => c.id === nextId) || null : null;
+    }
+  } else {
+    selectedCategories.push(catId);
+    if (!selectedCategory) {
+      selectedCategory = CATEGORIES.find(c => c.id === catId) || null;
+    }
+  }
+}
+
 function activeCategoryIds(activeCatId = selectedCategory?.id) {
   const ids = [];
   if (activeCatId) ids.push(activeCatId);
@@ -2383,7 +2449,7 @@ function openCategoryBurst() {
     const fx  = cx + (col - (cols - 1) / 2) * stepX;   // centre the 3 columns
     const fy  = cy + (row - (rows - 1) / 2) * stepY;   // centre the rows
     const item = document.createElement("button");
-    item.className = "burst-item";
+    item.className = "burst-item" + (selectedCategories.includes(cat.id) ? " selected" : "");
     item.style.left = `${fx}px`;
     item.style.top  = `${fy}px`;
     item.innerHTML =
@@ -2393,13 +2459,33 @@ function openCategoryBurst() {
     item.style.transform = `translate(-50%,-50%) translate(${ox - fx}px, ${oy - fy}px) scale(.2)`;
     item.style.opacity = "0";
     item.style.transitionDelay = `${i * 0.03}s`;
-    item.addEventListener("click", e => { e.stopPropagation(); selectBurstCategory(cat.id); });
+    item.addEventListener("click", e => {
+      e.stopPropagation();
+      toggleSelectedCategory(cat.id);
+      openCategoryBurst();
+    });
     overlay.appendChild(item);
     requestAnimationFrame(() => requestAnimationFrame(() => {
       item.style.transform = "translate(-50%,-50%)";
       item.style.opacity = "1";
     }));
   });
+
+  const addWrap = document.createElement("div");
+  addWrap.className = "burst-add-wrap";
+  addWrap.innerHTML = `
+    <div class="burst-add-label">${selectedCategories.length ? `${selectedCategories.length} categor${selectedCategories.length === 1 ? "y" : "ies"} selected` : "Select all relevant types"}</div>
+    <button type="button" class="burst-add-btn" id="burstAddBtn" ${selectedCategories.length ? "" : "disabled"}>Add details</button>
+  `;
+  addWrap.addEventListener("click", e => e.stopPropagation());
+  overlay.appendChild(addWrap);
+  addWrap.querySelector("#burstAddBtn").onclick = () => {
+    if (!selectedCategories.length) return;
+    const nextCat = selectedCategory && selectedCategories.includes(selectedCategory.id)
+      ? selectedCategory
+      : (CATEGORIES.find(c => c.id === selectedCategories[0]) || null);
+    if (nextCat) renderBurstDetail(nextCat);
+  };
 
   overlay.classList.add("open");
   document.body.classList.add("burst-open");
@@ -2419,12 +2505,6 @@ function closeCategoryBurst(clear = true) {
     selectedTags = [];
     selectedDifficulty = null;
   }
-}
-
-function selectBurstCategory(catId) {
-  const cat = CATEGORIES.find(c => c.id === catId);
-  if (!cat) return;
-  renderBurstDetail(cat);            // stay in the overlay; show the detail step
 }
 
 // Detail step, rendered inside the burst overlay: subtypes + difficulty + note + photo.
@@ -2452,7 +2532,7 @@ function renderBurstDetail(cat) {
       </div>
     </div>
     ${categoryIds.length ? `<div class="bd-label">Categories</div><div class="bd-cats" id="bdCats"></div>` : ""}
-    ${subs.length ? `<div class="bd-label">Type · tap all that apply</div><div class="bd-subs" id="bdSubs"></div><button type="button" class="bd-add-cat" id="bdAddCat">＋ Add another category</button>` : `<button type="button" class="bd-add-cat" id="bdAddCat">＋ Add another category</button>`}
+    ${subs.length ? `<div class="bd-label">Type · tap all that apply</div><div class="bd-subs" id="bdSubs"></div>` : ""}
     <div class="bd-label">Difficulty</div>
     <div class="bd-diff-row" id="bdDiff">
       <button class="bd-diff" data-val="low"><span class="bd-diff-dot" style="background:#43a047"></span>Easy</button>
@@ -2515,10 +2595,6 @@ function renderBurstDetail(cat) {
   // Note (persisted via the hidden #noteInput so Back keeps it)
   const noteEl = card.querySelector("#bdNote");
   noteEl.value = document.getElementById("noteInput").value || "";
-  card.querySelector("#bdAddCat").onclick = () => {
-    document.getElementById("noteInput").value = noteEl.value;
-    openCategoryBurst();
-  };
 
   // Photo — reuse the existing hidden inputs + pipeline
   card.querySelector("#bdCam").onclick = () => { saveFormState(); document.getElementById("photoCamera").click(); };
@@ -3984,6 +4060,11 @@ function coverageSummaryText() {
   return `${me.toFixed(1)} km explored`;
 }
 
+function hideCoverageStats() {
+  const el = document.getElementById("coverageStats");
+  if (el) el.style.display = "none";
+}
+
 function updateCoverageModeUI() {
   const coverageToggle = document.getElementById("menuCoverageToggle");
   const coverageSub = document.getElementById("menuCoverageSub");
@@ -4016,7 +4097,7 @@ function toggleCoverage() {
     loadDistanceStats();
   } else {
     map.removeLayer(coverageLayer);
-    document.getElementById("coverageStats").style.display = "none";
+    hideCoverageStats();
     if (gridVisible) {
       gridVisible = false;
       map.removeLayer(gridLayer);
@@ -4221,13 +4302,14 @@ async function loadAccessibleRoutes() {
     (await res.json()).forEach(track => {
       if (!track.geojson) return;
       const geo = JSON.parse(track.geojson);
-      if (geo.type !== "LineString") return;
-      const lls = geo.coordinates.map(([lng, lat]) => [lat, lng]);
-      // Casing + solid green line so known-good routes read clearly on the map
-      L.polyline(lls, { color: "#ffffff", weight: 8, opacity: 0.7, lineCap: "round", lineJoin: "round" }).addTo(accessibleLayer);
-      L.polyline(lls, { color: "#2e9e5b", weight: 5, opacity: 0.95, lineCap: "round", lineJoin: "round" })
-        .bindPopup(`✓ Accessible route${track.name ? `<br><b>${track.name}</b>` : ""}`)
-        .addTo(accessibleLayer);
+      forEachLineStringCoords(geo, coords => {
+        const lls = coords.map(([lng, lat]) => [lat, lng]);
+        // Casing + solid orange line so known-good routes read clearly on the map
+        L.polyline(lls, { color: "#ffffff", weight: 8, opacity: 0.7, lineCap: "round", lineJoin: "round" }).addTo(accessibleLayer);
+        L.polyline(lls, { color: "#f2872e", weight: 5, opacity: 0.95, lineCap: "round", lineJoin: "round" })
+          .bindPopup(`✓ Accessible route${track.name ? `<br><b>${track.name}</b>` : ""}`)
+          .addTo(accessibleLayer);
+      });
     });
   } catch (_) {}
 }
@@ -4253,6 +4335,23 @@ function metersToPixels(m) {
   return m / metresPerPixel;
 }
 
+function forEachLineStringCoords(geo, visit) {
+  if (!geo) return;
+  if (geo.type === "LineString" && Array.isArray(geo.coordinates)) {
+    visit(geo.coordinates);
+    return;
+  }
+  if (geo.type === "MultiLineString" && Array.isArray(geo.coordinates)) {
+    geo.coordinates.forEach(coords => {
+      if (Array.isArray(coords) && coords.length >= 2) visit(coords);
+    });
+    return;
+  }
+  if (geo.type === "GeometryCollection" && Array.isArray(geo.geometries)) {
+    geo.geometries.forEach(child => forEachLineStringCoords(child, visit));
+  }
+}
+
 async function loadTracks() {
   if (!coverageVisible || !isSignedIn()) return;
   const b = map.getBounds();
@@ -4269,13 +4368,14 @@ async function loadTracks() {
     (await res.json()).forEach(track => {
       if (!track.geojson) return;
       const geo = JSON.parse(track.geojson);
-      if (geo.type !== "LineString") return;
-      const lls = geo.coordinates.map(([lng, lat]) => [lat, lng]);
-      geo.coordinates.forEach(([lng, lat]) => allTrackPoints.push({ lat, lng }));
-      L.polyline(lls, { color: "#9b6dd6", weight: bandPx, opacity: 0.28,
-        lineCap: "round", lineJoin: "round", interactive: false }).addTo(coverageLayer);
-      L.polyline(lls, { color: "#b98fe6", weight: corePx, opacity: 0.5,
-        lineCap: "round", lineJoin: "round", interactive: false }).addTo(coverageLayer);
+      forEachLineStringCoords(geo, coords => {
+        const lls = coords.map(([lng, lat]) => [lat, lng]);
+        coords.forEach(([lng, lat]) => allTrackPoints.push({ lat, lng }));
+        L.polyline(lls, { color: "#8a3410", weight: bandPx, opacity: 0.34,
+          lineCap: "round", lineJoin: "round", interactive: false }).addTo(coverageLayer);
+        L.polyline(lls, { color: "#f7a765", weight: corePx, opacity: 0.82,
+          lineCap: "round", lineJoin: "round", interactive: false }).addTo(coverageLayer);
+      });
     });
     if (gridVisible) drawGrid();
   } catch (_) {}
@@ -4378,16 +4478,7 @@ async function drawGrid() {
     }
   }
 
-  // Stats pill: the cell under the map centre + total explored
-  const c   = map.getCenter();
-  const ci  = cellIndices(c.lat, c.lng);
-  const cpc = Math.round((fracs.get(`${ci.row},${ci.col}`) || 0) * 100);
-  const statsEl = document.getElementById("coverageStats");
-  const kmStr = totalExploredKm > 0 ? ` · ${coverageSummaryText()}` : "";
-  statsEl.textContent = tooMany
-    ? `Zoom in to see cells${kmStr}`
-    : `Cell ${cellLabel(ci.row, ci.col)} · ${cpc}% explored${kmStr}`;
-  statsEl.style.display = "block";
+  hideCoverageStats();
 }
 
 let totalExploredKm = 0;
@@ -4400,14 +4491,10 @@ async function loadDistanceStats() {
     coverageStatsModel = await res.json();
     totalExploredKm = coverageStatsModel.km_me || 0;
     updateCoverageModeUI();
-    const statsEl = document.getElementById("coverageStats");
     if (gridVisible) {
-      drawGrid(); // refresh grid stats to include km
-    } else if (coverageVisible && totalExploredKm > 0) {
-      statsEl.textContent = coverageSummaryText();
-      statsEl.style.display = "block";
+      drawGrid();
     } else {
-      statsEl.style.display = "none";
+      hideCoverageStats();
     }
   } catch (_) {}
 }
