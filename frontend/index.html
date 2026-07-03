@@ -1612,7 +1612,7 @@
   </div>
   <div id="splashReady">
     <div class="cover-kick">Welcome back — you've explored</div>
-    <div class="cover-big"><b id="coverBig">—</b><span>tiles</span></div>
+    <div class="cover-big"><b id="coverBig">—</b><span>km</span></div>
     <div class="cover-sub" id="coverSub">keep roaming</div>
     <div class="swipe"><div class="ch">⌃</div><div class="tx">Swipe up for the map</div></div>
   </div>
@@ -1988,12 +1988,15 @@ function setText(id, v) { const e = document.getElementById(id); if (e) e.textCo
 
 async function updateCoverStats() {
   try {
-    const res = await apiFetch(`${API}/tracks/tiles`);
-    if (res.ok) {
-      const t = await res.json();
-      setText("coverBig", t.visited);
-      setText("coverSub", `${t.completed} fully explored · keep roaming`);
-    }
+    const [statsRes, tilesRes] = await Promise.all([
+      apiFetch(`${API}/tracks/stats`),
+      apiFetch(`${API}/tracks/tiles`),
+    ]);
+    let km = "0.0", visited = 0, km2 = "0.0";
+    if (statsRes.ok) { const m = await statsRes.json(); km = (m.km_me || 0).toFixed(1); }
+    if (tilesRes.ok) { const t = await tilesRes.json(); visited = t.visited; km2 = (t.km2 || 0).toFixed(1); }
+    setText("coverBig", km);
+    setText("coverSub", `${visited} tiles & ${km2} km² explored — keep roaming`);
   } catch (_) {}
 }
 
