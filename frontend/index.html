@@ -87,6 +87,10 @@
     #exploredMapBanner span { font-size: 14px; font-weight: 700; }
     body.exploring #searchBar, body.exploring #searchResults, body.exploring #fab,
     body.exploring #routeBtn, body.exploring #targetBtn { display: none !important; }
+    /* In the explored-map only, stack the remaining controls low on the left. */
+    body.exploring #showRoutesBtn { bottom: 24px; left: 20px; right: auto; }
+    body.exploring #locateBtn { bottom: 88px; left: 20px; right: auto; }
+    body.exploring #northBtn { bottom: 152px; left: 20px; right: auto; }
 
     /* ── FAB — drop marker at current location ── */
     #fab {
@@ -108,7 +112,7 @@
     /* ── Locate — west of FAB (radial fan) ── */
     #locateBtn {
       position: absolute;
-      bottom: 178px; left: 20px;
+      bottom: 40px; right: 124px;
       z-index: 1000;
       width: 54px; height: 54px;
       border-radius: 50%;
@@ -649,7 +653,7 @@
     /* ── Show-my-routes button (home screen) ── */
     #showRoutesBtn {
       position: absolute;
-      bottom: 110px; left: 20px;
+      bottom: 108px; left: 20px;
       z-index: 1000;
       width: 56px; height: 56px;
       border-radius: 50%;
@@ -800,7 +804,7 @@
     /* ── North button — directly above FAB (radial fan) ── */
     #northBtn {
       position: absolute;
-      bottom: 246px; left: 20px;
+      bottom: 131px; right: 39px;
       z-index: 1000;
       width: 46px; height: 46px;
       border-radius: 50%;
@@ -2030,6 +2034,7 @@ function switchTab(t) {
   map.removeLayer(availableAreasLayer);
   availableAreasLayer.clearLayers();
   availableFeatures = [];
+  _roamLoadedBounds = null;
   document.getElementById("exploredMapBanner")?.classList.remove("show");
   document.getElementById("exploredView")?.classList.toggle("show", t === "explored");
   document.getElementById("tabMapBtn")?.classList.toggle("active", t === "map");
@@ -2055,7 +2060,8 @@ function enterExploredMap() {
     _coverageForced = true;
   }
   availableAreasLayer.addTo(map);
-  loadRoamableForView();
+  _roamLoadedBounds = null;
+  loadRoamableForView(true);
   setTimeout(() => { try { map.invalidateSize(); } catch (_) {} }, 60);
 }
 
@@ -4367,20 +4373,18 @@ async function deleteMarker(id) {
 let coverageVisible = false;
 const coverageLayer = L.layerGroup(); // not added to map until toggled on
 
-// Manually-claimed explored areas — pale aubergine, on a pane BELOW the orange routes.
-map.createPane("claimedPane");
-map.getPane("claimedPane").style.zIndex = 350;
+// Manually-claimed explored areas (pale aubergine). Rendered on the default
+// overlay and pushed to the back so they sit UNDER the orange routes.
 const claimedAreasLayer = L.layerGroup();
 let claimedFeatures = [];   // [{id, osm_type, osm_id, name, rings, layer}]
 
 // Roamable polygons available to claim — faint dashed outlines, shown in the
 // focused explored-map so you can see (and instantly claim) what's tappable.
-map.createPane("availPane");
-map.getPane("availPane").style.zIndex = 340;
 const availableAreasLayer = L.layerGroup();
 let availableFeatures = [];  // [{osm_type, osm_id, name, kind, geojson, rings, area, layer}]
 let _roamLoadToken = 0;
 let _roamMoveTimer = null;
+let _roamLoadedBounds = null;
 
 // ── Coverage grid state ───────────────────────────────────────────────────────
 let gridVisible    = false;
@@ -4817,9 +4821,10 @@ async function loadClaimedAreas() {
   } catch (_) {}
 }
 function addClaimedFeatureGeo(geo, meta) {
-  const layer = L.geoJSON(geo, { pane: "claimedPane", interactive: false,
+  const layer = L.geoJSON(geo, { interactive: false,
     style: { color: "#5a3d8a", weight: 1.6, opacity: 0.95, fillColor: "#9b6dd6", fillOpacity: 0.45 } })
     .addTo(claimedAreasLayer);
+  layer.bringToBack();   // keep claimed fills beneath the orange routes
   const feat = { id: meta.id ?? null, osm_type: meta.osm_type ?? null, osm_id: meta.osm_id ?? null,
     name: meta.name ?? null, rings: geojsonOuterRings(geo), layer };
   claimedFeatures.push(feat);
@@ -4843,9 +4848,9 @@ function addAvailableFeature(el) {
   const rings = areaElementRings(el);
   if (!rings.length) return;
   const geo = areaElementGeoJSON(el);
-  const layer = L.geoJSON(geo, { pane: "availPane", interactive: false,
-    style: { color: "#7a4b8f", weight: 1.2, opacity: 0.7, dashArray: "4 4",
-             fillColor: "#9b6dd6", fillOpacity: 0.06 } }).addTo(availableAreasLayer);
+  const layer = L.geoJSON(geo, { interactive: false,
+    style: { color: "#6a3d8f", weight: 2, opacity: 0.9, dashArray: "5 5",
+             fillColor: "#9b6dd6", fillOpacity: 0.12 } }).addTo(availableAreasLayer);
   availableFeatures.push({ osm_type: el.type, osm_id: el.id,
     name: (el.tags && el.tags.name) || null, kind, geojson: geo,
     rings, area: ringsArea(rings), layer });
@@ -4853,16 +4858,19 @@ function addAvailableFeature(el) {
 
 // Preload every roamable polygon in the current viewport (once per pan), so
 // tapping is an instant local hit-test instead of a slow per-tap Overpass call.
-async function loadRoamableForView() {
+async function loadRoamableForView(force) {
   if (activeTab !== "exploredmap") return;
   if (map.getZoom() < 14) {
-    availableAreasLayer.clearLayers(); availableFeatures = [];
+    availableAreasLayer.clearLayers(); availableFeatures = []; _roamLoadedBounds = null;
     showToast("Zoom in to load areas to claim", 1800);
     return;
   }
+  const view = map.getBounds();
+  // Don't refetch while panning inside the region we already loaded.
+  if (!force && _roamLoadedBounds && _roamLoadedBounds.contains(view)) return;
+  const region = view.pad(0.6);   // generous margin so small pans don't reload
   const token = ++_roamLoadToken;
-  const b = map.getBounds();
-  const bbox = `${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()}`;
+  const bbox = `${region.getSouth()},${region.getWest()},${region.getNorth()},${region.getEast()}`;
   const q = `[out:json][timeout:25];(` +
     `way["leisure"](${bbox});` +
     `way["landuse"~"recreation_ground|grass|meadow|village_green|forest|greenfield|allotments|farmland"](${bbox});` +
@@ -4870,13 +4878,15 @@ async function loadRoamableForView() {
     `relation["leisure"~"park|recreation_ground|common|nature_reserve|golf_course"](${bbox});` +
     `relation["landuse"~"recreation_ground|meadow|forest|village_green"](${bbox});` +
     `);out geom;`;
-  showToast("Loading areas…", 1000);
+  showToast("Loading areas to claim…", 1200);
   const data = await areaOverpass(q);
-  if (token !== _roamLoadToken) return;   // a newer pan superseded this load
+  if (token !== _roamLoadToken) return;   // a newer load superseded this one
   if (!data) { showToast("Couldn't load areas — pan or zoom to retry", 2400); return; }
+  _roamLoadedBounds = region;
   availableAreasLayer.clearLayers();
   availableFeatures = [];
   (data.elements || []).forEach(addAvailableFeature);
+  claimedFeatures.forEach(f => f.layer.bringToBack());   // keep claimed under fresh outlines
 }
 
 // Tap handler for the focused explored-map. Instant: hit-tests the preloaded
@@ -5074,7 +5084,7 @@ map.on("moveend", () => {
   if (accessibleVisible) loadAccessibleRoutes();
   if (activeTab === "exploredmap") {
     clearTimeout(_roamMoveTimer);
-    _roamMoveTimer = setTimeout(loadRoamableForView, 400);
+    _roamMoveTimer = setTimeout(() => loadRoamableForView(false), 500);
   }
 });
 
